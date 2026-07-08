@@ -4,8 +4,8 @@ import DashBoard from "../pages/DashBoard/DashBoard.jsx";
 import PrivateLayout from "../layouts/PrivateLayout.jsx";
 import Activity from "../pages/Activity.jsx";
 import ManageBadges from "../pages/ManageBadges.jsx";
-import ManageUser from "../pages/ManageUser.jsx";
-import ManageUserEdit from "../pages/ManageUserEdit.jsx";
+import ManageUser from "../pages/ManageUsers/ManageUser.jsx";
+import ManageUserEdit from "../pages/ManageUsers/ManageUserEdit.jsx";
 import Events from "../pages/Events.jsx";
 import LeaderBoard from "../pages/LeaderBoard.jsx";
 import ManageEndUser from "../pages/ManageEndUser.jsx";
@@ -14,6 +14,7 @@ import ReportedUsers from "../pages/ReportedUsers.jsx";
 import RolesPermission from "../pages/RolesPermission.jsx";
 import SupportTicket from "../pages/SupportTicket.jsx";
 import Venues from "../pages/Venues.jsx";
+import ManageUserAdd from "../pages/ManageUsers/ManageUserAdd.jsx";
 
 const router=createBrowserRouter([
     {
@@ -36,7 +37,10 @@ const router=createBrowserRouter([
                 path:'/manage-users',
                 element:<ManageUser/>
             },{
-                path:'/manage-users-edit',
+                path:'/manage-users/add',
+                element:<ManageUserAdd/>
+            },{
+                path:'/manage-users/edit',
                 element:<ManageUserEdit/>
             },{
                 path:'/events',

@@ -4,14 +4,16 @@ import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import Loader from "../components/Loader";
 
 const PrivateLayout = () => {
-  // const { user, loading } = useAuth();
-
-  // if (loading) return <div>Loading...</div>;
-
-  // if (!user) return <Navigate to="/login" replace />;
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { user, loading } = useAuth();
+
+  if (loading) return <Loader/>;
+
+  if (!user) return <Navigate to="/login" replace />;
+  
   return (
     <div
       id="wrapper"
