@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getUsers } from "../../api/userApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
+import { ColumnMenu } from "../../components/columnMenu";
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -11,16 +12,46 @@ function ManageUser() {
     skip: 0,
     take: 10,
   });
+
+  const [sort, setSort] = useState([]);
+  const [filter, setFilter] = useState({
+    logic: "and",
+    filters: [],
+  });
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   useEffect(() => {
     fetchUsers();
-  }, [page]);
+  }, [page, sort, filter, search]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+
+      setPage((prev) => ({
+        ...prev,
+        skip: 0,
+      }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const fetchUsers = async () => {
     try {
-      const res = await getUsers({
+      const body = {
         page: page.skip / page.take + 1,
         pageSize: page.take,
-      });
-      console.log(res.data);
+
+        sorts: sort.map((s) => ({
+          field: s.field,
+          direction: s.dir === "asc" ? 0 : 1,
+        })),
+        
+
+        customSearch: search,
+      };
+
+      const res = await getUsers(body);
 
       setUsers(res.data.data);
       setTotal(res.data.totalRecord);
@@ -29,9 +60,62 @@ function ManageUser() {
     }
   };
 
+  const handleFilterChange = (e) => {
+    setFilter(e.filter);
+
+    setPage((prev) => ({
+      ...prev,
+      skip: 0,
+    }));
+  };
+  const filterOperators = {
+    text: [
+      {
+        text: "Contains",
+        operator: "contains",
+      },
+    ],
+  };
+  const CheckboxCell = () => (
+    <td className="text-center align-middle">
+      <label className="custom-checkbox m-0">
+        <input type="checkbox" className="child-checkbox" />
+        <span className="checkmark"></span>
+      </label>
+    </td>
+  );
+  const ActionCell = (props) => (
+    <td className="text-center align-middle">
+      <div className="d-flex justify-content-center gap-2">
+        <button
+          to={`/manage-users/edit/${props.dataItem.id}`}
+          className="edit-btn"
+          title="Edit"
+        >
+          <i className="demo-icon icon-edit-1"></i>
+        </button>
+
+        <button type="button" className="delete-btn" title="Delete">
+          <i className="demo-icon icon-delete-1"></i>
+        </button>
+      </div>
+    </td>
+  );
+  const StatusCell = (props) => (
+    <td className="text-center align-middle">
+      <div
+        className={`tag ${
+          props.dataItem.isActive ? "success-tag" : "basic-tag"
+        } d-inline-block`}
+      >
+        {props.dataItem.isActive ? "Active" : "Inactive"}
+      </div>
+    </td>
+  );
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
+        <h3>Manage User</h3>
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
@@ -41,7 +125,8 @@ function ManageUser() {
               className="form-control search-input"
               type="search"
               placeholder="Search"
-              aria-label="Search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
 
             <button
@@ -81,7 +166,7 @@ function ManageUser() {
         <div className="col-12 mt-3 mt-xxl-4">
           <div className="table-responsive">
             <Grid
-              style={{ height: "600px" }}
+              // style={{ height: "600px" }}
               data={users}
               pageable={{
                 buttonCount: 5,
@@ -93,68 +178,46 @@ function ManageUser() {
               take={page.take}
               total={total}
               onPageChange={(e) => setPage(e.page)}
+              sortable
+              sort={sort}
+              onSortChange={(e) => setSort(e.sort)}
+  
             >
               {/* Checkbox */}
               <GridColumn
-                title=""
-                width="70px"
-                cell={(props) => (
-                  <td>
-                    <label className="custom-checkbox">
-                      <input type="checkbox" className="child-checkbox" />
-                      <span className="checkmark"></span>
-                    </label>
-                  </td>
-                )}
+                width="60px"
+                headerClassName="text-center"
+                cells={{
+                  data: CheckboxCell,
+                }}
               />
 
-              {/* Action */}
               <GridColumn
                 title="Action"
-                width="120px"
-                cell={(props) => (
-                  <td>
-                    <span className="d-flex gap-2 align-items-center">
-                      <Link
-                        className="small-square-btn edit-btn"
-                        to={`/manage-users/edit/${props.dataItem.id}`}
-                      >
-                        <i className="demo-icon icon-edit-1"></i>
-                      </Link>
-
-                      <button
-                        type="button"
-                        className="small-square-btn danger-btn border-0"
-                      >
-                        <i className="demo-icon icon-delete-1"></i>
-                      </button>
-                    </span>
-                  </td>
-                )}
+                width="110px"
+                headerClassName="text-center"
+                cells={{
+                  data: ActionCell,
+                }}
               />
-
-              {/* User Details */}
-              <GridColumn field="firstName" title="First Name" />
-              <GridColumn field="lastName" title="Last Name" />
-              <GridColumn field="roleName" title="Role" />
-              <GridColumn field="contactNumber" title="Phone" />
-              <GridColumn field="email" title="Email" />
-
-              {/* Status */}
               <GridColumn
+                width={"150px"}
+                field="firstName"
+                title="First Name"
+                // columnMenu={ColumnMenu}
+              />
+              <GridColumn width={"150px"} field="lastName" title="Last Name" />
+              <GridColumn width={"150px"} field="userName" title="User Name" />
+              <GridColumn width={"120px"} field="roleName" title="Role" />
+              <GridColumn width={"150px"} field="contactNumber" title="Phone" />
+              <GridColumn width={"300px"} field="email" title="Email" />
+
+              <GridColumn
+                width={"120px"}
                 title="Status"
-                width="120px"
-                cell={(props) => (
-                  <td>
-                    <div
-                      className={`tag ${
-                        props.dataItem.isActive ? "success-tag" : "basic-tag"
-                      }`}
-                    >
-                      {props.dataItem.isActive ? "Active" : "Inactive"}
-                    </div>
-                  </td>
-                )}
+                cells={{
+                  data: StatusCell,
+                }}
               />
             </Grid>
           </div>

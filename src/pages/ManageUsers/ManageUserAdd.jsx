@@ -1,6 +1,10 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { DatePicker } from "@progress/kendo-react-dateinputs";
+import { addUser, getCountryCode, getGender } from "../../api/userApi";
 function ManageUserAdd() {
+  const [preview, setPreview] = useState(null);
+  const [genders, setGenders] = useState([]);
+  const [countryCodeData, setCountryCodeData] = useState([]);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -15,27 +19,86 @@ function ManageUserAdd() {
     birthDay: "",
     address: "",
     userName: "",
+
     // isProfileUpdate: true,
   });
+
+  useEffect(() => {
+    getGenderData();
+    getCountryCodeData();
+  }, []);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : name === "gender"
+            ? Number(value)
+            : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await loginUser(form);
+      const res = await addUser(form);
       login(res.data);
       console.log(res);
+      console.log(form.profileImage);
       navigate("/");
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const getGenderData = async () => {
+    try {
+      const res = await getGender();
+      console.log(res.data);
+      setGenders(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getCountryCodeData = async () => {
+    try {
+      const res = await getCountryCode();
+      setCountryCodeData(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    setForm((prev) => ({
+      ...prev,
+      profileImage: file,
+    }));
+
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const handleCountryChange = (e) => {
+    const selected = countryCodeData.find(
+      (c) => c.countryId === Number(e.target.value),
+    );
+
+    if (!selected) return;
+
+    setForm((prev) => ({
+      ...prev,
+      countryCode: selected.countryCode,
+      countryCodeName: selected.phoneInternationalCode,
+    }));
   };
   return (
     <div className="container-fluid">
@@ -62,17 +125,46 @@ function ManageUserAdd() {
               <fieldset className="row">
                 <div className="col-12">
                   <div className="field d-flex align-items-center gap-3">
-                    <div className="user-image-edit">
-                      <img src="images/user-img.png" className="img-fluid" />
-                      <button className="edit-btn-small">
+                    <div className="user-image-edit position-relative">
+                      <img
+                        src={preview || "/images/user-img.png"}
+                        alt="Profile"
+                        className="img-fluid rounded-circle"
+                        style={{
+                          width: "120px",
+                          height: "120px",
+                          objectFit: "cover",
+                        }}
+                      />
+
+                      <label
+                        htmlFor="profileImage"
+                        className="edit-btn-small"
+                        style={{ cursor: "pointer" }}
+                      >
                         <i className="demo-icon icon-edit-1"></i>
-                      </button>
+                      </label>
+
+                      <input
+                        id="profileImage"
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={handleImageChange}
+                      />
                     </div>
-                    <h3 className="mb-0">
-                      <button className="text-btn fw-semibold text-start">
-                        Upload a Profile Photo
-                      </button>
-                    </h3>
+
+                    <div>
+                      <h5 className="mb-2">Profile Photo</h5>
+
+                      <label
+                        htmlFor="profileImage"
+                        className="btn btn-outline-primary"
+                        style={{ cursor: "pointer" }}
+                      >
+                        Upload Profile Photo
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div className="col-12 mt-2">
@@ -114,14 +206,18 @@ function ManageUserAdd() {
                     <label htmlFor="birthday" className="fw-semibold">
                       Birthday
                     </label>
-                    <input
-                      type="date"
-                      id="date"
-                      name="birthday"
-                      className="form-control"
-                      value={form.birthDay}
-                      onChange={handleChange}
+                    <DatePicker
+                      value={form.birthDay ? new Date(form.birthDay) : null}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          birthDay: e.value
+                            ? e.value.toISOString().split("T")[0]
+                            : "",
+                        }))
+                      }
                     />
+                    -
                   </div>
                 </div>
                 <div className="col-sm-6 col-xl-4 mt-3">
@@ -129,13 +225,21 @@ function ManageUserAdd() {
                     <label htmlFor="gender" className="fw-semibold">
                       Gender
                     </label>
+
                     <select
+                      id="gender"
+                      name="gender"
                       className="form-select"
                       value={form.gender}
                       onChange={handleChange}
                     >
-                      <option value={"male"}>Male</option>
-                      <option value={"female"}>Female</option>
+                      <option value="">Select Gender</option>
+
+                      {genders.map((gender) => (
+                        <option key={gender.id} value={gender.id}>
+                          {gender.description}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -181,18 +285,42 @@ function ManageUserAdd() {
                 </div>
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
-                    <label htmlFor="contact-no" className="fw-semibold">
+                    <label className="fw-semibold">
                       Contact Number <span className="danger-color">*</span>
                     </label>
-                    <input
-                      type="text"
-                      name="contact-no"
-                      className="form-control"
-                      id="contactNo"
-                      maxLength={10}
-                    />
+
+                    <div className="input-group">
+                      <select
+                        className="form-select"
+                        style={{ maxWidth: "140px" }}
+                        onChange={handleCountryChange}
+                        defaultValue=""
+                      >
+                        <option value="">Code</option>
+
+                        {countryCodeData.map((country) => (
+                          <option
+                            key={country.countryId}
+                            value={country.countryId}
+                          >
+                            {country.phoneInternationalCode}    {country.countryName}
+                          </option>
+                        ))}
+                      </select>
+
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="contactNumber"
+                        value={form.contactNumber}
+                        onChange={handleChange}
+                        maxLength={10}
+                        placeholder="Enter Contact Number"
+                      />
+                    </div>
                   </div>
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label htmlFor="email" className="fw-semibold">
@@ -217,11 +345,12 @@ function ManageUserAdd() {
                     </label>
                     <select className="form-select">
                       <option>----</option>
-                      <option>Select</option>
+
                       <option>Admin</option>
                     </select>
                   </div>
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label className="fw-semibold d-block mb-2">

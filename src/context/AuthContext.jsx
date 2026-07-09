@@ -20,6 +20,8 @@ export const AuthProvider = ({ children }) => {
         const user = await getCurrentUser();
 
         setUser(user);
+        console.log("Get Current",user);
+        
       } catch {
         localStorage.removeItem("token");
       } finally {
