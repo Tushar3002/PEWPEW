@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getUsers } from "../../api/userApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { ColumnMenu } from "../../components/columnMenu";
@@ -20,6 +20,8 @@ function ManageUser() {
   });
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const navigate=useNavigate()
   useEffect(() => {
     fetchUsers();
   }, [page, sort, filter, search]);
@@ -52,7 +54,8 @@ function ManageUser() {
       };
 
       const res = await getUsers(body);
-
+      console.log(res.data.data);
+      
       setUsers(res.data.data);
       setTotal(res.data.totalRecord);
     } catch (err) {
@@ -88,10 +91,11 @@ function ManageUser() {
     <td className="text-center align-middle">
       <div className="d-flex justify-content-center gap-2">
         <button
-          to={`/manage-users/edit/${props.dataItem.id}`}
-          className="edit-btn"
-          title="Edit"
-        >
+        type="button"
+        className="edit-btn"
+        title="Edit"
+        onClick={() => navigate(`/manage-users/edit/${props.dataItem.id}`)}
+      > 
           <i className="demo-icon icon-edit-1"></i>
         </button>
 

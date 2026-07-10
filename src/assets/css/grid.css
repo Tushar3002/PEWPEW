@@ -19,7 +19,6 @@
   border-right: 1px solid #dee2e6;
 }
 
-/* Remove zebra striping */
 .k-grid tbody tr {
   background: #fff !important;
 }
@@ -32,7 +31,6 @@
   background: #fff !important;
 }
 
-/* Thin border between rows */
 .k-grid tbody td {
   border-bottom: 1px solid #e9ecef;
   border-right: 1px solid #e9ecef;

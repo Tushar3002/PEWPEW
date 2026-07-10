@@ -10,8 +10,8 @@ export const getCurrentUser=async()=>{
     return res.data
 }
 
-export const addUser=async()=>{
-    const res=await api.post('/User/Add')
+export const addUser=async(body)=>{
+    const res=await api.post('/User/Add',body)
     return res.data
 }
 
@@ -21,6 +21,21 @@ export const getGender=async()=>{
 }
 
 export const getCountryCode=async()=>{
-    const res=await api.get('Common/country-codes')
+    const res=await api.get('/Common/country-codes')
+    return res.data
+}
+
+export const getRole=async()=>{
+    const res=await api.get('Role/GetRolesForDropdown')
+    return res.data
+}
+
+export const getUserById=async(id)=>{
+    const res=await api.get(`/User/${id}`)
+    return res.data
+}
+
+export const updateUser=async(body)=>{
+    const res=await api.put('/User/update',body)
     return res.data
 }

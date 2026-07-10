@@ -20,9 +20,9 @@ import './assets/css/grid.css'
 // import "@progress/kendo-theme-default";
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+
     <App />
-  </StrictMode>,
+
 )
 
 

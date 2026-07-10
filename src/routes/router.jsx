@@ -16,64 +16,75 @@ import SupportTicket from "../pages/SupportTicket.jsx";
 import Venues from "../pages/Venues.jsx";
 import ManageUserAdd from "../pages/ManageUsers/ManageUserAdd.jsx";
 
-const router=createBrowserRouter([
-    {
-        path:'/login',
-        element:<Login/>
-    },
-    {
-        element:<PrivateLayout/>,
-        children:[
-            {
-                path:'/',
-                element:<DashBoard/>
-            },{
-                path:'/activity',
-                element:<Activity/>
-            },{
-                path:'/manage-badges',
-                element:<ManageBadges/>
-            },{
-                path:'/manage-users',
-                element:<ManageUser/>
-            },{
-                path:'/manage-users/add',
-                element:<ManageUserAdd/>
-            },{
-                path:'/manage-users/edit',
-                element:<ManageUserEdit/>
-            },{
-                path:'/events',
-                element:<Events/>
-            },{
-                path:'/leaderboard',
-                element:<LeaderBoard/>
-            },
-            {
-                path:'/managebadges',
-                element:<ManageBadges/>
-            },
-            {
-                path:'/manage-end-users',
-                element:<ManageEndUser/>
-            },{
-                path:'/messaging',
-                element:<Messaging/>
-            },{
-                path:'/reported-users',
-                element:<ReportedUsers/>
-            },{
-                path:'/roles-permissions',
-                element:<RolesPermission/>
-            },{
-                path:'/supportTicket',
-                element:<SupportTicket/>
-            },{
-                path:'/venues',
-                element:<Venues/>
-            }
-        ]
-    
-    }
-])
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    element: <PrivateLayout />,
+    children: [
+      {
+        path: "/",
+        element: <DashBoard />,
+      },
+      {
+        path: "/activity",
+        element: <Activity />,
+      },
+      {
+        path: "/manage-badges",
+        element: <ManageBadges />,
+      },
+      {
+        path: "/manage-users",
+        element: <ManageUser />,
+      },
+      {
+        path: "/manage-users/add",
+        element: <ManageUserAdd />,
+      },
+      {
+        path: "/manage-users/edit/:id",
+        element: <ManageUserEdit />,
+      },
+      {
+        path: "/events",
+        element: <Events />,
+      },
+      {
+        path: "/leaderboard",
+        element: <LeaderBoard />,
+      },
+      {
+        path: "/managebadges",
+        element: <ManageBadges />,
+      },
+      {
+        path: "/manage-end-users",
+        element: <ManageEndUser />,
+      },
+      {
+        path: "/messaging",
+        element: <Messaging />,
+      },
+      {
+        path: "/reported-users",
+        element: <ReportedUsers />,
+      },
+      {
+        path: "/roles-permissions",
+        element: <RolesPermission />,
+      },
+      {
+        path: "/supportTicket",
+        element: <SupportTicket />,
+      },
+      {
+        path: "/venues",
+        element: <Venues />,
+      },
+    ],
+  },
+]);
 export default router;
