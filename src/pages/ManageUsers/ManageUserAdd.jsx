@@ -1,55 +1,50 @@
-import React, { useEffect, useState } from "react";
-
-import { addUser, getCountryCode, getGender, getRole } from "../../api/userApi";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-
-import { initialUserForm } from "../../constants/userForm";
+import { addUser } from "../../api/userApi";
 import UserForm from "../../components/users/UserForm";
-import { useUserForm } from "../../hooks/useUserForm";
+import { initialUserForm } from "../../constants/userForm";
 import { useUserDropDown } from "../../hooks/useUserDropDown";
-
 
 function ManageUserAdd() {
   const navigate = useNavigate();
+  const { genders, roles, countryCodeData } = useUserDropDown();
 
-  const { genders, roles, countryCodeData }=useUserDropDown();
-  const {
-    form,
-    setForm,
-    preview,
-    handleChange,
-    handleImageChange,
-    handleCountryChange,
-    handleCommunicateChange,
-  } = useUserForm(countryCodeData);
-
-const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (data) => {
     try {
-      // console.log(form);
-      const res = await addUser(form);
+      const selectedCountry = countryCodeData.find(
+        (country) => String(country.countryId) === String(data.countryCode),
+      );
+
+      const payload = {
+        ...data,
+        gender: data.gender ? Number(data.gender) : null,
+        role: data.role ,
+        commincateWith: Array.isArray(data.commincateWith)
+          ? data.commincateWith.map(String)
+          : [],
+        countryCode: selectedCountry
+          ? selectedCountry.phoneInternationalCode
+          : data.countryCode,
+        countryCodeName: selectedCountry
+          ? selectedCountry.countryCode
+          : data.countryCodeName,
+      };
+      console.log(payload);
+      
+      await addUser(payload);
       navigate("/manage-users");
     } catch (error) {
-      console.log(error.response);
+      console.log(error?.response);
     }
   };
+
   return (
     <UserForm
-      form={form}
-      setForm={setForm}
+      defaultValues={initialUserForm}
       genders={genders}
       roles={roles}
       countryCodeData={countryCodeData}
-      handleSubmit={handleSubmit}
-      preview={preview}
-      setPreview={setPreview}
-      handleImageChange={handleImageChange}
-      handleCommunicateChange={handleCommunicateChange}
-      handleCountryChange={handleCountryChange}
-      getGenderData={getGenderData}
-      getCountryCodeData={getCountryCodeData}
-      getRolesData={getRolesData}
-      handleChange={handleChange}
+      onSubmit={handleSubmit}
     />
   );
 }

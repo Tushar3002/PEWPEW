@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { initialUserForm } from "../constants/userForm";
 
-export const useUserForm=(countryCodeData)=>{
-    const [form, setForm] = useState(initialUserForm);
-  
-    const [preview, setPreview] = useState(null);
-    const handleChange = (e) => {
+export const useUserForm = (countryCodeData) => {
+  const [form, setForm] = useState(initialUserForm);
+
+  const [preview, setPreview] = useState(null);
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     // console.log(name, value);
     setForm((prev) => ({
@@ -18,8 +18,6 @@ export const useUserForm=(countryCodeData)=>{
             : value,
     }));
   };
-
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -62,8 +60,16 @@ export const useUserForm=(countryCodeData)=>{
     }));
   };
 
-  
-    return {
+  const handleBirthdayChange = (e) => {
+  setForm((prev) => ({
+    ...prev,
+    birthDay: e.value
+      ? e.value.toISOString().split("T")[0]
+      : "",
+  }));
+};
+
+  return {
     form,
     setForm,
     preview,
@@ -72,5 +78,6 @@ export const useUserForm=(countryCodeData)=>{
     handleCommunicateChange,
     handleCountryChange,
     handleImageChange,
+    handleBirthdayChange
+  };
 };
-}

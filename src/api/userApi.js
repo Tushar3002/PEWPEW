@@ -39,3 +39,12 @@ export const updateUser=async(body)=>{
     const res=await api.put('/User/update',body)
     return res.data
 }
+
+export const deleteUser=async(userIds)=>{
+    const res=await api.delete('/User',{
+        data:{
+            userIds
+        }
+    })
+    return res.data
+}

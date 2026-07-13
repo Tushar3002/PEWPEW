@@ -1,22 +1,73 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DatePicker } from "@progress/kendo-react-dateinputs";
 import defaultProfilePic from "../../assets/images/user-img.png";
+import { useForm, Controller } from "react-hook-form";
+import { initialUserForm } from "../../constants/userForm";
 
 function UserForm({
-  form,
-
-  genders,
-  roles,
-  countryCodeData,
-  handleSubmit,
+  genders = [],
+  roles = [],
+  countryCodeData = [],
+  onSubmit,
   preview,
-
+  defaultValues,
   handleImageChange,
-  handleChange,
-
-  handleCountryChange,
-  handleCommunicateChange,
 }) {
+  const [imagePreview, setImagePreview] = useState(preview || defaultProfilePic);
+  const today = new Date();
+  const {
+    register,
+    handleSubmit: rhfSubmit,
+    control,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: { ...initialUserForm },
+  });
+
+  const resolveCountryCodeValue = (value) => {
+    if (!value || !countryCodeData.length) return "";
+
+    const matchedCountry = countryCodeData.find(
+      (country) =>
+        String(country.countryId) === String(value) ||
+        String(country.phoneInternationalCode) === String(value) ||
+        String(country.countryCode) === String(value),
+    );
+
+    return matchedCountry ? matchedCountry.countryId : "";
+  };
+
+  useEffect(() => {
+    const nextValues = {
+      ...initialUserForm,
+      ...defaultValues,
+      countryCode: resolveCountryCodeValue(defaultValues?.countryCode),
+    };
+
+    reset(nextValues);
+
+    if (defaultValues?.profileImage) {
+      setImagePreview(defaultValues.profileImage);
+    } else if (!preview) {
+      setImagePreview(defaultProfilePic);
+    }
+  }, [defaultValues, preview, reset, countryCodeData]);
+
+  const handleProfileImageChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setValue("profileImage", file);
+    setImagePreview(URL.createObjectURL(file));
+
+    if (handleImageChange) {
+      handleImageChange(event);
+    }
+  };
+
   return (
     <div className="container-fluid">
       <div className="tabbar-section">
@@ -38,13 +89,13 @@ function UserForm({
         </div>
         <div className="row">
           <div className="col-12">
-            <form className="mt-3 mt-xxl-4" onSubmit={handleSubmit}>
+            <form className="mt-3 mt-xxl-4" onSubmit={rhfSubmit(onSubmit)}>
               <fieldset className="row">
                 <div className="col-12">
                   <div className="field d-flex align-items-center gap-3">
                     <div className="user-image-edit position-relative">
                       <img
-                        src={preview || defaultProfilePic}
+                        src={imagePreview || defaultProfilePic}
                         alt="Profile"
                         className="img-fluid rounded-circle"
                         style={{
@@ -67,7 +118,7 @@ function UserForm({
                         type="file"
                         accept="image/*"
                         hidden
-                        onChange={handleImageChange}
+                        onChange={handleProfileImageChange}
                       />
                     </div>
 
@@ -84,122 +135,136 @@ function UserForm({
                     </div>
                   </div>
                 </div>
+
                 <div className="col-12 mt-2">
                   <h3 className="fw-bold mt-4">Personal Information</h3>
                   <hr className="mb-2" />
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
-                    <label htmlFor="first-name" className="fw-semibold">
+                    <label htmlFor="firstName" className="fw-semibold">
                       First Name <span className="danger-color">*</span>
                     </label>
                     <input
-                      type="text"
-                      name="firstName"
-                      className="form-control"
-                      value={form.firstName}
-                      onChange={handleChange}
-                      required
+                      id="firstName"
+                      className={`form-control ${errors.firstName ? "is-invalid" : ""}`}
+                      {...register("firstName", {
+                        required: "First Name is required",
+                      })}
                     />
+                    <div className="invalid-feedback">{errors.firstName?.message}</div>
                   </div>
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
-                    <label htmlFor="last-name" className="fw-semibold">
+                    <label htmlFor="lastName" className="fw-semibold">
                       Last Name <span className="danger-color">*</span>
                     </label>
                     <input
-                      type="text"
-                      name="lastName"
-                      className="form-control"
-                      value={form.lastName}
-                      onChange={handleChange}
-                      required
+                      id="lastName"
+                      className={`form-control ${errors.lastName ? "is-invalid" : ""}`}
+                      {...register("lastName", {
+                        required: "Last Name is required",
+                      })}
                     />
+                    <div className="invalid-feedback">{errors.lastName?.message}</div>
                   </div>
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
-                    <label htmlFor="birthday" className="fw-semibold">
+                    <label htmlFor="birthDay" className="fw-semibold">
                       Birthday
                     </label>
-                    <DatePicker
-                      value={form.birthDay ? new Date(form.birthDay) : null}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          birthDay: e.value
-                            ? e.value.toISOString().split("T")[0]
-                            : "",
-                        }))
-                      }
+                    <Controller
+                      name="birthDay"
+                      control={control}
+                       max={today}
+                      rules={{ required: "Birthday is required" }}
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value ? new Date(field.value) : null}
+                          onChange={(e) => {
+                            field.onChange(e.value ? e.value.toISOString().split("T")[0] : "");
+                          }}
+                          className={`form-control ${errors.birthDay ? "is-invalid" : ""}`}
+                        />
+                      )}
                     />
-                    -
+                    {errors.birthDay && (
+                      <div className="invalid-feedback d-block">{errors.birthDay.message}</div>
+                    )}
                   </div>
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label htmlFor="gender" className="fw-semibold">
                       Gender
                     </label>
-
                     <select
                       id="gender"
-                      name="gender"
-                      className="form-select"
-                      value={form.gender}
-                      onChange={handleChange}
+                      className={`form-select ${errors.gender ? "is-invalid" : ""}`}
+                      {...register("gender", {
+                        required: "Gender is required",
+                      })}
                     >
                       <option value="">Select Gender</option>
-
                       {genders.map((gender) => (
                         <option key={gender.id} value={gender.id}>
                           {gender.description}
                         </option>
                       ))}
                     </select>
+                    <div className="invalid-feedback">{errors.gender?.message}</div>
                   </div>
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label htmlFor="userName" className="fw-semibold">
                       User Name <span className="danger-color">*</span>
                     </label>
                     <input
-                      type="text"
-                      name="userName"
-                      className="form-control"
-                      value={form.userName}
-                      onChange={handleChange}
-                      required
+                      id="userName"
+                      className={`form-control ${errors.userName ? "is-invalid" : ""}`}
+                      {...register("userName", {
+                        required: "Username is required",
+                      })}
                     />
+                    <div className="invalid-feedback">{errors.userName?.message}</div>
                   </div>
                 </div>
+
                 <div className="col-12 mt-2">
                   <h3 className="fw-bold mt-4">Address Details</h3>
                   <hr className="mb-2" />
                 </div>
+
                 <div className="col-sm-6 col-xl-8 mt-3">
                   <div className="form-group">
                     <label htmlFor="address" className="fw-semibold">
                       Address
                     </label>
                     <textarea
-                      name="address"
-                      className="form-control"
+                      id="address"
                       rows={4}
-                      value={form.address}
-                      onChange={handleChange}
+                      className={`form-control ${errors.address ? "is-invalid" : ""}`}
+                      {...register("address", {
+                        required: "Address is required",
+                      })}
                     />
+                    <div className="invalid-feedback">{errors.address?.message}</div>
                   </div>
                 </div>
 
                 <div className="col-12 mt-2">
-                  <h3 className="fw-bold mt-4">
-                    Contact and Additional Details
-                  </h3>
+                  <h3 className="fw-bold mt-4">Contact and Additional Details</h3>
                   <hr className="mb-2" />
                 </div>
+
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label className="fw-semibold">
@@ -207,38 +272,62 @@ function UserForm({
                     </label>
 
                     <div className="d-flex align-items-center gap-2">
-                      <select
-                        className="form-select"
-                        style={{
-                          width: "90px",
-                          minWidth: "90px",
-                          maxWidth: "90px",
-                        }}
-                        onChange={handleCountryChange}
-                        defaultValue=""
-                      >
-                        <option value="">+1</option>
+                      <Controller
+                        name="countryCode"
+                        control={control}
+                        rules={{ required: "Country Code is required" }}
+                        render={({ field }) => (
+                          <select
+                            className={`form-select ${errors.countryCode ? "is-invalid" : ""}`}
+                            style={{
+                              width: "90px",
+                              minWidth: "90px",
+                              maxWidth: "90px",
+                            }}
+                            value={field.value ?? ""}
+                            onChange={(e) => {
+                              const selectedCountry = countryCodeData.find(
+                                (country) => String(country.countryId) === e.target.value,
+                              );
 
-                        {countryCodeData.map((country) => (
-                          <option
-                            key={country.countryId}
-                            value={country.countryId}
+                              if (!selectedCountry) {
+                                field.onChange("");
+                                setValue("countryCodeName", "");
+                                return;
+                              }
+
+                              field.onChange(selectedCountry.countryId);
+                              setValue("countryCodeName", selectedCountry.countryCode || selectedCountry.phoneInternationalCode);
+                            }}
                           >
-                            {country.phoneInternationalCode}{" "}
-                            {country.countryName}
-                          </option>
-                        ))}
-                      </select>
+                            <option value="">+1</option>
+                            {countryCodeData.map((country) => (
+                              <option key={country.countryId} value={country.countryId}>
+                                {country.phoneInternationalCode} {country.countryName}
+                              </option>
+                            ))}
+                          </select>
+                          
+                        )}
+                        
+                      />
+
+                      {/* {errors.countryCode && (
+                        <div className="invalid-feedback d-block">{errors.countryCode.message}</div>
+                      )} */}
 
                       <input
-                        type="text"
-                        className="form-control flex-grow-1"
-                        name="contactNumber"
-                        value={form.contactNumber}
-                        onChange={handleChange}
-                        maxLength={10}
-                        placeholder="Enter Contact Number"
+                        id="contactNumber"
+                        className={`form-control ${errors.contactNumber ? "is-invalid" : ""}`}
+                        {...register("contactNumber", {
+                          required: "Contact Number is required",
+                          pattern: {
+                            value: /^[0-9]{10}$/,
+                            message: "Enter 10 digits",
+                          },
+                        })}
                       />
+                      <div className="invalid-feedback">{errors.contactNumber?.message}</div>
                     </div>
                   </div>
                 </div>
@@ -250,14 +339,19 @@ function UserForm({
                     </label>
                     <div className="field-icon">
                       <input
-                        type="email"
-                        name="email"
-                        className="form-control"
                         id="email"
-                        value={form.email}
-                        onChange={handleChange}
+                        type="email"
+                        className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                        {...register("email", {
+                          required: "Email is required",
+                          pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Invalid Email",
+                          },
+                        })}
                       />
-                      <i className="demo-icon icon-eye-line"></i>
+                      <div className="invalid-feedback">{errors.email?.message}</div>
+                      
                     </div>
                   </div>
                 </div>
@@ -268,64 +362,103 @@ function UserForm({
                       Role
                     </label>
                     <select
-                      name="role"
-                      className="form-select"
-                      onChange={handleChange}
-                      value={form.role}
+                      id="role"
+                      className={`form-select ${errors.role ? "is-invalid" : ""}`}
+                      {...register("role", {
+                        required: "Role is required",
+                      })}
                     >
                       <option value="">Select Role</option>
-                      {roles.map((r) => (
-                        <option key={r.key} value={r.key}>
-                          {r.value}
+                      {roles.map((role) => (
+                        <option key={role.key} value={role.key}>
+                          {role.value}
                         </option>
                       ))}
                     </select>
+                    <div className="invalid-feedback">{errors.role?.message}</div>
                   </div>
                 </div>
 
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label className="fw-semibold d-block mb-2">
-                      Able to communicate with{" "}
-                      <span className="danger-color">*</span>
+                      Able to communicate with <span className="danger-color">*</span>
                     </label>
 
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="endUsers"
-                        value={"1"}
-                        checked={form.commincateWith.includes("1")}
-                        onChange={handleCommunicateChange}
-                      />
-                      <label className="form-check-label" htmlFor="endUsers">
-                        End User
-                      </label>
-                    </div>
+                    <Controller
+                      name="commincateWith"
+                      control={control}
+                      defaultValue={[]}
+                      rules={{
+                        validate: (value) =>
+                          (Array.isArray(value) ? value.length : 0) > 0 ||
+                          "Select at least one communication type",
+                      }}
+                      render={({ field }) => {
+                        const selectedValues = Array.isArray(field.value) ? field.value : [];
 
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="internalUsers"
-                        value={"2"}
-                        checked={form.commincateWith.includes("2")}
-                        onChange={handleCommunicateChange}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="internalUsers"
-                      >
-                        Internal User
-                      </label>
-                    </div>
+                        return (
+                          <>
+                            <div className="form-check form-check-inline">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="endUsers"
+                                value="1"
+                                checked={selectedValues.includes("1")}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  const nextValues = checked
+                                    ? [...selectedValues, "1"]
+                                    : selectedValues.filter((value) => value !== "1");
+
+                                  field.onChange(nextValues);
+                                }}
+                              />
+                              <label className="form-check-label" htmlFor="endUsers">
+                                End User
+                              </label>
+                            </div>
+
+                            <div className="form-check form-check-inline">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="internalUsers"
+                                value="2"
+                                checked={selectedValues.includes("2")}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  const nextValues = checked
+                                    ? [...selectedValues, "2"]
+                                    : selectedValues.filter((value) => value !== "2");
+
+                                  field.onChange(nextValues);
+                                }}
+                              />
+                              <label className="form-check-label" htmlFor="internalUsers">
+                                Internal User
+                              </label>
+                            </div>
+
+                            {errors.commincateWith && (
+                              <div className="text-danger mt-1">{errors.commincateWith.message}</div>
+                            )}
+                          </>
+                        );
+                      }}
+                    />
                   </div>
                 </div>
+
                 <div className="col-12 mt-3 mt-xxl-4">
                   <div className="d-flex flex-wrap justify-content-end gap-3">
-                    <button className="btn main-btn border-btn">Cancel</button>
-                    <button className="btn main-btn w-auto">Save</button>
+                    <button type="button" className="btn main-btn border-btn">
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn main-btn w-auto">
+                      Save
+                    </button>
                   </div>
                 </div>
               </fieldset>

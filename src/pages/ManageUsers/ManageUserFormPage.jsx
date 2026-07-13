@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getUserById, updateUser } from "../../api/userApi";
+import { addUser, getUserById, updateUser } from "../../api/userApi";
 import UserForm from "../../components/users/UserForm";
 import { initialUserForm } from "../../constants/userForm";
 import { useUserDropDown } from "../../hooks/useUserDropDown";
 
-function ManageUserEdit() {
+function ManageUserFormPage() {
   const [defaultValues, setDefaultValues] = useState(initialUserForm);
   const navigate = useNavigate();
   const { id } = useParams();
+  const isEditMode = Boolean(id);
   const { genders, roles, countryCodeData } = useUserDropDown();
 
   useEffect(() => {
+    if (!isEditMode) {
+      setDefaultValues(initialUserForm);
+      return;
+    }
+
     loadUser();
-  }, [id]);
+  }, [id, isEditMode]);
 
   const loadUser = async () => {
     try {
@@ -38,34 +44,43 @@ function ManageUserEdit() {
         userName: userData.userName || "",
         profileImage: userData.profileImage || "",
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const buildPayload = (data) => {
+    const selectedCountry = countryCodeData.find(
+      (country) => String(country.countryId) === String(data.countryCode),
+    );
+
+    return {
+      ...data,
+      userId: isEditMode ? id : undefined,
+      gender: data.gender ? Number(data.gender) : null,
+      role: data.role,
+      commincateWith: Array.isArray(data.commincateWith)
+        ? data.commincateWith.map(String)
+        : [],
+      countryCode: selectedCountry
+        ? selectedCountry.phoneInternationalCode
+        : data.countryCode,
+      countryCodeName: selectedCountry
+        ? selectedCountry.countryCode
+        : data.countryCodeName,
+    };
   };
 
   const handleSubmit = async (data) => {
     try {
-      const selectedCountry = countryCodeData.find(
-        (country) => String(country.countryId) === String(data.countryCode),
-      );
+      const payload = buildPayload(data);
 
-      const payload = {
-        ...data,
-        userId: id,
-        gender: data.gender ? Number(data.gender) : null,
-        role: data.role ,
-        commincateWith: Array.isArray(data.commincateWith)
-          ? data.commincateWith.map(String)
-          : [],
-        countryCode: selectedCountry
-          ? selectedCountry.phoneInternationalCode
-          : data.countryCode,
-        countryCodeName: selectedCountry
-          ? selectedCountry.countryCode
-          : data.countryCodeName,
-      };
+      if (isEditMode) {
+        await updateUser(payload);
+      } else {
+        await addUser(payload);
+      }
 
-      await updateUser(payload);
       navigate("/manage-users");
     } catch (error) {
       console.log(error?.response);
@@ -74,8 +89,8 @@ function ManageUserEdit() {
 
   return (
     <UserForm
-      defaultValues={defaultValues}
-      preview={defaultValues.profileImage || ""}
+      defaultValues={isEditMode ? defaultValues : initialUserForm}
+      preview={isEditMode ? defaultValues.profileImage || "" : ""}
       genders={genders}
       roles={roles}
       countryCodeData={countryCodeData}
@@ -84,4 +99,4 @@ function ManageUserEdit() {
   );
 }
 
-export default ManageUserEdit;
+export default ManageUserFormPage;
