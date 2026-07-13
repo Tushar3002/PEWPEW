@@ -37,16 +37,21 @@ const router = createBrowserRouter([
         element: <ManageBadges />,
       },
       {
-        path: "/manage-users",
-        element: <ManageUser />,
-      },
-      {
-        path: "/manage-users/add",
-        element: <ManageUserFormPage />,
-      },
-      {
-        path: "/manage-users/edit/:id",
-        element: <ManageUserFormPage />,
+        path: "manage-users",
+        children: [
+          {
+            index: true,
+            element: <ManageUser />,
+          },
+          {
+            path: "add",
+            element: <ManageUserFormPage />,
+          },
+          {
+            path: "edit/:id",
+            element: <ManageUserFormPage />,
+          },
+        ],
       },
       {
         path: "/events",

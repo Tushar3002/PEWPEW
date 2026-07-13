@@ -7,6 +7,7 @@ import { ColumnMenu } from "../../components/columnMenu";
 function ManageUser() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
+  const [statusMap, setStatusMap] = useState({});
 
   const [page, setPage] = useState({
     skip: 0,
@@ -115,17 +116,40 @@ function ManageUser() {
       </div>
     </td>
   );
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div
-        className={`tag ${
-          props.dataItem.isActive ? "success-tag" : "basic-tag"
-        } d-inline-block`}
-      >
-        {props.dataItem.isActive ? "Active" : "Inactive"}
-      </div>
-    </td>
-  );
+  const handleStatusToggle = (id, currentValue) => {
+    setStatusMap((prev) => ({
+      ...prev,
+      [id]: !currentValue,
+    }));
+  };
+
+  const StatusCell = (props) => {
+    const rowId = props.dataItem.id;
+    const isActive = statusMap[rowId] ?? props.dataItem.isActive;
+
+    return (
+      <td className="text-center align-middle">
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <div
+            className={`tag ${isActive ? "success-tag" : "basic-tag"} d-inline-block`}
+          >
+            {isActive ? "Active" : "Inactive"}
+          </div>
+
+          <div className="form-check form-switch d-inline-flex align-items-center m-0">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              checked={Boolean(isActive)}
+              onChange={() => handleStatusToggle(rowId, Boolean(isActive))}
+              aria-label={`Toggle status for ${props.dataItem.userName || "user"}`}
+            />
+          </div>
+        </div>
+      </td>
+    );
+  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
