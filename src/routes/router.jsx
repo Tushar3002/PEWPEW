@@ -15,6 +15,7 @@ import SupportTicket from "../pages/SupportTicket.jsx";
 import Venues from "../pages/Venues.jsx";
 import ManageUserFormPage from "../pages/ManageUsers/ManageUserFormPage.jsx";
 import RolesPermission from "../pages/RolesAndPermissions/RolesPermission.jsx";
+import RolesPermissionFormPage from "../pages/RolesAndPermissions/RolesPermissionFormPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -27,14 +28,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <DashBoard />,
-      },
-      {
-        path: "/activity",
-        element: <Activity />,
-      },
-      {
-        path: "/manage-badges",
-        element: <ManageBadges />,
       },
       {
         path: "manage-users",
@@ -52,6 +45,29 @@ const router = createBrowserRouter([
             element: <ManageUserFormPage />,
           },
         ],
+      },
+      {
+        path: "/roles-permissions",
+        children:[
+          {
+            index:true,
+            element: <RolesPermission />,
+          },{
+            path:"add",
+            element:<RolesPermissionFormPage/>
+          },{
+            path:"edit/:id",
+            element:<RolesPermissionFormPage/>
+          }
+        ]
+      },
+      {
+        path: "/activity",
+        element: <Activity />,
+      },
+      {
+        path: "/manage-badges",
+        element: <ManageBadges />,
       },
       {
         path: "/events",
@@ -77,10 +93,7 @@ const router = createBrowserRouter([
         path: "/reported-users",
         element: <ReportedUsers />,
       },
-      {
-        path: "/roles-permissions",
-        element: <RolesPermission />,
-      },
+      
       {
         path: "/supportTicket",
         element: <SupportTicket />,

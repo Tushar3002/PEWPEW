@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteUser, getUsers } from "../../api/userApi";
+import { deleteUser, getUsers, updateStatus } from "../../api/userApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { ColumnMenu } from "../../components/columnMenu";
 
@@ -38,6 +38,17 @@ function ManageUser() {
 
     return () => clearTimeout(timer);
   }, [searchInput]);
+
+  const updateStatusData = async (id, isActive) => {
+    try {
+      await updateStatus(id, isActive);
+      fetchUsers();
+      return true;
+    } catch (error) {
+      console.log(error?.response);
+      return false;
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -116,25 +127,32 @@ function ManageUser() {
       </div>
     </td>
   );
-  const handleStatusToggle = (id, currentValue) => {
+  const handleStatusToggle = async (id, currentValue) => {
+    const nextValue = !currentValue;
+
     setStatusMap((prev) => ({
       ...prev,
-      [id]: !currentValue,
+      [id]: nextValue,
     }));
+
+    const isSuccess = await updateStatusData(id, nextValue);
+
+    if (!isSuccess) {
+      setStatusMap((prev) => ({
+        ...prev,
+        [id]: currentValue,
+      }));
+    }
   };
 
   const StatusCell = (props) => {
-    const rowId = props.dataItem.id;
+    const rowId = props.dataItem.userId ?? props.dataItem.id;
     const isActive = statusMap[rowId] ?? props.dataItem.isActive;
 
     return (
       <td className="text-center align-middle">
         <div className="d-flex justify-content-center align-items-center gap-2">
-          <div
-            className={`tag ${isActive ? "success-tag" : "basic-tag"} d-inline-block`}
-          >
-            {isActive ? "Active" : "Inactive"}
-          </div>
+          
 
           <div className="form-check form-switch d-inline-flex align-items-center m-0">
             <input

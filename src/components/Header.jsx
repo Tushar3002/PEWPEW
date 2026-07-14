@@ -37,22 +37,7 @@ function Header({ toggleSidebar }) {
               <i className="demo-icon icon-cross"></i>
             </button>
 
-            {/* Search Form */}
-            <form
-              className="d-md-flex searchbar align-items-center"
-              role="search"
-            >
-              <input
-                className="form-control search-input"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-
-              <button className="btn btn-outline-primary" type="button">
-                <i className="demo-icon icon-search"></i>
-              </button>
-            </form>
+            
 
             {/* Header Icons */}
             <div className="head-icons">

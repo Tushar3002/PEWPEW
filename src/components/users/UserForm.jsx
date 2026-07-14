@@ -12,12 +12,16 @@ function UserForm({
   preview,
   defaultValues,
   handleImageChange,
+
+  onRoleChange,
 }) {
-  const [imagePreview, setImagePreview] = useState(preview || defaultProfilePic);
+  const [imagePreview, setImagePreview] = useState(
+    preview || defaultProfilePic,
+  );
   const today = new Date();
   const {
     register,
-    handleSubmit: rhfSubmit,
+    handleSubmit,
     control,
     setValue,
     reset,
@@ -89,7 +93,7 @@ function UserForm({
         </div>
         <div className="row">
           <div className="col-12">
-            <form className="mt-3 mt-xxl-4" onSubmit={rhfSubmit(onSubmit)}>
+            <form className="mt-3 mt-xxl-4" onSubmit={handleSubmit(onSubmit)}>
               <fieldset className="row">
                 <div className="col-12">
                   <div className="field d-flex align-items-center gap-3">
@@ -150,10 +154,21 @@ function UserForm({
                       id="firstName"
                       className={`form-control ${errors.firstName ? "is-invalid" : ""}`}
                       {...register("firstName", {
+                        setValueAs: (value) => value?.trim(),
                         required: "First Name is required",
+                        minLength: {
+                          value: 2,
+                          message: "Minimum 2 characters",
+                        },
+                        maxLength: {
+                          value: 32,
+                          message: "Maximum 32 characters",
+                        },
                       })}
                     />
-                    <div className="invalid-feedback">{errors.firstName?.message}</div>
+                    <div className="invalid-feedback">
+                      {errors.firstName?.message}
+                    </div>
                   </div>
                 </div>
 
@@ -166,10 +181,21 @@ function UserForm({
                       id="lastName"
                       className={`form-control ${errors.lastName ? "is-invalid" : ""}`}
                       {...register("lastName", {
+                        setValueAs: (value) => value?.trim(),
                         required: "Last Name is required",
+                        minLength: {
+                          value: 2,
+                          message: "Minimum 2 characters",
+                        },
+                        maxLength: {
+                          value: 32,
+                          message: "Maximum 32 characters",
+                        },
                       })}
                     />
-                    <div className="invalid-feedback">{errors.lastName?.message}</div>
+                    <div className="invalid-feedback">
+                      {errors.lastName?.message}
+                    </div>
                   </div>
                 </div>
 
@@ -181,20 +207,26 @@ function UserForm({
                     <Controller
                       name="birthDay"
                       control={control}
-                       max={today}
+                      max={today}
                       rules={{ required: "Birthday is required" }}
                       render={({ field }) => (
                         <DatePicker
                           value={field.value ? new Date(field.value) : null}
                           onChange={(e) => {
-                            field.onChange(e.value ? e.value.toISOString().split("T")[0] : "");
+                            field.onChange(
+                              e.value
+                                ? e.value.toISOString().split("T")[0]
+                                : "",
+                            );
                           }}
                           className={`form-control ${errors.birthDay ? "is-invalid" : ""}`}
                         />
                       )}
                     />
                     {errors.birthDay && (
-                      <div className="invalid-feedback d-block">{errors.birthDay.message}</div>
+                      <div className="invalid-feedback d-block">
+                        {errors.birthDay.message}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -208,7 +240,7 @@ function UserForm({
                       id="gender"
                       className={`form-select ${errors.gender ? "is-invalid" : ""}`}
                       {...register("gender", {
-                        required: "Gender is required",
+                        required: "Select One Gender",
                       })}
                     >
                       <option value="">Select Gender</option>
@@ -218,7 +250,9 @@ function UserForm({
                         </option>
                       ))}
                     </select>
-                    <div className="invalid-feedback">{errors.gender?.message}</div>
+                    <div className="invalid-feedback">
+                      {errors.gender?.message}
+                    </div>
                   </div>
                 </div>
 
@@ -232,9 +266,24 @@ function UserForm({
                       className={`form-control ${errors.userName ? "is-invalid" : ""}`}
                       {...register("userName", {
                         required: "Username is required",
+                        minLength: {
+                          value: 2,
+                          message: "Minimum 2 characters",
+                        },
+                        maxLength: {
+                          value: 16,
+                          message: "Maximum 16 characters",
+                        },
+                        pattern: {
+                          value: /^[A-Za-z0-9]+$/,
+                          message:
+                            "Only letters and numbers are allowed. No spaces or special characters.",
+                        },
                       })}
                     />
-                    <div className="invalid-feedback">{errors.userName?.message}</div>
+                    <div className="invalid-feedback">
+                      {errors.userName?.message}
+                    </div>
                   </div>
                 </div>
 
@@ -253,15 +302,25 @@ function UserForm({
                       rows={4}
                       className={`form-control ${errors.address ? "is-invalid" : ""}`}
                       {...register("address", {
+                        setValueAs: (value) => value?.trim(),
                         required: "Address is required",
+                        minLength: {
+                          value: 16,
+                          message: "Address is too Short",
+                        },
+
                       })}
                     />
-                    <div className="invalid-feedback">{errors.address?.message}</div>
+                    <div className="invalid-feedback">
+                      {errors.address?.message}
+                    </div>
                   </div>
                 </div>
 
                 <div className="col-12 mt-2">
-                  <h3 className="fw-bold mt-4">Contact and Additional Details</h3>
+                  <h3 className="fw-bold mt-4">
+                    Contact and Additional Details
+                  </h3>
                   <hr className="mb-2" />
                 </div>
 
@@ -287,7 +346,8 @@ function UserForm({
                             value={field.value ?? ""}
                             onChange={(e) => {
                               const selectedCountry = countryCodeData.find(
-                                (country) => String(country.countryId) === e.target.value,
+                                (country) =>
+                                  String(country.countryId) === e.target.value,
                               );
 
                               if (!selectedCountry) {
@@ -297,19 +357,25 @@ function UserForm({
                               }
 
                               field.onChange(selectedCountry.countryId);
-                              setValue("countryCodeName", selectedCountry.countryCode || selectedCountry.phoneInternationalCode);
+                              setValue(
+                                "countryCodeName",
+                                selectedCountry.countryCode ||
+                                  selectedCountry.phoneInternationalCode,
+                              );
                             }}
                           >
                             <option value="">+1</option>
                             {countryCodeData.map((country) => (
-                              <option key={country.countryId} value={country.countryId}>
-                                {country.phoneInternationalCode} {country.countryName}
+                              <option
+                                key={country.countryId}
+                                value={country.countryId}
+                              >
+                                {country.phoneInternationalCode}{" "}
+                                {country.countryName}
                               </option>
                             ))}
                           </select>
-                          
                         )}
-                        
                       />
 
                       {/* {errors.countryCode && (
@@ -320,6 +386,7 @@ function UserForm({
                         id="contactNumber"
                         className={`form-control ${errors.contactNumber ? "is-invalid" : ""}`}
                         {...register("contactNumber", {
+                          
                           required: "Contact Number is required",
                           pattern: {
                             value: /^[0-9]{10}$/,
@@ -327,7 +394,9 @@ function UserForm({
                           },
                         })}
                       />
-                      <div className="invalid-feedback">{errors.contactNumber?.message}</div>
+                      <div className="invalid-feedback">
+                        {errors.contactNumber?.message}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -343,6 +412,7 @@ function UserForm({
                         type="email"
                         className={`form-control ${errors.email ? "is-invalid" : ""}`}
                         {...register("email", {
+                          setValueAs: (value) => value?.trim(),
                           required: "Email is required",
                           pattern: {
                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -350,8 +420,9 @@ function UserForm({
                           },
                         })}
                       />
-                      <div className="invalid-feedback">{errors.email?.message}</div>
-                      
+                      <div className="invalid-feedback">
+                        {errors.email?.message}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -366,6 +437,9 @@ function UserForm({
                       className={`form-select ${errors.role ? "is-invalid" : ""}`}
                       {...register("role", {
                         required: "Role is required",
+                        onChange: (e) => {
+                          onRoleChange(e.target.value);
+                        },
                       })}
                     >
                       <option value="">Select Role</option>
@@ -375,14 +449,17 @@ function UserForm({
                         </option>
                       ))}
                     </select>
-                    <div className="invalid-feedback">{errors.role?.message}</div>
+                    <div className="invalid-feedback">
+                      {errors.role?.message}
+                    </div>
                   </div>
                 </div>
 
                 <div className="col-sm-6 col-xl-4 mt-3">
                   <div className="form-group">
                     <label className="fw-semibold d-block mb-2">
-                      Able to communicate with <span className="danger-color">*</span>
+                      Able to communicate with{" "}
+                      <span className="danger-color">*</span>
                     </label>
 
                     <Controller
@@ -395,7 +472,9 @@ function UserForm({
                           "Select at least one communication type",
                       }}
                       render={({ field }) => {
-                        const selectedValues = Array.isArray(field.value) ? field.value : [];
+                        const selectedValues = Array.isArray(field.value)
+                          ? field.value
+                          : [];
 
                         return (
                           <>
@@ -410,12 +489,17 @@ function UserForm({
                                   const checked = e.target.checked;
                                   const nextValues = checked
                                     ? [...selectedValues, "1"]
-                                    : selectedValues.filter((value) => value !== "1");
+                                    : selectedValues.filter(
+                                        (value) => value !== "1",
+                                      );
 
                                   field.onChange(nextValues);
                                 }}
                               />
-                              <label className="form-check-label" htmlFor="endUsers">
+                              <label
+                                className="form-check-label"
+                                htmlFor="endUsers"
+                              >
                                 End User
                               </label>
                             </div>
@@ -431,18 +515,25 @@ function UserForm({
                                   const checked = e.target.checked;
                                   const nextValues = checked
                                     ? [...selectedValues, "2"]
-                                    : selectedValues.filter((value) => value !== "2");
+                                    : selectedValues.filter(
+                                        (value) => value !== "2",
+                                      );
 
                                   field.onChange(nextValues);
                                 }}
                               />
-                              <label className="form-check-label" htmlFor="internalUsers">
+                              <label
+                                className="form-check-label"
+                                htmlFor="internalUsers"
+                              >
                                 Internal User
                               </label>
                             </div>
 
                             {errors.commincateWith && (
-                              <div className="text-danger mt-1">{errors.commincateWith.message}</div>
+                              <div className="text-danger mt-1">
+                                {errors.commincateWith.message}
+                              </div>
                             )}
                           </>
                         );

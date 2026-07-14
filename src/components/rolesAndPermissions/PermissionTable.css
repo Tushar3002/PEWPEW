@@ -1,0 +1,10 @@
+.permission-checkbox.form-check-input {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+
+}
+
+.permission-checkbox.form-check-input:disabled {
+  opacity: 1;
+}

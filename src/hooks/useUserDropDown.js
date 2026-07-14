@@ -36,6 +36,8 @@ export function useUserDropDown() {
   const getRolesData = async () => {
     try {
       const res = await getRole();
+      console.log("Roles",res.data);
+      
       setRoles(res.data);
       // console.log("Roles", res);
     } catch (error) {

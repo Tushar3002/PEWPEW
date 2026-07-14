@@ -4,13 +4,18 @@ import { addUser, getUserById, updateUser } from "../../api/userApi";
 import UserForm from "../../components/users/UserForm";
 import { initialUserForm } from "../../constants/userForm";
 import { useUserDropDown } from "../../hooks/useUserDropDown";
+import { getRoleById } from "../../api/rolesandPermission";
+import PermissionTable from "../../components/rolesAndPermissions/PermissionTable";
 
 function ManageUserFormPage() {
   const [defaultValues, setDefaultValues] = useState(initialUserForm);
+  
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = Boolean(id);
   const { genders, roles, countryCodeData } = useUserDropDown();
+  const [selectedRole, setSelectedRole] = useState("");
+  const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -20,6 +25,22 @@ function ManageUserFormPage() {
 
     loadUser();
   }, [id, isEditMode]);
+
+  useEffect(() => {
+    if (!selectedRole) return;
+
+    getRoleandPermissions(selectedRole);
+  }, [selectedRole]);
+
+  const getRoleandPermissions = async (id) => {
+    try {
+      const res = await getRoleById(id);
+      setPermissions(res.data.permissions)
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
 
   const loadUser = async () => {
     try {
@@ -44,6 +65,7 @@ function ManageUserFormPage() {
         userName: userData.userName || "",
         profileImage: userData.profileImage || "",
       });
+      setSelectedRole(userData.roleId || "");
     } catch (error) {
       console.log(error);
     }
@@ -87,15 +109,19 @@ function ManageUserFormPage() {
     }
   };
 
-  return (
+  return (<>
     <UserForm
       defaultValues={isEditMode ? defaultValues : initialUserForm}
       preview={isEditMode ? defaultValues.profileImage || "" : ""}
       genders={genders}
       roles={roles}
       countryCodeData={countryCodeData}
+    
+      onRoleChange={setSelectedRole}
       onSubmit={handleSubmit}
     />
+    {selectedRole && <PermissionTable permissions={permissions} editable={false}/>}
+    </>
   );
 }
 

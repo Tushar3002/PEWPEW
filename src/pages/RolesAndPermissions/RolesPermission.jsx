@@ -1,43 +1,66 @@
-import React, { useEffect, useState } from 'react'
-import { getRolesAndPermission } from '../../api/rolesandPermission';
-import { Link } from 'react-router-dom';
-import { Grid, GridColumn } from '@progress/kendo-react-grid';
+import React, { useEffect, useState } from "react";
+import {
+  deleteRole,
+  getRolesAndPermission,
+  updateStatusforRoles,
+} from "../../api/rolesandPermission";
+import { Link, useNavigate } from "react-router-dom";
+import { Grid, GridColumn } from "@progress/kendo-react-grid";
 
 function RolesPermission() {
+  const [data, setData] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [statusMap, setStatusMap] = useState({});
+  const [page, setPage] = useState({
+    skip: 0,
+    take: 10,
+  });
 
-    const [data, setData] = useState([]);
-    const [total, setTotal] = useState(0);
-  
-    const [page, setPage] = useState({
-      skip: 0,
-      take: 10,
-    });
-  
-    const [sort, setSort] = useState([]);
-    const [filter, setFilter] = useState({
-      logic: "and",
-      filters: [],
-    });
-    const [search, setSearch] = useState("");
-    const [searchInput, setSearchInput] = useState("");
+  const [sort, setSort] = useState([]);
+  const [filter, setFilter] = useState({
+    logic: "and",
+    filters: [],
+  });
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    rolesandpermissionData();
+  }, [page, sort, filter, search]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
 
-    useEffect(() => {
-        rolesandpermissionData();
-      }, [page, sort, filter, search]);
-      useEffect(() => {
-        const timer = setTimeout(() => {
-          setSearch(searchInput);
-    
-          setPage((prev) => ({
-            ...prev,
-            skip: 0,
-          }));
-        }, 500);
-    
-        return () => clearTimeout(timer);
-      }, [searchInput]);
+      setPage((prev) => ({
+        ...prev,
+        skip: 0,
+      }));
+    }, 500);
 
-  const rolesandpermissionData=async()=>{
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const updateStatusData = async (id, isActive) => {
+    try {
+      await updateStatusforRoles(id, isActive);
+      rolesandpermissionData();
+      return true;
+    } catch (error) {
+      console.log(error?.response);
+      return false;
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await deleteRole(id);
+      rolesandpermissionData();
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  const rolesandpermissionData = async () => {
     try {
       const body = {
         page: page.skip / page.take + 1,
@@ -47,51 +70,80 @@ function RolesPermission() {
           field: s.field,
           direction: s.dir === "asc" ? 0 : 1,
         })),
-        
 
         customSearch: search,
       };
-      const res=await getRolesAndPermission(body)
+      const res = await getRolesAndPermission(body);
       console.log(res.data);
-      setData(res.data.data)
-
+      setData(res.data.data);
+      setTotal(res.data.totalRecord)
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const ActionCell = (props) => (
     <td className="text-center align-middle">
       <div className="d-flex justify-content-center gap-2">
         <button
-        type="button"
-        className="edit-btn"
-        title="Edit"
-        onClick={() => navigate(`/manage-users/edit/${props.dataItem.id}`)}
-      > 
+          type="button"
+          className="edit-btn"
+          title="Edit"
+          onClick={() =>
+            navigate(`/roles-permissions/edit/${props.dataItem.id}`)
+          }
+        >
           <i className="demo-icon icon-edit-1"></i>
         </button>
 
-        <button type="button" className="delete-btn" title="Delete">
+        <button type="button" className="delete-btn" title="Delete" onClick={()=>handleDelete(props.dataItem.id)}>
           <i className="demo-icon icon-delete-1"></i>
         </button>
       </div>
     </td>
   );
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div
-        className={`tag ${
-          props.dataItem.isActive ? "success-tag" : "basic-tag"
-        } d-inline-block`}
-      >
-        {props.dataItem.isActive ? "Active" : "Inactive"}
-      </div>
-    </td>
-  );
+  const handleStatusToggle = async (id, currentValue) => {
+    const nextValue = !currentValue;
+
+    setStatusMap((prev) => ({
+      ...prev,
+      [id]: nextValue,
+    }));
+
+    const isSuccess = await updateStatusData(id, nextValue);
+
+    if (!isSuccess) {
+      setStatusMap((prev) => ({
+        ...prev,
+        [id]: currentValue,
+      }));
+    }
+  };
+
+  const StatusCell = (props) => {
+    const rowId = props.dataItem.userId ?? props.dataItem.id;
+    const isActive = statusMap[rowId] ?? props.dataItem.isActive;
+
+    return (
+      <td className="text-center align-middle">
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <div className="form-check form-switch d-inline-flex align-items-center m-0">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              checked={Boolean(isActive)}
+              onChange={() => handleStatusToggle(rowId, Boolean(isActive))}
+              aria-label={`Toggle status for ${props.dataItem.userName || "user"}`}
+            />
+          </div>
+        </div>
+      </td>
+    );
+  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <h3>Manage User</h3>
+        <h3>Role & Permission</h3>
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
@@ -129,7 +181,7 @@ function RolesPermission() {
             </a> */}
 
             <Link
-              to={"/manage-users/add"}
+              to={"/roles-permissions/add"}
               className="btn main-btn border-btn blue-btn"
             >
               Add Users
@@ -157,9 +209,7 @@ function RolesPermission() {
               sortable
               sort={sort}
               onSortChange={(e) => setSort(e.sort)}
-  
             >
-           
               <GridColumn
                 title="Action"
                 width="110px"
@@ -174,9 +224,16 @@ function RolesPermission() {
                 title="Role Name"
                 // columnMenu={ColumnMenu}
               />
-              <GridColumn width={"550px"} field="description" title="Description" />
-              <GridColumn width={"200px"} field="noOfUser" title="No. Of User" />
-              
+              <GridColumn
+                width={"550px"}
+                field="description"
+                title="Description"
+              />
+              <GridColumn
+                width={"200px"}
+                field="noOfUser"
+                title="No. Of User"
+              />
 
               <GridColumn
                 width={"120px"}
@@ -190,7 +247,7 @@ function RolesPermission() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default RolesPermission
+export default RolesPermission;

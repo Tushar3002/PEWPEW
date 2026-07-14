@@ -48,3 +48,17 @@ export const deleteUser=async(userIds)=>{
     })
     return res.data
 }
+
+export const updateStatus = async (id, isActive) => {
+  const res = await api.put(
+    `/User/UpdateStatus/${id}`,
+    null,
+    {
+      params: {
+        isActive,
+      },
+    }
+  );
+
+  return res.data;
+};
