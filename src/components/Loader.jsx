@@ -6,7 +6,7 @@ const Loader = () => {
     if (!loading) return null;
 
     return (
-        <div className="loader-overlay">
+        <div className="loader-overlay" role="status" aria-live="polite" aria-label="Loading">
             <div className="spinner-border text-dark" />
         </div>
     );

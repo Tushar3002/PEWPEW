@@ -181,6 +181,20 @@ p.large {
     border-radius: 10px;
     border: solid var(--border-color) 1px;
     width: 100%;
+    overflow: visible !important;
+}
+
+.table-responsive .k-grid-pager,
+.table-responsive .k-animation-container,
+.table-responsive .k-popup,
+.table-responsive .k-list-container {
+    overflow: visible !important;
+}
+
+.table-responsive .k-animation-container,
+.table-responsive .k-popup,
+.table-responsive .k-list-container {
+    z-index: 99999 !important;
 }
 
 .table-responsive table.table {
@@ -371,12 +385,12 @@ table.table tbody td+td {
     color: rgba(38, 157, 215, 1);
 }
 
-.small-square-btn .icon-eye-line:before {
+/* .small-square-btn .icon-eye-line:before {
     position: relative;
     left: -3px;
     font-size: 12px;
     top: -1px;
-}
+} */
 
 .small-square-btn.edit-btn:hover,
 .small-square-btn.edit-btn:focus {

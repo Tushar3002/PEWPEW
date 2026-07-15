@@ -8,7 +8,7 @@ export const api = axios.create({
 const defaultApiOptions = {
   showLoader: true,
   showSuccessToast: false,
-  skipToast: false,
+  showErrorToast: true,
   useToken: true,
 };
 
@@ -50,27 +50,23 @@ api.interceptors.response.use(
     if (error.config?.showLoader) {
       loader.hide();
     }
-    const message = error.response?.data?.message || "Something went wrong";
+    if (!error.response) {
+      toast.error("Network error. Please check your internet connection.");
+      return Promise.reject(error);
+    }
 
     const status = error.response?.status;
 
-    // Avoid toast if explicitly disabled
-    if (!error.config?.skipToast && status !== 401) {
-      toast.error(message, {
-        theme: "colored",
-      });
-    }
-
-    // Unauthorized
     if (status === 401) {
       localStorage.removeItem("token");
-    }
-
-    //  FOrbidden
-    if (status === 403) {
-      toast.error(message, {
-        theme: "colored",
-      });
+      window.location.href = "/login";
+    } else if (error.config?.showErrorToast !== false) {
+      toast.error(
+        error.response?.data?.message || "Something went wrong. Please try again.",
+        {
+          theme: "colored",
+        }
+      );
     }
 
     return Promise.reject(error);

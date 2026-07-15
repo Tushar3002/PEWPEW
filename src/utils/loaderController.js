@@ -4,13 +4,13 @@ let hideLoader = () => {};
 let activeRequests = 0;
 
 export const registerLoader = (show, hide) => {
-  showLoader = show;
-  hideLoader = hide;
+  showLoader = typeof show === "function" ? show : () => {};
+  hideLoader = typeof hide === "function" ? hide : () => {};
 };
 
 export const loader = {
   show() {
-    activeRequests++;
+    activeRequests += 1;
 
     if (activeRequests === 1) {
       showLoader();
@@ -19,7 +19,7 @@ export const loader = {
 
   hide() {
     if (activeRequests > 0) {
-      activeRequests--;
+      activeRequests -= 1;
     }
 
     if (activeRequests === 0) {

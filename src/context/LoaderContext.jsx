@@ -1,6 +1,6 @@
 // context/LoaderContext.jsx
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 import { registerLoader } from "../utils/loaderController";
 
 const LoaderContext = createContext();
@@ -8,24 +8,27 @@ const LoaderContext = createContext();
 export const LoaderProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
-  const show = () => setLoading(true);
-  const hide = () => setLoading(false);
+  const show = useCallback(() => setLoading(true), []);
+  const hide = useCallback(() => setLoading(false), []);
 
   useEffect(() => {
     registerLoader(show, hide);
-  }, []);
 
-  return (
-    <LoaderContext.Provider
-      value={{
-        loading,
-        show,
-        hide,
-      }}
-    >
-      {children}
-    </LoaderContext.Provider>
+    return () => {
+      registerLoader(() => {}, () => {});
+    };
+  }, [show, hide]);
+
+  const value = useMemo(
+    () => ({
+      loading,
+      show,
+      hide,
+    }),
+    [loading, show, hide]
   );
+
+  return <LoaderContext.Provider value={value}>{children}</LoaderContext.Provider>;
 };
 
 export const useLoader = () => {

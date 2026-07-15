@@ -103,7 +103,15 @@ function RolesPermission() {
   );
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
+    if (!nextValue) {
+    const confirmed = window.confirm(
+      "Are you sure you want to inactivate this role?\n\nInactivating this role will prevent all associated users from accessing the system."
+    );
 
+    if (!confirmed) {
+      return;
+    }
+  }
     setStatusMap((prev) => ({
       ...prev,
       [id]: nextValue,
@@ -190,11 +198,11 @@ function RolesPermission() {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive">
+      <div className="row w-100">
+        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
+          <div className="table-responsive w-100" style={{ overflow: "visible" }}>
             <Grid
-              // style={{ height: "600px" }}
+              style={{ width: "100%", overflow: "visible" }}
               data={data}
               pageable={{
                 buttonCount: 5,

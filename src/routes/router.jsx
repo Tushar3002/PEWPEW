@@ -7,7 +7,7 @@ import ManageBadges from "../pages/ManageBadges.jsx";
 import ManageUser from "../pages/ManageUsers/ManageUser.jsx";
 import Events from "../pages/Events.jsx";
 import LeaderBoard from "../pages/LeaderBoard.jsx";
-import ManageEndUser from "../pages/ManageEndUser.jsx";
+
 import Messaging from "../pages/Messaging.jsx";
 import ReportedUsers from "../pages/ReportedUsers.jsx";
 
@@ -16,6 +16,9 @@ import Venues from "../pages/Venues.jsx";
 import ManageUserFormPage from "../pages/ManageUsers/ManageUserFormPage.jsx";
 import RolesPermission from "../pages/RolesAndPermissions/RolesPermission.jsx";
 import RolesPermissionFormPage from "../pages/RolesAndPermissions/RolesPermissionFormPage.jsx";
+import ManageEndUser from "../pages/ManageEndUsers/ManageEndUser.jsx";
+import ManageEndUserView from "../pages/ManageEndUsers/View/ManageEndUserView.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -62,6 +65,19 @@ const router = createBrowserRouter([
         ]
       },
       {
+        path: "/manage-end-users",
+        children:[
+          {
+            index:true,
+            element:<ManageEndUser/>
+          },
+          {
+            path:'view/:id',
+            element:<ManageEndUserView/>
+          }
+        ]
+      },
+      {
         path: "/activity",
         element: <Activity />,
       },
@@ -81,10 +97,7 @@ const router = createBrowserRouter([
         path: "/managebadges",
         element: <ManageBadges />,
       },
-      {
-        path: "/manage-end-users",
-        element: <ManageEndUser />,
-      },
+      
       {
         path: "/messaging",
         element: <Messaging />,

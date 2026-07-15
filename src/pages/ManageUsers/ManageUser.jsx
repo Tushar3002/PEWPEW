@@ -7,7 +7,8 @@ import { ColumnMenu } from "../../components/columnMenu";
 function ManageUser() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
-  const [statusMap, setStatusMap] = useState({});
+
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
 
   const [page, setPage] = useState({
     skip: 0,
@@ -73,15 +74,24 @@ function ManageUser() {
       console.error(err);
     }
   };
-  const handleDelete = async (id) => {
+  const handleDelete = async (ids) => {
+    const userIds = Array.isArray(ids) ? ids : [ids];
+
+    if (!userIds.length) return;
+
     try {
-      const res=await deleteUser([id])
-      fetchUsers()
-      console.log(id);
-      
+      await deleteUser(userIds);
+      fetchUsers();
+      setSelectedUserIds([]);
     } catch (error) {
       console.log(error.response);
     }
+  };
+
+  const toggleUserSelection = (id) => {
+    setSelectedUserIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
   };
 
   // const handleFilterChange = (e) => {
@@ -101,14 +111,24 @@ function ManageUser() {
   //   ],
   // };
 
-  const CheckboxCell = () => (
-    <td className="text-center align-middle">
-      <label className="custom-checkbox m-0">
-        <input type="checkbox" className="child-checkbox" />
-        <span className="checkmark"></span>
-      </label>
-    </td>
-  );
+  const CheckboxCell = (props) => {
+    const rowId = props.dataItem.userId ?? props.dataItem.id;
+    const isSelected = selectedUserIds.includes(rowId);
+
+    return (
+      <td className="text-center align-middle">
+        <label className="custom-checkbox m-0">
+          <input
+            type="checkbox"
+            className="child-checkbox"
+            checked={isSelected}
+            onChange={() => toggleUserSelection(rowId)}
+          />
+          <span className="checkmark"></span>
+        </label>
+      </td>
+    );
+  };
   const ActionCell = (props) => (
     <td className="text-center align-middle">
       <div className="d-flex justify-content-center gap-2">
@@ -121,7 +141,12 @@ function ManageUser() {
           <i className="demo-icon icon-edit-1"></i>
         </button>
 
-        <button type="button" className="delete-btn" title="Delete" onClick={()=>handleDelete(props.dataItem.id)}>
+        <button
+          type="button"
+          className="delete-btn"
+          title="Delete"
+          onClick={() => handleDelete(props.dataItem.id)}
+        >
           <i className="demo-icon icon-delete-1"></i>
         </button>
       </div>
@@ -130,44 +155,38 @@ function ManageUser() {
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
 
-    setStatusMap((prev) => ({
-      ...prev,
-      [id]: nextValue,
-    }));
+    if (!nextValue) {
+      const confirmed = window.confirm(
+        `Are you sure you want to ${
+          nextValue ? "activate" : "deactivate"
+        } this role?`,
+      );
 
+      if (!confirmed) return;
+    }
     const isSuccess = await updateStatusData(id, nextValue);
-
     if (!isSuccess) {
-      setStatusMap((prev) => ({
-        ...prev,
-        [id]: currentValue,
-      }));
+      alert("Failed to update status.");
     }
   };
 
-  const StatusCell = (props) => {
-    const rowId = props.dataItem.userId ?? props.dataItem.id;
-    const isActive = statusMap[rowId] ?? props.dataItem.isActive;
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          
-
-          <div className="form-check form-switch d-inline-flex align-items-center m-0">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              role="switch"
-              checked={Boolean(isActive)}
-              onChange={() => handleStatusToggle(rowId, Boolean(isActive))}
-              aria-label={`Toggle status for ${props.dataItem.userName || "user"}`}
-            />
-          </div>
-        </div>
-      </td>
-    );
-  };
+  const StatusCell = (props) => (
+    <td className="text-center align-middle">
+      <div className="form-check form-switch d-inline-flex align-items-center m-0">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          checked={Boolean(props.dataItem.isActive)}
+          onChange={() =>
+            handleStatusToggle(
+              props.dataItem.id,
+              Boolean(props.dataItem.isActive),
+            )
+          }
+        />
+      </div>
+    </td>
+  );
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -175,7 +194,7 @@ function ManageUser() {
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
-            role="search" 
+            role="search"
             noValidate
           >
             <input
@@ -197,13 +216,19 @@ function ManageUser() {
 
         <div className="col-12 col-lg">
           <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-            {/* <a href="#" className="btn main-btn border-btn danger-btn">
-          Delete
-        </a>
+            {selectedUserIds.length > 0 ? (
+              <button
+                type="button"
+                className="btn main-btn border-btn danger-btn"
+                onClick={() => handleDelete(selectedUserIds)}
+              >
+                Delete
+              </button>
+            ) : null}
 
-        <a href="#" className="btn main-btn border-btn blue-btn">
-          Import
-        </a> */}
+            {/* <a href="#" className="btn main-btn border-btn blue-btn">
+              Import
+            </a> */}
 
             <a href="#" className="btn main-btn border-btn sky-btn">
               Export
@@ -221,8 +246,9 @@ function ManageUser() {
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive">
+          <div className="table-responsive" style={{ overflow: "visible" }}>
             <Grid
+              // style={{ width: "100%", overflow: "visible" }}
               // style={{ height: "600px" }}
               data={users}
               pageable={{
@@ -250,26 +276,26 @@ function ManageUser() {
 
               <GridColumn
                 title="Action"
-                width="110px"
+                width="150px"
                 headerClassName="text-center"
                 cells={{
                   data: ActionCell,
                 }}
               />
               <GridColumn
-                width={"150px"}
+                width={"180px"}
                 field="firstName"
                 title="First Name"
                 // columnMenu={ColumnMenu}
               />
-              <GridColumn width={"150px"} field="lastName" title="Last Name" />
-              <GridColumn width={"150px"} field="userName" title="User Name" />
-              <GridColumn width={"120px"} field="roleName" title="Role" />
-              <GridColumn width={"150px"} field="contactNumber" title="Phone" />
+              <GridColumn width={"180px"} field="lastName" title="Last Name" />
+              <GridColumn width={"180px"} field="userName" title="User Name" />
+              <GridColumn width={"150px"} field="roleName" title="Role" />
+              <GridColumn width={"170px"} field="contactNumber" title="Phone" />
               <GridColumn width={"300px"} field="email" title="Email" />
 
               <GridColumn
-                width={"120px"}
+                width={"220px"}
                 title="Status"
                 cells={{
                   data: StatusCell,

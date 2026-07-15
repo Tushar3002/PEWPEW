@@ -92,3 +92,71 @@
     color:#fff0f1;
     background:#dc3545;
 }
+
+.eye-btn{
+    width:36px;
+    height:36px;
+    border-radius:8px;
+    background:#eef6ff;
+    border:1px solid #61c9f1;
+    color:#61c9f1;
+    justify-content: center;
+}
+
+.eye-btn:hover{
+    border-color:#61c9f1;
+    color:#eef6ff;
+    background:#61c9f1;
+}
+.custom-toggle {
+  position: relative;
+  width: 90px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+  overflow: hidden;
+}
+
+.custom-toggle.enabled {
+  background: #2563eb;
+}
+
+.custom-toggle.disabled {
+  background: #6b7280;
+}
+
+.custom-toggle-circle {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  transition: left 0.25s ease;
+}
+
+.custom-toggle.enabled .custom-toggle-circle {
+  left: 61px;
+}
+
+.custom-toggle-text {
+  position: absolute;
+  top: 50%;
+  left: 32px;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  user-select: none;
+  white-space: nowrap;
+  transition: left 0.25s ease;
+}
+
+.custom-toggle.enabled .custom-toggle-text {
+  left: 12px;
+}
