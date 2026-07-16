@@ -160,3 +160,13 @@
 .custom-toggle.enabled .custom-toggle-text {
   left: 12px;
 }
+
+.grid-tooltip {
+    max-width: 250px;
+}
+
+.grid-tooltip .k-tooltip-content {
+    max-width: 250px;
+    white-space: normal;
+    word-break: break-word;
+}

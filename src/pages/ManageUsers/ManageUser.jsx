@@ -155,15 +155,14 @@ function ManageUser() {
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
 
-    if (!nextValue) {
-      const confirmed = window.confirm(
-        `Are you sure you want to ${
-          nextValue ? "activate" : "deactivate"
-        } this role?`,
-      );
+    const confirmed = window.confirm(
+      `Are you sure you want to ${
+        nextValue ? "activate" : "deactivate"
+      } this role?`,
+    );
 
-      if (!confirmed) return;
-    }
+    if (!confirmed) return;
+
     const isSuccess = await updateStatusData(id, nextValue);
     if (!isSuccess) {
       alert("Failed to update status.");

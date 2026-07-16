@@ -3,7 +3,7 @@ import { loader } from "../utils/loaderController";
 import { toast } from "react-toastify";
 
 export const api = axios.create({
-  baseURL: "https://pewdevapi.alliancetek.net/api/v1",
+  baseURL: import.meta.env.VITE_API_URL
 });
 const defaultApiOptions = {
   showLoader: true,

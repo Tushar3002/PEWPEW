@@ -16,7 +16,6 @@ function ManageEndUser() {
 
   const [selectedUserIds, setSelectedUserIds] = useState([]);
 
-
   const [page, setPage] = useState({
     skip: 0,
     take: 10,
@@ -62,7 +61,7 @@ function ManageEndUser() {
       };
 
       const res = await getEndUsers(body);
-      console.log("DAT",res.data.data);
+      console.log("DAT", res.data.data);
 
       setUsers(res.data.data);
       setTotal(res.data.totalRecord);
@@ -130,53 +129,50 @@ function ManageEndUser() {
     );
   };
   const ActionCell = (props) => {
-  const isVerified = Boolean(props.dataItem.isVerify);
+    const isVerified = Boolean(props.dataItem.isVerify);
+    return (
+      <td className="text-center align-middle">
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <button
+            type="button"
+            className="eye-btn"
+            title="View"
+            onClick={() =>
+              navigate(`/manage-end-users/view/${props.dataItem.id}`)
+            }
+          >
+            <i className="icon-eye-line"></i>
+          </button>
 
-  return (
-    <td className="text-center align-middle">
-      <div className="d-flex justify-content-center align-items-center gap-2">
-        <button
-          type="button"
-          className="eye-btn"
-          title="View"
-          onClick={() =>
-            navigate(`/manage-end-users/view/${props.dataItem.id}`)
-          }
-        >
-          <i className="icon-eye-line"></i>
-        </button>
+          <button
+            type="button"
+            className="delete-btn"
+            title="Delete"
+            onClick={() => handleDelete(props.dataItem.id)}
+          >
+            <i className="icon-delete-1"></i>
+          </button>
 
-        <button
-          type="button"
-          className="delete-btn"
-          title="Delete"
-          onClick={() => handleDelete(props.dataItem.id)}
-        >
-          <i className="icon-delete-1"></i>
-        </button>
+          <button
+            type="button"
+            onClick={() =>
+              handleVerificationToggle(
+                props.dataItem.id,
+                Boolean(props.dataItem.isVerify),
+              )
+            }
+            className={`custom-toggle ${isVerified ? "enabled" : "disabled"}`}
+          >
+            <span className="custom-toggle-circle" />
 
-        <button
-          type="button"
-          onClick={() =>
-            handleVerificationToggle(
-              props.dataItem.id,
-              Boolean(props.dataItem.isVerify)
-            )
-          }
-          className={`custom-toggle ${
-            isVerified ? "enabled" : "disabled"
-          }`}
-        >
-          <span className="custom-toggle-circle" />
-
-          <span className="custom-toggle-text">
-            {isVerified ? "Enabled" : "Verified"}
-          </span>
-        </button>
-      </div>
-    </td>
-  );
-};
+            <span className="custom-toggle-text">
+              {isVerified ? "Enabled" : "Verified"}
+            </span>
+          </button>
+        </div>
+      </td>
+    );
+  };
   const handleToggle = async ({ currentValue, updateFn, confirmMessage }) => {
     const nextValue = !currentValue;
 

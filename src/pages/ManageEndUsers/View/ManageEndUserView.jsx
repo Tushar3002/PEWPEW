@@ -8,10 +8,20 @@ import badge4 from "../../../assets/images/badge-4.svg";
 import { getEndUserById } from "../../../api/EndUsers/endUserViewApi";
 import { useParams } from "react-router-dom";
 import UploadGunsTable from "./UploadGunsTable";
+import VenuesTable from "./VenuesTable";
+import EventsTable from "./EventsTable";
+import ActivitiesTables from "./ActivitiesTables";
 
 function ManageEndUserView() {
   const [endUser, setEndUser] = useState({});
   const { id } = useParams();
+  const [activeTab, setActiveTab] = useState("upload");
+  const tabs = [
+    { id: "upload", label: "Upload Gun" },
+    { id: "venues", label: "Venues" },
+    { id: "events", label: "Events" },
+    { id: "activities", label: "Activities" },
+  ];
 
   const formatDisplayValue = (value) => {
     if (!value) return "";
@@ -251,181 +261,43 @@ function ManageEndUserView() {
         <div className="row">
           <div className="col-12">
             {/* <!-- Tab Nav (desktop only) --> */}
-            <ul className="nav nav-tabs" id="myTab" role="tablist">
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="nav-one-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-one-tab-pane"
-                  type="button"
-                  role="tab"
-                  aria-controls="nav-one-tab-pane"
-                  aria-selected="true"
-                >
-                  Upload Gun
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="nav-two-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-two-tab-pane"
-                  type="button"
-                  role="tab"
-                  aria-controls="nav-two-tab-pane"
-                  aria-selected="false"
-                >
-                  Venues
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link active"
-                  id="nav-three-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-three-tab-pane"
-                  type="button"
-                  role="tab"
-                  aria-controls="nav-three-tab-pane"
-                  aria-selected="true"
-                >
-                  Events
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="nav-four-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-four-tab-pane"
-                  type="button"
-                  role="tab"
-                  aria-controls="nav-four-tab-pane"
-                  aria-selected="false"
-                >
-                  Activities
-                </button>
-              </li>
+            <ul className="nav nav-tabs">
+              {tabs.map((tab) => (
+                <li className="nav-item" key={tab.id}>
+                  <button
+                    className={`nav-link ${activeTab === tab.id ? "active" : ""}`}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                </li>
+              ))}
             </ul>
             {/* <!-- Shared Content: Tab + Accordion --> */}
-            <div className="tab-content accordion" id="myTabContent">
-              <div
-                className="tab-pane fade accordion-item"
-                id="nav-one-tab-pane"
-                // role="tabpanel"
-                // aria-labelledby="nav-one-tab"
-                // tabindex="0"
-              >
-                <h2 className="accordion-header d-lg-none" id="headingOne">
-                  <button
-                    className="accordion-button"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne"
-                    aria-expanded="true"
-                    aria-controls="collapseOne"
-                  >
-                    Upload Gun
-                  </button>
-                </h2>
-                <div
-                  id="collapseOne"
-                  className="accordion-collapse collapse show d-lg-block"
-                  aria-labelledby="headingOne"
-                  data-bs-parent="#myTabContent"
-                >
+            <div className="tab-content mt-4">
+              {activeTab === "upload" && (
+                <div className="tab-pane fade show active">
                   <UploadGunsTable userId={id} />
-                  {/* <thead className="table-dark">
-                    <tr>
-                      <th>Action</th>
-                      <th>Host Name</th>
-                      <th>Event Name</th>
-                      <th>Date & Time</th>
-                      <th>Address</th>
-                    </tr>
-                  </thead> */}
                 </div>
-              </div>
-              <div
-                className="tab-pane fade accordion-item"
-                id="nav-two-tab-pane"
-                // role="tabpanel"
-                // aria-labelledby="nav-two-tab"
-                // tabindex="0"
-              >
-                <h2 className="accordion-header d-lg-none" id="headingTwo">
-                  <button
-                    className="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapseTwo"
-                    aria-expanded="false"
-                    aria-controls="collapseTwo"
-                  >
-                    Venues
-                  </button>
-                </h2>
-                <div
-                  id="collapseTwo"
-                  className="accordion-collapse collapse d-lg-block"
-                  aria-labelledby="headingTwo"
-                  data-bs-parent="#myTabContent"
-                ></div>
-              </div>
-              <div
-                className="tab-pane fade show active accordion-item"
-                id="nav-three-tab-pane"
-                // role="tabpanel"
-                // aria-labelledby="nav-three-tab"
-                // tabindex="0"
-              >
-                <h2 className="accordion-header d-lg-none" id="headingThree">
-                  <button
-                    className="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapseThree"
-                    aria-expanded="false"
-                    aria-controls="collapseThree"
-                  >
-                    Events
-                  </button>
-                </h2>
-                <div
-                  id="collapseThree"
-                  className="accordion-collapse collapse d-lg-block"
-                  aria-labelledby="headingThree"
-                  data-bs-parent="#myTabContent"
-                ></div>
-              </div>
-              <div
-                className="tab-pane fade accordion-item"
-                id="nav-four-tab-pane"
-                // role="tabpanel"
-                // aria-labelledby="nav-four-tab"
-                // tabindex="0"
-              >
-                <h2 className="accordion-header d-lg-none" id="headingFour">
-                  <button
-                    className="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapseFour"
-                    aria-expanded="false"
-                    aria-controls="collapseThree"
-                  >
-                    Activities
-                  </button>
-                </h2>
-                <div
-                  id="collapseFour"
-                  className="accordion-collapse collapse d-lg-block"
-                  aria-labelledby="headingFour"
-                  data-bs-parent="#myTabContent"
-                ></div>
-              </div>
+              )}
+
+              {activeTab === "venues" && (
+                <div className="tab-pane fade show active">
+                  <VenuesTable userId={id}/>
+                </div>
+              )}
+
+              {activeTab === "events" && (
+                <div className="tab-pane fade show active">
+                  <EventsTable userId={id}/>
+                </div>
+              )}
+
+              {activeTab === "activities" && (
+                <div className="tab-pane fade show active">
+                  <ActivitiesTables userId={id}/>
+                </div>
+              )}
             </div>
           </div>
         </div>
