@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-
+// import './login.css'
 import logo from "../assets/images/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import { useForm } from "react-hook-form";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -59,7 +60,7 @@ function Login() {
                       placeholder="Enter Your Email Address"
                       {...register("email", {
                         setValueAs: (value) => value?.trim(),
-                        
+
                         required: "Email is required",
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -78,20 +79,30 @@ function Login() {
                       Password
                     </label>
 
-                    <input
-                      id="password"
-                      type="password"
-                      className={`form-control ${
-                        errors.password ? "is-invalid" : ""
-                      }`}
-                      placeholder="Enter Your Password"
-                      {...register("password", {
-                        setValueAs: (value) => value?.trim(),
-                        required: "Password is required",
-                      })}
-                    />
+                    <div className="input-group">
+                      <input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                        placeholder="Enter Your Password"
+                        {...register("password", {
+                          setValueAs: (value) => value?.trim(),
+                          required: "Password is required",
+                        })}
+                      />
 
-                    <div className="invalid-feedback">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        <i
+                          className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                        ></i>
+                      </button>
+                    </div>
+
+                    <div className="invalid-feedback d-block">
                       {errors.password?.message}
                     </div>
                   </div>
