@@ -2,6 +2,7 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import React, { useEffect, useState } from "react";
 import {
+  deleteVenue,
   getVenueGunDetails,
   updateVenueStatus,
   venueListByUser,
@@ -83,7 +84,7 @@ function VenuesTable({ userId }) {
             type="button"
             className="delete-btn"
             title="Delete"
-            onClick={() => handleDelete(props.dataItem.gunId)}
+            onClick={() => handleDelete(props.dataItem.venueId)}
           >
             <i className="icon-delete-1"></i>
           </button>
@@ -250,8 +251,8 @@ function VenuesTable({ userId }) {
 
   const handleDelete = async (id) => {
     try {
-      await deleteGunUser(id);
-      fetchUploadGun();
+      await deleteVenue(id);
+      fetchVenue();
     } catch (error) {
       console.log(error.response);
     }

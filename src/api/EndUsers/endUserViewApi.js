@@ -56,6 +56,11 @@ export const getVenueGunDetails = async(venueId)=>{
   return res.data
 }
 
+export const deleteVenue=async(venueId)=>{
+  await api.delete(`/Venue/${venueId}`)
+  return res.data
+}
+
 export const eventListByUser = async (body) => {
     const res = await api.post("/Event/GetEventList", body);
     return res.data;
@@ -77,6 +82,11 @@ export const updateActivitiesStatus = async (gunId,isActive) => {
 };
 
 export const getReportList=async(body)=>{
-  const res=await api.post('/Report/GetReportList')
+  const res=await api.post('/Report/GetReportList',body)
+  return res.data
+}
+
+export const getVenueActivities=async(postId)=>{
+  const res=await api.get(`/Venue/GetVenueActivity/${postId}`)
   return res.data
 }

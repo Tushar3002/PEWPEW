@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Login from "../auth/Login.jsx";
 import DashBoard from "../pages/DashBoard/DashBoard.jsx";
 import PrivateLayout from "../layouts/PrivateLayout.jsx";
-import Activity from "../pages/Activity.jsx";
+import Activity from "../pages/Activity/Activity.jsx";
 import ManageBadges from "../pages/ManageBadges.jsx";
 import ManageUser from "../pages/ManageUsers/ManageUser.jsx";
 import Events from "../pages/Events.jsx";
@@ -18,6 +18,7 @@ import RolesPermission from "../pages/RolesAndPermissions/RolesPermission.jsx";
 import RolesPermissionFormPage from "../pages/RolesAndPermissions/RolesPermissionFormPage.jsx";
 import ManageEndUser from "../pages/ManageEndUsers/ManageEndUser.jsx";
 import ManageEndUserView from "../pages/ManageEndUsers/View/ManageEndUserView.jsx";
+import ActivityDetail from "../pages/Activity/ActivityDetail.jsx";
 
 
 const router = createBrowserRouter([
@@ -77,9 +78,18 @@ const router = createBrowserRouter([
           }
         ]
       },
+      
       {
         path: "/activity",
-        element: <Activity />,
+        children:[
+          {
+            index:true,
+            element:<Activity/>
+          },{
+            path:"view/:id",
+            element:<ActivityDetail/>
+          }
+        ]
       },
       {
         path: "/manage-badges",

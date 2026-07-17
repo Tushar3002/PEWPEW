@@ -6,6 +6,8 @@ import {
   updateActivitiesStatus,
 } from "../../../api/EndUsers/endUserViewApi";
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
+import ReportListModal from "../../../components/Modal/ReportListModal";
+import { useNavigate } from "react-router-dom";
 
 function ActivitiesTables({ userId }) {
   const [data, setData] = useState([]);
@@ -14,12 +16,17 @@ function ActivitiesTables({ userId }) {
     skip: 0,
     take: 10,
   });
+
+  const navigate=useNavigate()
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
   const [showViewer, setShowViewer] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const [showReport, setShowReport] = useState(false);
+  const [reportedIdData, setReportedIdData] = useState("");
 
   const openViewer = (files, index) => {
     setAttachments(files);
@@ -70,20 +77,53 @@ function ActivitiesTables({ userId }) {
     }
   };
 
+  const handleReportClick = async (reportedId) => {
+    //  console.log("Clicked ID:", reportedId);
+
+    setReportedIdData(reportedId);
+    // console.log("ReportedId is :",reportedId)
+    setShowReport(true);
+  };
+
+  const ReportedDataCell = (props) => {
+    const value = props.dataItem.totalReport;
+    const reportedId = props.dataItem.postId;
+
+    return (
+      <td {...props.tdProps}>
+        {value > 0 ? (
+          <button
+            type="button"
+            className="btn btn-link p-0"
+            onClick={() => handleReportClick(reportedId)}
+          >
+            {value}
+          </button>
+        ) : (
+          value
+        )}
+      </td>
+    );
+  };
+
   const ActionCell = (props) => {
     const isVerified = Boolean(props.dataItem.isVerify);
 
     return (
       <td className="text-center align-middle">
         <div className="d-flex justify-content-center align-items-center gap-2">
+
           <button
             type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => handleDelete(props.dataItem.gunId)}
+            className="eye-btn"
+            title="View"
+            onClick={() =>
+              navigate(`/activity/view/${props.dataItem.postId}`)
+            }
           >
-            <i className="icon-delete-1"></i>
+            <i className="fa fa-eye"></i>
           </button>
+          
         </div>
       </td>
     );
@@ -109,28 +149,7 @@ function ActivitiesTables({ userId }) {
       </td>
     );
   };
-  //   const ImageCell = (props) => {
-  //     const image = props.dataItem.attachmentList;
 
-  //     return (
-  //       <td className="text-center">
-  //         {image ? (
-  //           <img
-  //             src={image}
-  //             alt="Gun"
-  //             style={{
-  //               width: "60px",
-  //               height: "60px",
-  //               objectFit: "cover",
-  //               borderRadius: "6px",
-  //             }}
-  //           />
-  //         ) : (
-  //           "-"
-  //         )}
-  //       </td>
-  //     );
-  //   };
   const AttachmentCell = (props) => {
     const attachments = props.dataItem.attachmentList || [];
 
@@ -154,6 +173,7 @@ function ActivitiesTables({ userId }) {
                     position: "relative",
                     cursor: "pointer",
                   }}
+                  key={index}
                 >
                   <video
                     style={{
@@ -382,9 +402,9 @@ function ActivitiesTables({ userId }) {
                   cells={{ data: TextCell }}
                 />
                 <GridColumn
-                  field="totalReport"
+                  // field="totalReport"
                   title="Reported"
-                  cells={{ data: TextCell }}
+                  cells={{ data: ReportedDataCell }}
                 />
 
                 <GridColumn
@@ -404,6 +424,12 @@ function ActivitiesTables({ userId }) {
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
+      />
+
+      <ReportListModal
+        show={showReport}
+        reportedId={reportedIdData}
+        onClose={() => setShowReport(false)}
       />
     </div>
   );
