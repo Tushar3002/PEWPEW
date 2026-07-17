@@ -2,9 +2,11 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import React, { useEffect, useState } from "react";
 import {
+  getVenueGunDetails,
   updateVenueStatus,
   venueListByUser,
 } from "../../../api/EndUsers/endUserViewApi";
+import GunModal from "../../../components/Modal/GunModal";
 
 function VenuesTable({ userId }) {
   const [data, setData] = useState([]);
@@ -14,6 +16,10 @@ function VenuesTable({ userId }) {
     take: 10,
   });
   const [search, setSearch] = useState("");
+
+  const [showGunModal, setShowGunModal] = useState(false);
+  const [gunData, setGunData] = useState([]);
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchVenue();
@@ -37,6 +43,34 @@ function VenuesTable({ userId }) {
     } catch (error) {
       console.log(error?.response);
     }
+  };
+
+  const handleGunClick = async (venueId) => {
+    try {
+      const res = await getVenueGunDetails(venueId);
+      console.log(res.data);
+      setGunData(res.data);
+      setShowGunModal(true);
+    } catch (error) {
+      console.error(error?.response);
+    } 
+  };
+
+  const GunCountCell = (props) => {
+    const count = props.dataItem.totalGun;
+    const venueId = props.dataItem.venueId;
+
+    return (
+      <td {...props.tdProps}>
+        <button
+          type="button"
+          className="btn btn-link p-0"
+          onClick={() => handleGunClick(venueId)}
+        >
+          {count}
+        </button>
+      </td>
+    );
   };
 
   const ActionCell = (props) => {
@@ -191,7 +225,6 @@ function VenuesTable({ userId }) {
       return <td {...props.tdProps}>-</td>;
     }
 
-    // Add https:// if missing
     const href =
       url.startsWith("http://") || url.startsWith("https://")
         ? url
@@ -205,7 +238,7 @@ function VenuesTable({ userId }) {
           rel="noopener noreferrer"
           title={url}
           style={{
-            color: "#0d6efd", // Bootstrap primary blue
+            color: "#0d6efd",
             textDecoration: "underline",
           }}
         >
@@ -284,7 +317,7 @@ function VenuesTable({ userId }) {
                 <GridColumn
                   field="totalGun"
                   title="No. of Gun"
-                  cells={{ data: TextCell }}
+                  cells={{ data: GunCountCell }}
                 />
                 <GridColumn
                   field="avgRate"
@@ -319,6 +352,11 @@ function VenuesTable({ userId }) {
           </div>
         </div>
       </div>
+      <GunModal
+        show={showGunModal}
+        onClose={() => setShowGunModal(false)}
+        data={gunData}
+      />
     </div>
   );
 }

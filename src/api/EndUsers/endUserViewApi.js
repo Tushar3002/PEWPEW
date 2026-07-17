@@ -45,6 +45,17 @@ export const updateVenueStatus = async (venueId,isActive) => {
   return res.data;
 };
 
+export const getVenueGunDetails = async(venueId)=>{
+  const res=await api.get(`/Venue/GetVenueGunDetails`,{
+    params:{
+      venueId,
+    },
+    
+  })
+
+  return res.data
+}
+
 export const eventListByUser = async (body) => {
     const res = await api.post("/Event/GetEventList", body);
     return res.data;
@@ -64,3 +75,8 @@ export const updateActivitiesStatus = async (gunId,isActive) => {
   });
   return res.data;
 };
+
+export const getReportList=async(body)=>{
+  const res=await api.post('/Report/GetReportList')
+  return res.data
+}
