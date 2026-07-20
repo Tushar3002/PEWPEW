@@ -12,13 +12,14 @@ import Messaging from "../pages/Messaging.jsx";
 import ReportedUsers from "../pages/ReportedUsers.jsx";
 
 import SupportTicket from "../pages/SupportTicket.jsx";
-import Venues from "../pages/Venues.jsx";
+import Venues from "../pages/Venue/Venues.jsx";
 import ManageUserFormPage from "../pages/ManageUsers/ManageUserFormPage.jsx";
 import RolesPermission from "../pages/RolesAndPermissions/RolesPermission.jsx";
 import RolesPermissionFormPage from "../pages/RolesAndPermissions/RolesPermissionFormPage.jsx";
 import ManageEndUser from "../pages/ManageEndUsers/ManageEndUser.jsx";
 import ManageEndUserView from "../pages/ManageEndUsers/View/ManageEndUserView.jsx";
 import ActivityDetail from "../pages/Activity/ActivityDetail.jsx";
+import VenueDetail from "../pages/Venue/VenueDetail.jsx";
 
 
 const router = createBrowserRouter([
@@ -88,6 +89,18 @@ const router = createBrowserRouter([
           },{
             path:"view/:id",
             element:<ActivityDetail/>
+          }
+        ]
+      },
+      {
+        path:"/venue",
+        children:[
+          {
+            index:true,
+            element:<Venues/>
+          },{
+            path:"view/:id",
+            element:<VenueDetail/>
           }
         ]
       },

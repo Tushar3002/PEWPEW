@@ -141,7 +141,7 @@ function ManageEndUser() {
               navigate(`/manage-end-users/view/${props.dataItem.id}`)
             }
           >
-            <i className="icon-eye-line"></i>
+            <i className="fa fa-eye"></i>
           </button>
 
           <button

@@ -60,6 +60,22 @@ export const deleteVenue=async(venueId)=>{
   await api.delete(`/Venue/${venueId}`)
   return res.data
 }
+export const getVenueActivities=async(postId)=>{
+  const res=await api.get(`/Venue/GetVenueActivity/${postId}`)
+  return res.data
+}
+
+export const getVenueById=async(venueId)=>{
+  const res=await api.get(`/Venue/${venueId}`)
+  return res.data
+}
+
+export const getActivitiesinVenue=async(body)=>{
+  const res=await api.post('/Venue/GetActivities',body)
+  return res.data
+}
+
+
 
 export const eventListByUser = async (body) => {
     const res = await api.post("/Event/GetEventList", body);
@@ -81,12 +97,24 @@ export const updateActivitiesStatus = async (gunId,isActive) => {
   return res.data;
 };
 
+export const getPostComments=async(body)=>{
+  const res=await api.post('/Activities/GetPostComments',body)
+  return res.data
+}
+
 export const getReportList=async(body)=>{
   const res=await api.post('/Report/GetReportList',body)
   return res.data
 }
 
-export const getVenueActivities=async(postId)=>{
-  const res=await api.get(`/Venue/GetVenueActivity/${postId}`)
+
+
+export const getActivitiesClickDetails=async(id,type)=>{
+  const res=await api.get('/Activities/GetActivtyClickDetails',{
+    params:{
+      id,type
+    }
+  })
+
   return res.data
 }

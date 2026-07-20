@@ -8,6 +8,7 @@ import {
   venueListByUser,
 } from "../../../api/EndUsers/endUserViewApi";
 import GunModal from "../../../components/Modal/GunModal";
+import { useNavigate } from "react-router-dom";
 
 function VenuesTable({ userId }) {
   const [data, setData] = useState([]);
@@ -21,6 +22,8 @@ function VenuesTable({ userId }) {
   const [showGunModal, setShowGunModal] = useState(false);
   const [gunData, setGunData] = useState([]);
   // const [loading, setLoading] = useState(false);
+
+  const navigate=useNavigate()
 
   useEffect(() => {
     fetchVenue();
@@ -80,6 +83,24 @@ function VenuesTable({ userId }) {
     return (
       <td className="text-center align-middle">
         <div className="d-flex justify-content-center align-items-center gap-2">
+          <button
+            type="button"
+            className="eye-btn"
+            title="View"
+            onClick={() =>
+              navigate(`/venue/view/${props.dataItem.venueId}`)
+            }
+          >
+            <i className="fa fa-eye"></i>
+          </button>
+          <button
+            type="button"
+            className="edit-btn"
+            title="Edit"
+            // onClick={() => handleDelete(props.dataItem.venueId)}
+          >
+            <i className="icon-edit-1"></i>
+          </button>
           <button
             type="button"
             className="delete-btn"
