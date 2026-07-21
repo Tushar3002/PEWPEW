@@ -36,3 +36,9 @@ export const updateVerification=async(id,isVerify)=>{
     })
     return res.data
 }
+
+
+export const getEndUserDropDown=async()=>{
+    const res=await api.get('/EndUser/GetEndUserDropdown')
+    return res.data
+}
