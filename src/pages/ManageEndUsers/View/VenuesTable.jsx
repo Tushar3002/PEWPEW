@@ -9,6 +9,8 @@ import {
 } from "../../../api/EndUsers/endUserViewApi";
 import GunModal from "../../../components/Modal/GunModal";
 import { useNavigate } from "react-router-dom";
+import { DetailsCell } from "../../../components/GridCells/DetailsCell";
+import VenueEditModal from "../../../components/Modal/VenueEditModal";
 
 function VenuesTable({ userId }) {
   const [data, setData] = useState([]);
@@ -18,12 +20,13 @@ function VenuesTable({ userId }) {
     take: 10,
   });
   const [search, setSearch] = useState("");
-
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedVenueId, setSelectedVenueId] = useState(null);
   const [showGunModal, setShowGunModal] = useState(false);
   const [gunData, setGunData] = useState([]);
   // const [loading, setLoading] = useState(false);
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVenue();
@@ -57,7 +60,7 @@ function VenuesTable({ userId }) {
       setShowGunModal(true);
     } catch (error) {
       console.error(error?.response);
-    } 
+    }
   };
 
   const GunCountCell = (props) => {
@@ -87,9 +90,7 @@ function VenuesTable({ userId }) {
             type="button"
             className="eye-btn"
             title="View"
-            onClick={() =>
-              navigate(`/venue/view/${props.dataItem.venueId}`)
-            }
+            onClick={() => navigate(`/venue/view/${props.dataItem.venueId}`)}
           >
             <i className="fa fa-eye"></i>
           </button>
@@ -97,7 +98,7 @@ function VenuesTable({ userId }) {
             type="button"
             className="edit-btn"
             title="Edit"
-            // onClick={() => handleDelete(props.dataItem.venueId)}
+            onClick={() => handleEdit(props.dataItem.venueId)}
           >
             <i className="icon-edit-1"></i>
           </button>
@@ -157,26 +158,7 @@ function VenuesTable({ userId }) {
       </div>
     </td>
   );
-  const DetailsCell = (props) => {
-    const value = props.dataItem[props.field] || "";
 
-    return (
-      <td>
-        <span
-          title={value}
-          style={{
-            display: "block",
-            width: "100px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
   const ImageCell = (props) => {
     const image = props.dataItem.attachmentFullPath;
 
@@ -278,6 +260,11 @@ function VenuesTable({ userId }) {
       console.log(error.response);
     }
   };
+
+  const handleEdit = (venueId) => {
+    setSelectedVenueId(venueId);
+    setShowEditModal(true);
+  };
   return (
     <div className="tabbar-section">
       <div className="row">
@@ -304,6 +291,7 @@ function VenuesTable({ userId }) {
               >
                 <GridColumn
                   title="Action"
+                  width={"150px"}
                   headerClassName="text-center"
                   cells={{
                     data: ActionCell,
@@ -334,7 +322,8 @@ function VenuesTable({ userId }) {
                 <GridColumn
                   field="address"
                   title="Address"
-                  cells={{ data: DetailsCell }}
+                  width={"300px"}
+                  cells={{ data: TextCell }}
                 />
                 <GridColumn
                   field="totalGun"
@@ -378,6 +367,14 @@ function VenuesTable({ userId }) {
         show={showGunModal}
         onClose={() => setShowGunModal(false)}
         data={gunData}
+      />
+      <VenueEditModal
+        show={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedVenueId(null);
+        }}
+        venueId={selectedVenueId}
       />
     </div>
   );

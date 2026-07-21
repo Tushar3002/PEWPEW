@@ -6,30 +6,27 @@ import {
 } from "../../api/EndUsers/endUserViewApi";
 import { useParams } from "react-router-dom";
 import GunModal from "../../components/Modal/GunModal";
+import EventsTabs from "./Tabs/EventsTabs";
+import ActivityTabs from "./Tabs/ActivityTabs";
 
 function VenueDetail() {
   const [data, setData] = useState("");
-  const [page, setPage] = useState({
-    skip: 0,
-    take: 10,
-  });
-  const [activities, setActivities] = useState([]);
+
   const [events, setEvents] = useState([]);
   const [showGunModal, setShowGunModal] = useState(false);
   const [gunData, setGunData] = useState([]);
   const { id } = useParams();
   const isVideo = (url) => /\.(mp4|webm|mov)$/i.test(url);
 
+  const [activeTab, setActiveTab] = useState("activities");
+
   const tabs = [
- 
-    
     { id: "activities", label: "Activities" },
     { id: "events", label: "Events" },
   ];
 
   useEffect(() => {
     getVenueByIdData();
-    getActivitiesData();
   }, []);
 
   const getVenueByIdData = async () => {
@@ -37,22 +34,6 @@ function VenueDetail() {
       const res = await getVenueById(id);
       console.log(res.data);
       setData(res.data);
-    } catch (error) {
-      console.log(error.response);
-    }
-  };
-
-  const getActivitiesData = async () => {
-    const body = {
-      pageNumber: page.skip / page.take + 1,
-      pageSize: page.take,
-      venueId: id,
-      search: "",
-    };
-    console.log("Activities body:", body);
-    try {
-      const res = await getActivitiesinVenue(body);
-      console.log(res);
     } catch (error) {
       console.log(error.response);
     }
@@ -77,11 +58,8 @@ function VenueDetail() {
         <span className="fs-4">{data.totalPost || 0}</span>
       </div>
 
-      {/* Venue Container */}
       <div className="border rounded p-4">
-        {/* Venue Header */}
         <div className="row g-4 align-items-center mb-4">
-          {/* Venue Image */}
           <div className="col-12 col-md-4">
             <img
               src={data.imageFullPath}
@@ -89,12 +67,10 @@ function VenueDetail() {
               className="w-100 rounded"
               style={{
                 height: "220px",
-                objectFit: "cover",
+                objectFit: "contain",
               }}
             />
           </div>
-
-          {/* Venue Name & Description */}
           <div className="col-12 col-md-8">
             <h3 className="fw-bold mb-3">{data.venueName || "-"}</h3>
 
@@ -109,7 +85,7 @@ function VenueDetail() {
           <div className="col-12 col-lg-6">
             <div className="border rounded p-3 h-100">
               <div className="d-flex justify-content-between align-items-center">
-                <h4 className="fw-bold mb-0">My Gun</h4>
+                <h6 className="fw-bold mb-3">My Guns</h6>
 
                 <button
                   type="button"
@@ -119,27 +95,60 @@ function VenueDetail() {
                   View All
                 </button>
               </div>
+              <div>
+                {data?.guns?.map((gun) => (
+                  <div key={gun.gunId} className="mb-2">
+                    <div className="row g-2 align-items-center">
+                      <div className="col-3">
+                        <img
+                          src={gun.imageFullPath}
+                          alt={gun.gunName}
+                          className="w-100 rounded"
+                          style={{
+                            height: "65px",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+
+                      <div className="col-9">
+                        <div className="fw-semibold">{gun.gunName || "-"}</div>
+
+                        <div className="small text-muted">
+                          {gun.manufacturers?.join(", ") || "-"}
+                        </div>
+
+                        <div
+                          className="small"
+                          style={{
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {gun.details || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Details */}
           <div className="col-12 col-lg-6">
             <div className="border rounded p-3 h-100">
-              <h4 className="fw-bold mb-3">Details</h4>
+              <h6 className="fw-bold mb-3">Details</h6>
 
-              {/* Website */}
               <div className="mb-3">
                 <span className="fw-semibold">Website:</span>{" "}
                 {data.website || "-"}
               </div>
 
-              {/* Phone */}
               <div className="mb-3">
                 <span className="fw-semibold">Phone:</span>{" "}
                 {data.phone ? `(${data.countryCode}) ${data.phone}` : "-"}
               </div>
-
-              {/* Address */}
               <div>
                 <span className="fw-semibold">Address:</span>{" "}
                 {data.address || "-"}
@@ -148,10 +157,9 @@ function VenueDetail() {
           </div>
         </div>
 
-        {/* Activity Attachments */}
         {data.venueActivityAttachements?.length > 0 && (
           <div className="mt-4">
-            <h4 className="fw-bold mb-3">Photos/Videos</h4>
+            <h6 className="fw-bold mb-3 ">Photos/Videos</h6>
 
             <div className="d-flex flex-wrap gap-3">
               {data.venueActivityAttachements.map((attachment, index) => {
@@ -207,17 +215,15 @@ function VenueDetail() {
             </ul>
             {/* <!-- Shared Content: Tab + Accordion --> */}
             <div className="tab-content mt-4">
-              
-
               {activeTab === "events" && (
                 <div className="tab-pane fade show active">
-                  {/* <EventsTable userId={id}/> */}
+                  <EventsTabs userId={id} />
                 </div>
               )}
 
               {activeTab === "activities" && (
                 <div className="tab-pane fade show active">
-                  {/* <ActivitiesTables userId={id}/> */}
+                  <ActivityTabs userId={id} />
                 </div>
               )}
             </div>
