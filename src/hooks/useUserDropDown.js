@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getCountryCode, getGender, getRole } from "../api/userApi";
+import { getRole } from "../api/userApi";
+import { getCountryCode, getGender } from "../api/Common/commonApi";
 
 export function useUserDropDown() {
 
@@ -29,7 +30,7 @@ export function useUserDropDown() {
 
       setCountryCodeData(res.data);
     } catch (error) {
-      console.log(error);
+      console.log(error); 
     }
   };
 

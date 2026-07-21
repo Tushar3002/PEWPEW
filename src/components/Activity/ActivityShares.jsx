@@ -20,7 +20,7 @@ function ActivityShares({ postId, type }) {
   };
   return (
     <div className="border rounded p-3">
-      <h4 className="fw-bold mb-3">Shares</h4>
+      {type===3 ?<h4 className="fw-bold mb-3">Shares</h4> : <h4 className="fw-bold mb-3">Likes</h4>}
 
       <hr />
 

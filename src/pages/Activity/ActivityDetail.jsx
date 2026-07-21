@@ -143,7 +143,7 @@ function ActivityDetail() {
 
             <div className="row align-items-center mb-2">
               <div className="col-4">
-                <span className="fw-bold fs-5 text-dark">Rate:</span>
+                <span className="fw-bold fs-5 text-dark">Ratings :</span>
               </div>
               <div className="col-8">
                 <span className="fs-5">{activityData.rate ?? "-"}</span>
@@ -160,6 +160,36 @@ function ActivityDetail() {
                 <span className="fs-5">{activityData.post || "-"}</span>
               </div>
             </div>
+            {activityData.venueName && <div className="row align-items-center mb-2">
+              <div className="col-4">
+                <span className="fw-bold fs-5 text-dark">
+                  Venue Name:
+                </span>
+              </div>
+              <div className="col-8">
+                <span className="fs-5">{activityData.venueName || "-"}</span>
+              </div>
+            </div>}
+           {activityData.venueLocation && <div className="row align-items-center mb-2">
+              <div className="col-4">
+                <span className="fw-bold fs-5 text-dark">
+                  Venue Address :
+                </span>
+              </div>
+              <div className="col-8">
+                <span className="fs-5">{activityData.venueLocation || "-"}</span>
+              </div>
+            </div>}
+            {activityData.venueOwner && <div className="row align-items-center mb-2">
+              <div className="col-4">
+                <span className="fw-bold fs-5 text-dark">
+                  Venue Owner Name :
+                </span>
+              </div>
+              <div className="col-8">
+                <span className="fs-5">{activityData.venueOwner || "-"}</span>
+              </div>
+            </div>}
           </div>
         </div>
       </div>
@@ -196,12 +226,29 @@ function ActivityDetail() {
                 </span>
               </div>
             </div>}
+
+            {activityData.totalLike>0 && <div className="col-sm-6">
+              <div
+                className="border-contents aspect-icon-column d-flex blue-column align-items-center gap-3 justify-content-center"
+                style={{ cursor: "pointer" }}
+                onClick={() => setActiveSection("likes")}
+              >
+                <i className="demo-icon icon-likes large-icon "></i>
+
+                <span>
+                  <h2 className="mb-1">{activityData.totalLike || 0}</h2>
+                  <h3 className="mb-0">Likes</h3>
+                </span>
+              </div>
+            </div>}
           </div>
         </div>
         <div className="col-md-12 col-lg-6 col-xl-7 mt-3 mt-xxl-4">
           {activeSection === "comments" && <ActivityComments postId={id} />}
 
           {activeSection === "shares" && <ActivityShares postId={id} type={3} />}
+
+          {activeSection === "likes" && <ActivityShares postId={id} type={1} />}
         </div>
       </div>
     </div>

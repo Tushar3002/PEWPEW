@@ -5,7 +5,7 @@ import PrivateLayout from "../layouts/PrivateLayout.jsx";
 import Activity from "../pages/Activity/Activity.jsx";
 import ManageBadges from "../pages/ManageBadges.jsx";
 import ManageUser from "../pages/ManageUsers/ManageUser.jsx";
-import Events from "../pages/Events.jsx";
+import Events from "../pages/Events/Events.jsx";
 import LeaderBoard from "../pages/LeaderBoard.jsx";
 
 import Messaging from "../pages/Messaging.jsx";
@@ -20,6 +20,7 @@ import ManageEndUser from "../pages/ManageEndUsers/ManageEndUser.jsx";
 import ManageEndUserView from "../pages/ManageEndUsers/View/ManageEndUserView.jsx";
 import ActivityDetail from "../pages/Activity/ActivityDetail.jsx";
 import VenueDetail from "../pages/Venue/VenueDetail.jsx";
+import EventsDetail from "../pages/Events/EventsDetail.jsx";
 
 
 const router = createBrowserRouter([
@@ -105,13 +106,22 @@ const router = createBrowserRouter([
         ]
       },
       {
+        path:'/events',
+        children:[
+          {
+            index:true,
+            element:<Events/>
+          },{
+            path:'view/:id',
+            element:<EventsDetail/>
+          }
+        ]
+      },
+      {
         path: "/manage-badges",
         element: <ManageBadges />,
       },
-      {
-        path: "/events",
-        element: <Events />,
-      },
+
       {
         path: "/leaderboard",
         element: <LeaderBoard />,
