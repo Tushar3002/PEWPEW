@@ -2,7 +2,7 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import React, { useEffect, useState } from "react";
 import {
-  deleteVenue,
+  
   getVenueGunDetails,
   updateVenueStatus,
   venueListByUser,
@@ -10,7 +10,9 @@ import {
 import GunModal from "../../../components/Modal/GunModal";
 import { useNavigate } from "react-router-dom";
 import { DetailsCell } from "../../../components/GridCells/DetailsCell";
-import VenueEditModal from "../../../components/Modal/VenueEditModal";
+import VenueEditModal from "../../../components/Modal/VenueModal";
+import WebsiteCell from "../../../components/GridCells/WebsiteCell";
+import { deleteVenue } from "../../../api/Venue/venueApi";
 
 function VenuesTable({ userId }) {
   const [data, setData] = useState([]);
@@ -222,35 +224,7 @@ function VenuesTable({ userId }) {
       </td>
     );
   };
-  const WebsiteCell = (props) => {
-    const url = props.dataItem.website;
-
-    if (!url) {
-      return <td {...props.tdProps}>-</td>;
-    }
-
-    const href =
-      url.startsWith("http://") || url.startsWith("https://")
-        ? url
-        : `https://${url}`;
-
-    return (
-      <td {...props.tdProps}>
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          title={url}
-          style={{
-            color: "#0d6efd",
-            textDecoration: "underline",
-          }}
-        >
-          {url}
-        </a>
-      </td>
-    );
-  };
+  
 
   const handleDelete = async (id) => {
     try {

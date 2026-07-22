@@ -16,6 +16,7 @@ function ManageUserFormPage() {
   const { genders, roles, countryCodeData } = useUserDropDown();
   const [selectedRole, setSelectedRole] = useState("");
   const [permissions, setPermissions] = useState([]);
+  
 
   useEffect(() => {
     if (!isEditMode) {

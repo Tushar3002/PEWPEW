@@ -37,7 +37,7 @@ function EventsTable({ userId }) {
     take: 10,
   });
   const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     if (!userId) return;
     fetchEvent();
@@ -84,13 +84,11 @@ function EventsTable({ userId }) {
             type="button"
             className="eye-btn"
             title="View"
-            onClick={() =>
-              navigate(`/events/view/${props.dataItem.eventId}`)
-            }
+            onClick={() => navigate(`/events/view/${props.dataItem.eventId}`)}
           >
             <i className="fa fa-eye"></i>
           </button>
-         
+
           <button
             type="button"
             className="delete-btn"
@@ -149,22 +147,17 @@ function EventsTable({ userId }) {
     );
   };
 
-const StatusDropdownCell = (props) => {
-  const value = props.dataItem?.[props.field] ?? "-";
+  const StatusDropdownCell = (props) => {
+    const value = props.dataItem?.[props.field] ?? "-";
 
-  return (
-    <td {...props.tdProps}>
-      <select
-        className="form-select"
-        value={value}
-        disabled
-     
-      >
-        <option value={value}>{value}</option>
-      </select>
-    </td>
-  );
-};
+    return (
+      <td {...props.tdProps}>
+        <select className="form-select" value={value} disabled>
+          <option value={value}>{value}</option>
+        </select>
+      </td>
+    );
+  };
 
   return (
     <div className="tabbar-section">
@@ -205,7 +198,11 @@ const StatusDropdownCell = (props) => {
                 total={total}
                 onPageChange={(e) => setPage(e.page)}
               >
-                <GridColumn width={"100px"} title="Action" cells={{data: ActionCell}}/>
+                <GridColumn
+                  width={"100px"}
+                  title="Action"
+                  cells={{ data: ActionCell }}
+                />
                 <GridColumn title="Host Name/Venue Name" field="venueName" />
                 <GridColumn title="Event Name" field="eventName" />
                 <GridColumn
@@ -215,9 +212,18 @@ const StatusDropdownCell = (props) => {
                     data: DateTimeCell,
                   }}
                 />
-                <GridColumn width={"300px"} title="Address" field="address" cells={{ data:DetailsCell}}/>
+                <GridColumn
+                  width={"300px"}
+                  title="Address"
+                  field="address"
+                  cells={{ data: DetailsCell }}
+                />
                 <GridColumn title="Created By" field="created" />
-                <GridColumn title="Status" field="approvalStatusName"  cells={{data:StatusDropdownCell}}/>
+                <GridColumn
+                  title="Status"
+                  field="approvalStatusName"
+                  cells={{ data: StatusDropdownCell }}
+                />
               </Grid>
             </Tooltip>
           </div>

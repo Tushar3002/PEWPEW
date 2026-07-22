@@ -1,0 +1,65 @@
+/* .venue-edit-modal .form-select option:hover,
+.venue-edit-modal .form-select option:focus,
+.venue-edit-modal .form-select option:checked {
+    background: var(--primary) linear-gradient(0deg, var(--primary) 0%, var(--primary) 100%);
+    color: var(--white);
+}
+
+.venue-edit-modal .k-list-item.k-state-hover,
+.venue-edit-modal .k-list-item:hover,
+.venue-edit-modal .k-list-item.k-hover,
+.venue-edit-modal .k-list-item.k-state-selected,
+.venue-edit-modal .k-list-item.k-selected {
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
+}
+
+.venue-edit-modal .k-multiselect,
+.venue-edit-modal .k-dropdown-wrap,
+.venue-edit-modal .k-picker-wrap {
+    border-color: var(--primary) !important;
+    background-color: var(--white) !important;
+}
+
+.venue-edit-modal .k-multiselect .k-input,
+.venue-edit-modal .k-dropdown-wrap .k-input,
+.venue-edit-modal .k-picker-wrap .k-input {
+    background-color: var(--white) !important;
+}
+
+.venue-edit-modal .k-multiselect .k-chip {
+    background-color: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+} */
+
+/* Selected MultiSelect tags */
+.venue-gun-multiselect .k-chip {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.venue-gun-multiselect .k-chip .k-svg-icon {
+  color: #fff !important;
+}
+
+/* Dropdown hover */
+.k-animation-container .k-list-item:hover,
+.k-animation-container .k-list-item.k-hover {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+/* Selected dropdown item */
+.k-animation-container .k-list-item.k-selected {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+/* Selected + hovered */
+.k-animation-container .k-list-item.k-selected:hover,
+.k-animation-container .k-list-item.k-selected.k-hover {
+  background-color: #c82333 !important;
+  color: #fff !important;
+}

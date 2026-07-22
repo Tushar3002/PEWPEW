@@ -100,9 +100,13 @@ const router = createBrowserRouter([
             index:true,
             element:<Venues/>
           },{
+            path:"add",
+            element:<VenueDetail/>  
+          }
+          ,{
             path:"view/:id",
             element:<VenueDetail/>
-          }
+          },
         ]
       },
       {

@@ -61,10 +61,6 @@ export const getVenueGunDetails = async(venueId)=>{
   return res.data
 }
 
-export const deleteVenue=async(venueId)=>{
-  await api.delete(`/Venue/${venueId}`)
-  return res.data
-}
 export const getVenueActivities=async(postId)=>{
   const res=await api.get(`/Venue/GetVenueActivity/${postId}`)
   return res.data
