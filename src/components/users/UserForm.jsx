@@ -97,24 +97,29 @@ function UserForm({
               <fieldset className="row">
                 <div className="col-12">
                   <div className="field d-flex align-items-center gap-3">
-                    <div className="user-image-edit position-relative">
-                      <img
-                        src={imagePreview || defaultProfilePic}
-                        alt="Profile"
-                        className="img-fluid rounded-circle"
-                        style={{
-                          width: "120px",
-                          height: "120px",
-                          objectFit: "cover",
-                        }}
-                      />
+                    <div
+                      className="position-relative"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        minWidth: "100px",
+                      }}
+                    >
+                      <div className="rounded-circle overflow-hidden w-100 h-100">
+                        <img
+                          src={imagePreview || defaultProfilePic}
+                          alt="Profile"
+                          className="w-100 h-100"
+                          style={{ objectFit: "cover" }}
+                        />
+                      </div>
 
                       <label
                         htmlFor="profileImage"
                         className="edit-btn-small"
                         style={{ cursor: "pointer" }}
                       >
-                        <i className="demo-icon icon-edit-1"></i>
+                        <i className="demo-icon icon-edit-1 p-1 "></i>
                       </label>
 
                       <input
@@ -308,7 +313,6 @@ function UserForm({
                           value: 16,
                           message: "Address is too Short",
                         },
-
                       })}
                     />
                     <div className="invalid-feedback">
@@ -386,7 +390,6 @@ function UserForm({
                         id="contactNumber"
                         className={`form-control ${errors.contactNumber ? "is-invalid" : ""}`}
                         {...register("contactNumber", {
-                          
                           required: "Contact Number is required",
                           pattern: {
                             value: /^[0-9]{10}$/,

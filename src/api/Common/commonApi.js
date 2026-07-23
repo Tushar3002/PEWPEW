@@ -14,3 +14,19 @@ export const getCountryCode = async () => {
   const res = await api.get("/Common/country-codes");
   return res.data;
 };
+
+export const getVenueApprovalStatus=async()=>{
+  const res=await api.get("/Common/GetVenueApprovalStatus")
+  return res.data
+}
+
+
+export const getSupportStatus=async()=>{
+  const res=await api.get('/Common/GetSupportStatus')
+  return res.data
+}
+
+export const getSupportIssueType=async()=>{
+  const res=await api.get('/Common/GetSupportIssueType')
+  return res.data
+}

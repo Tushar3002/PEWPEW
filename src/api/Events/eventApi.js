@@ -9,3 +9,5 @@ export const getEventDetail = async(id)=>{
 
     return res.data
 }
+
+

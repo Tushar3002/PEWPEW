@@ -46,6 +46,8 @@ function ManageUserFormPage() {
   const loadUser = async () => {
     try {
       const res = await getUserById(id);
+      console.log("User by Id",res.data);
+      
       const userData = res.data || {};
 
       setDefaultValues({
@@ -64,7 +66,7 @@ function ManageUserFormPage() {
         birthDay: userData.birthDay || "",
         address: userData.address || "",
         userName: userData.userName || "",
-        profileImage: userData.profileImage || "",
+        profileImage: userData.profileImageFullPath || "",
       });
       setSelectedRole(userData.roleId || "");
     } catch (error) {

@@ -11,7 +11,7 @@ import LeaderBoard from "../pages/LeaderBoard.jsx";
 import Messaging from "../pages/Messaging.jsx";
 import ReportedUsers from "../pages/ReportedUsers.jsx";
 
-import SupportTicket from "../pages/SupportTicket.jsx";
+import SupportTicket from "../pages/SupportTicket/SupportTicket.jsx";
 import Venues from "../pages/Venue/Venues.jsx";
 import ManageUserFormPage from "../pages/ManageUsers/ManageUserFormPage.jsx";
 import RolesPermission from "../pages/RolesAndPermissions/RolesPermission.jsx";
