@@ -6,16 +6,20 @@ import { TextCell } from "../../components/GridCells/TextCell";
 import WebsiteCell from "../../components/GridCells/WebsiteCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import {
+  getVenueGunDetails,
   updateVenueStatus,
 } from "../../api/EndUsers/endUserViewApi";
 import VenueModal from "../../components/Modal/VenueModal";
 import { DateCell } from "../../components/GridCells/DateCell";
+import { getVenueApprovalStatus } from "../../api/Common/commonApi";
+import GunModal from "../../components/Modal/GunModal";
 
 function Venues() {
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [showVenueModal, setShowVenueModal] = useState(false);
   const [selectedVenueId, setSelectedVenueId] = useState(null);
+  const [approvals, setApprovals] = useState([]);
   const [page, setPage] = useState({
     skip: 0,
     take: 10,
@@ -24,10 +28,14 @@ function Venues() {
   const [sort, setSort] = useState([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [showGunModal, setShowGunModal] = useState(false);
+  const [gunData, setGunData] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     venueData();
+    approvalStatusData();
   }, [page, sort, search]);
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -43,7 +51,7 @@ function Venues() {
   }, [searchInput]);
 
   const venueData = async () => {
-    console.log("venueData CALLED");
+    // console.log("venueData CALLED");
     try {
       const body = {
         page: page.skip / page.take + 1,
@@ -62,6 +70,16 @@ function Venues() {
       setTotal(res.data.totalRecord);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const approvalStatusData = async () => {
+    try {
+      const res = await getVenueApprovalStatus();
+      console.log(res.data);
+      setApprovals(res.data);
+    } catch (error) {
+      console.log(error.response);
     }
   };
 
@@ -100,14 +118,75 @@ function Venues() {
     );
   };
 
-    const StatusDropdownCell = (props) => {
-    const value = props.dataItem?.[props.field] ?? "-";
+  const StatusDropdownCell = (props) => {
+    const currentStatus = props.dataItem?.[props.field] ?? "";
 
     return (
       <td {...props.tdProps}>
-        <select className="form-select" value={value} disabled>
-          <option value={value}>{value}</option>
+        <select
+          className="form-select"
+          value={currentStatus}
+          disabled={props.dataItem.isCreateAdmin}
+          onChange={(e) => {
+            const selectedStatus = approvals.find(
+              (approval) => approval.description === e.target.value,
+            );
+
+            console.log("Selected approval:", selectedStatus);
+          }}
+        >
+          {approvals.map((approval) => (
+            <option key={approval.id} value={approval.description}>
+              {approval.description}
+            </option>
+          ))}
         </select>
+      </td>
+    );
+  };
+
+  const handleGunClick = async (venueId) => {
+    try {
+      const res = await getVenueGunDetails(venueId);
+      // console.log(res);
+      // console.log("Venue",venueId);
+
+      setGunData(res.data);
+      setShowGunModal(true);
+    } catch (error) {
+      console.error(error?.response);
+    }
+  };
+
+  const GunCountCell = (props) => {
+    const count = props.dataItem.totalGun;
+    const venueId = props.dataItem.venueId;
+
+    return (
+      <td {...props.tdProps}>
+        <button
+          type="button"
+          className="btn btn-link p-0"
+          onClick={() => handleGunClick(venueId)}
+        >
+          {count}
+        </button>
+      </td>
+    );
+  };
+
+  const editUserCell = (props) => {
+    const userId = props.dataItem.userId;
+    const userName = props.dataItem.venueOwnerUserName;
+    return (
+      <td {...props.tdProps}>
+        <button
+          type="button"
+          className="btn btn-link p-0"
+          onClick={() => navigate(`/manage-users/edit/${userId}`)}
+        >
+          {userName}
+        </button>
       </td>
     );
   };
@@ -140,25 +219,22 @@ function Venues() {
     }
   };
 
- const handleDelete = async (venueId) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this venue?"
-  );
+  const handleDelete = async (venueId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this venue?",
+    );
 
-  if (!confirmed) return;
+    if (!confirmed) return;
 
-  try {
+    try {
+      const res = await deleteVenue(venueId);
 
-    const res = await deleteVenue(venueId);
-
-
-    await venueData();
-
-  } catch (error) {
-    console.log("DELETE CATCH:", error);
-    console.log("Response:", error?.response);
-  }
-};
+      await venueData();
+    } catch (error) {
+      console.log("DELETE CATCH:", error);
+      console.log("Response:", error?.response);
+    }
+  };
 
   const handleEditVenue = (venueId) => {
     console.log("Handle Edit", venueId);
@@ -252,6 +328,7 @@ function Venues() {
                 width={"150px"}
                 title="Owner Name"
                 field="venueOwnerUserName"
+                cells={{ data: editUserCell }}
               />
               <GridColumn
                 width={"180px"}
@@ -277,7 +354,12 @@ function Venues() {
                 field="address"
                 cells={{ data: TextCell }}
               />
-              <GridColumn width={"160px"} title="No. of Gun" field="totalGun" />
+              <GridColumn
+                width={"160px"}
+                title="No. of Gun"
+                field="totalGun"
+                cells={{ data: GunCountCell }}
+              />
               <GridColumn
                 width={"160px"}
                 title="Avg Venue Ratings"
@@ -304,7 +386,7 @@ function Venues() {
                 width={"220px"}
                 title="Approval Status"
                 field="approvalStatusName"
-                cells={{data:StatusDropdownCell}}
+                cells={{ data: StatusDropdownCell }}
               />
               <GridColumn
                 width={"160px"}
@@ -323,6 +405,11 @@ function Venues() {
           </div>
         </div>
       </div>
+      <GunModal
+        show={showGunModal}
+        onClose={() => setShowGunModal(false)}
+        data={gunData}
+      />
       <VenueModal
         show={showVenueModal}
         onClose={() => {
