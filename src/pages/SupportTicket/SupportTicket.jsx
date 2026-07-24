@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  deleteSupportTicket,
   getSupportList,
   statusUpdateSupportTicket,
 } from "../../api/SupportList/supportList";
@@ -8,6 +9,9 @@ import { TextCell } from "../../components/GridCells/TextCell";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { getSupportStatus } from "../../api/Common/commonApi";
 import SupportEditModal from "../../components/Modal/SupportEditModal";
+import SupportStatusModal from "../../components/Modal/SupportStatusModal";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 
 function SupportTicket() {
   const [page, setPage] = useState({
@@ -24,6 +28,20 @@ function SupportTicket() {
 
   const [status, setStatus] = useState([]);
 
+  const [showStatusModal, setShowStatusModal] = useState(false);
+
+  const [statusChange, setStatusChange] = useState(null);
+
+  const [adminDescription, setAdminDescription] = useState("");
+
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearch(searchInput);
@@ -54,7 +72,7 @@ function SupportTicket() {
 
     try {
       const res = await getSupportList(body);
-      // console.log(res.data);
+      console.log(res.data);
       setData(res.data.data);
       setTotal(res.data.totalRecord);
     } catch (error) {
@@ -65,7 +83,7 @@ function SupportTicket() {
   const getSupportTicketStatus = async () => {
     try {
       const res = await getSupportStatus();
-      // console.log(res.data);
+      console.log(res.data);
       setStatus(res.data);
     } catch (error) {
       console.log(error.response);
@@ -73,14 +91,24 @@ function SupportTicket() {
   };
 
   const updateSupportTicketStatus = async () => {
+    if (!statusChange) return;
+
     const body = {
-      adminDescription,
-      statusId,
-      ticketId,
+      ticketId: statusChange.ticketId,
+      statusId: statusChange.newStatusId,
+      adminDescription: adminDescription.trim(),
     };
+
     try {
       const res = await statusUpdateSupportTicket(body);
+
       console.log(res.data);
+
+      setShowStatusModal(false);
+      setStatusChange(null);
+      setAdminDescription("");
+
+      await getSupportTickets();
     } catch (error) {
       console.log(error.response);
     }
@@ -88,19 +116,42 @@ function SupportTicket() {
 
   const handleEditTicket = (ticketId) => {
     // console.log("Handle Edit", ticketId);
-    
 
     setSelectedTicketId(ticketId);
     setShowTicketModal(true);
     // console.log("Handle Edit", selectedTicketId);
   };
 
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteSupportTicket(deleteId);
+
+      closeDeleteModal();
+      await getSupportTickets();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteClick = (ticketId) => {
+    setDeleteId(ticketId);
+    setShowDeleteModal(true);
+  };
+
   const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
+    const statusId = props.dataItem.statusId;
+
+    const canDelete = statusId === 3 || statusId === 4;
 
     return (
       <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
+        <div className="d-flex justify-content align-items-center gap-2">
           <button
             type="button"
             className="edit-btn"
@@ -109,32 +160,63 @@ function SupportTicket() {
           >
             <i className="icon-edit-1"></i>
           </button>
+
+          {canDelete && (
+            <button
+              type="button"
+              className="delete-btn"
+              title="Delete"
+              onClick={() => openDeleteModal(props.dataItem.id)}
+            >
+              <i className="demo-icon icon-delete-1"></i>
+            </button>
+          )}
         </div>
       </td>
     );
   };
 
   const StatusDropdownCell = (props) => {
-    const currentStatus = props.dataItem?.[props.field] ?? "";
+    const ticket = props.dataItem;
+    const currentStatusId = ticket.statusId;
+
+    const isClosedStatus = currentStatusId === 3 || currentStatusId === 4;
+
+    const handleStatusChange = (e) => {
+      const newStatusId = Number(e.target.value);
+
+      if (newStatusId === currentStatusId) return;
+
+      const selectedStatus = status.find((item) => item.id === newStatusId);
+
+      if (!selectedStatus) return;
+
+      setStatusChange({
+        ticketId: ticket.id,
+        newStatusId: selectedStatus.id,
+      });
+
+      setAdminDescription(ticket.adminDescription || "");
+      setShowStatusModal(true);
+    };
 
     return (
       <td {...props.tdProps}>
         <select
           className="form-select"
-          value={currentStatus}
-          onChange={(e) => {
-            const selectedStatus = status.find(
-              (approval) => approval.description === e.target.value,
-            );
-
-            console.log("Selected approval:", selectedStatus);
-          }}
+          value={currentStatusId}
+          onChange={handleStatusChange}
         >
-          {status.map((approval) => (
-            <option key={approval.id} value={approval.description}>
-              {approval.description}
-            </option>
-          ))}
+          {status.map((item) => {
+            const shouldDisable =
+              isClosedStatus && (item.id === 1 || item.id === 2);
+
+            return (
+              <option key={item.id} value={item.id} disabled={shouldDisable}>
+                {item.description}
+              </option>
+            );
+          })}
         </select>
       </td>
     );
@@ -236,15 +318,34 @@ function SupportTicket() {
           </div>
         </div>
       </div>
-      <SupportEditModal 
+      <SupportEditModal
         ticketId={selectedTicketId}
         show={showTicketModal}
         onClose={() => {
           setShowTicketModal(false);
           setSelectedTicketId(null);
         }}
-
         onSuccess={getSupportTickets}
+      />
+
+      <SupportStatusModal
+        show={showStatusModal}
+        statusChange={statusChange}
+        adminDescription={adminDescription}
+        setAdminDescription={setAdminDescription}
+        onConfirm={updateSupportTicketStatus}
+        onClose={() => {
+          setShowStatusModal(false);
+          setStatusChange(null);
+          setAdminDescription("");
+        }}
+      />
+
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

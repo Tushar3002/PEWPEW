@@ -5,8 +5,7 @@ import profile from "../assets/images/profile-img.png";
 import { useAuth } from "../context/AuthContext";
 
 function Header({ toggleSidebar }) {
-
-  const {logout}=useAuth()
+  const { logout } = useAuth();
   return (
     <header>
       <div className="container-fluid">
@@ -37,37 +36,18 @@ function Header({ toggleSidebar }) {
               <i className="demo-icon icon-cross"></i>
             </button>
 
-            
-
             {/* Header Icons */}
             <div className="head-icons">
               <ul className="d-flex align-items-center gap-1 gap-sm-3 gap-xl-4">
                 <li className="dropdown no-arrow chat-notification">
-                  <a
-                    href="javascript:void(0);"
-                    className="dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                  >
+                  <a className="dropdown-toggle" data-bs-toggle="dropdown">
                     <i className="demo-icon icon-message-2"></i>
-                    <span>5</span>
                   </a>
-
-                  {/*
-          <ul className="dropdown-menu">
-            <li><a className="dropdown-item" href="profile.html">List One</a></li>
-            <li><a className="dropdown-item" href="#">List Two</a></li>
-          </ul>
-          */}
                 </li>
 
                 <li className="dropdown no-arrow notification">
-                  <a
-                    href="javascript:void(0);"
-                    className="dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                  >
+                  <a className="dropdown-toggle" data-bs-toggle="dropdown">
                     <i className="demo-icon icon-bell"></i>
-                    <span></span>
                   </a>
                 </li>
               </ul>

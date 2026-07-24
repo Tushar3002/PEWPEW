@@ -19,3 +19,8 @@ export const getSupportTicketDatabyId=async(id)=>{
 
     return res.data
 }
+
+export const deleteSupportTicket=async(ticketId)=>{
+    const res=await api.delete(`/SupportTicket/Delete/${ticketId}`)
+    return res.data
+}
