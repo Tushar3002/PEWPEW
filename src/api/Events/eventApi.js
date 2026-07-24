@@ -11,3 +11,18 @@ export const getEventDetail = async(id)=>{
 }
 
 
+export const getAllEventList=async(body,isUpcomingEvents,isAdminRequest)=>{
+    const res=await api.post('/Event/List',body,{
+        params:{
+            isUpcomingEvents,
+            isAdminRequest
+        }
+    })
+    return res.data
+}
+
+
+export const deleteEvents=async(eventId)=>{
+    const res=await api.delete(`/Event/Delete/${eventId}`)
+    return res.data
+}

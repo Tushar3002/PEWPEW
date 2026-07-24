@@ -30,3 +30,12 @@ export const getSupportIssueType=async()=>{
   const res=await api.get('/Common/GetSupportIssueType')
   return res.data
 }
+
+export const getCommonDashBoardFilters=async()=>{
+  const res=await api.get('/Common/GetDashboardFilters')
+  return res.data
+}
+
+export const getCommunicatedDropdown=async()=>{
+    const res=await api.get('/Common/GetCommincateWith')
+}

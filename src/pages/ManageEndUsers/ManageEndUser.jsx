@@ -132,7 +132,7 @@ function ManageEndUser() {
     const isVerified = Boolean(props.dataItem.isVerify);
     return (
       <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2">
           <button
             type="button"
             className="eye-btn"
@@ -310,7 +310,7 @@ function ManageEndUser() {
 
               <GridColumn
                 title="Action"
-                width="300px"
+                width="270px"
                 headerClassName="text-center"
                 cells={{
                   data: ActionCell,

@@ -1,315 +1,278 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import "../ManageEndUsers/css/EventsTable.css";
+import { deleteEvents, getAllEventList } from "../../api/Events/eventApi";
+import { Grid, GridColumn } from "@progress/kendo-react-grid";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import { DetailsCell } from "../../components/GridCells/DetailsCell";
+import DateTimeCell from "../../components/GridCells/DateTimeCell";
+import { useNavigate } from "react-router-dom";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+
+const eventTabs = [
+  {
+    key: "upcoming",
+    label: "Upcoming Events",
+    isUpcomingEvents: true,
+    isAdminRequest: null,
+  },
+  {
+    key: "passed",
+    label: "Passed Events",
+    isUpcomingEvents: false,
+    isAdminRequest: null,
+  },
+  {
+    key: "requests",
+    label: "Admin-added venues' Events requests",
+    isUpcomingEvents: null,
+    isAdminRequest: true,
+  },
+];
 
 function Events() {
+  const [eventData, setEventData] = useState({});
+
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState({
+    skip: 0,
+    take: 10,
+  });
+
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [sort, setSort] = useState([]);
+
+  //   const { id } = useParams();
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
+
+  const navigate = useNavigate();
+
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+
+      setPage((prev) => ({
+        ...prev,
+        skip: 0,
+      }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
+    getEvents();
+  }, [page, sort, search, activeTab]);
+
+  const getEvents = async () => {
+    const body = {
+      Page: page.skip / page.take + 1,
+      PageSize: page.take,
+      Sorts: sort.map((s) => ({
+        field: s.field,
+        direction: s.dir === "asc" ? 0 : 1,
+      })),
+      CustomSearch: search,
+    };
+    try {
+      const res = await getAllEventList(
+        body,
+        selectedTab.isUpcomingEvents,
+        selectedTab.isAdminRequest,
+      );
+      console.log(res.data);
+      setEventData(res.data.data);
+      setTotal(res.data.totalRecord);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    console.log("Tab Key", selectedTab);
+
+    setPage((prev) => ({
+      ...prev,
+      skip: 0,
+    }));
+  };
+
+  const StatusDropdownCell = (props) => {
+    const value = props.dataItem?.[props.field] ?? "-";
+
+    return (
+      <td {...props.tdProps}>
+        <select className="form-select" value={value} disabled>
+          <option value={value}>{value}</option>
+        </select>
+      </td>
+    );
+  };
+
+  const ActionCell = (props) => {
+    return (
+      <td className="text-center align-middle">
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <button
+            type="button"
+            className="eye-btn"
+            title="View"
+            onClick={() => navigate(`/events/view/${props.dataItem.eventId}`)}
+          >
+            <i className="fa fa-eye"></i>
+          </button>
+
+          <button
+            type="button"
+            className="delete-btn"
+            title="Delete"
+            onClick={() => openDeleteModal(props.dataItem.eventId)}
+          >
+            <i className="icon-delete-1"></i>
+          </button>
+        </div>
+      </td>
+    );
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteEvents(deleteId);
+
+      closeDeleteModal();
+      await getEvents();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <>
-        <div className="tabbar-section">
-                     <div className="row">
-                        <div className="col-12">
-                           {/* <!-- Tab Nav (desktop only) --> */}
-                           <ul className="nav nav-tabs" id="myTab" role="tablist">
-                              <li className="nav-item" role="presentation">
-                                 <button className="nav-link active" id="nav-one-tab" data-bs-toggle="tab" data-bs-target="#nav-one-tab-pane" type="button" role="tab" aria-controls="nav-one-tab-pane" aria-selected="true">Upcoming Events</button>
-                              </li>
-                              <li className="nav-item" role="presentation">
-                                 <button className="nav-link" id="nav-two-tab" data-bs-toggle="tab" data-bs-target="#nav-two-tab-pane" type="button" role="tab" aria-controls="nav-two-tab-pane" aria-selected="false">Passed Events</button>
-                              </li>
-                           </ul>
-                           {/* <!-- Shared Content: Tab + Accordion --> */}
-                           <div className="tab-content accordion" id="myTabContent">
-                              <div className="tab-pane fade show active accordion-item" id="nav-one-tab-pane" role="tabpanel" aria-labelledby="nav-one-tab" tabindex="0">
-                                 <h2 className="accordion-header d-lg-none" id="headingOne">
-                                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Upcoming Events</button>
-                                 </h2>
-                                 <div id="collapseOne" className="accordion-collapse collapse show d-lg-block" aria-labelledby="headingOne" data-bs-parent="#myTabContent">
-                                    <div className="accordion-body mt-3 mt-xxl-4">
-                                       <div className="row">
-                                          <div className="col-12">
-                                             <div className="table-responsive">
-                                                <table className="table">
-                                                   <thead className="table-dark">
-                                                      <tr>
-                                                         <th>Action</th>
-                                                         <th>Host Name/Venue Name</th>
-                                                         <th>Event Name</th>
-                                                         <th>Date & Time</th>
-                                                         <th>Address</th>
-                                                      </tr>
-                                                   </thead>
-                                                   <tbody>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Suite Park</td>
-                                                         <td>Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Vanguard Shooting Park</td>
-                                                         <td>GO Up meeting</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Pistol Range</td>
-                                                         <td>Gun Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Pistol Range</td>
-                                                         <td>GO Up meeting</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Falcon Ridge Shooting Park</td>
-                                                         <td>Gun Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Clay Target Center</td>
-                                                         <td>GO Up meeting</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a>
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Falcon Ridge Shooting Park</td>
-                                                         <td>Gun Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                   </tbody>
-                                                </table>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div className="tab-pane fade accordion-item" id="nav-two-tab-pane" role="tabpanel" aria-labelledby="nav-two-tab" tabindex="0">
-                                 <h2 className="accordion-header d-lg-none" id="headingTwo">
-                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Passed Events</button>
-                                 </h2>
-                                 <div id="collapseTwo" className="accordion-collapse collapse d-lg-block" aria-labelledby="headingTwo" data-bs-parent="#myTabContent">
-                                    <div className="accordion-body mt-3 mt-xxl-4">
-                                       <div className="row">
-                                          <div className="col-12">
-                                             <div className="table-responsive">
-                                                <table className="table">
-                                                   <thead className="table-dark">
-                                                      <tr>
-                                                         <th>Action</th>
-                                                         <th>Host Name/Venue Name</th>
-                                                         <th>Event Name</th>
-                                                         <th>Date & Time</th>
-                                                         <th>Address</th>
-                                                      </tr>
-                                                   </thead>
-                                                   <tbody>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Suite Park</td>
-                                                         <td>Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Vanguard Shooting Park</td>
-                                                         <td>GO Up meeting</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Clay Target Center</td>
-                                                         <td>Gun Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Pistol Range</td>
-                                                         <td>GO Up meeting</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Falcon Ridge Shooting Park</td>
-                                                         <td>Gun Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Clay Target Center</td>
-                                                         <td>GO Up meeting</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                      <tr>
-                                                         <td>
-                                                            <span className="d-flex gap-2 align-items-center">
-                                                            <a className="small-square-btn edit-btn" href="javascript:void(0);"><i className="demo-icon icon-eye-line"></i></a> 
-                                                            <a className="small-square-btn danger-btn" href="javascript:void(0);"><i className="demo-icon icon-delete-1"></i></a> 
-                                                            </span>
-                                                         </td>
-                                                         <td>Falcon Ridge Shooting Park</td>
-                                                         <td>Gun Meet Ups</td>
-                                                         <td>
-                                                            <p className="mb-0">Monday, 17 May 2024 3:30 am- 6:30 am</p>
-                                                            <p className="mb-0">This Event has ended</p>
-                                                         </td>
-                                                         <td>
-                                                            <p className="mb-0">Gun Club Association Member Meeting, Buriel club co. Ashville, NC</p>
-                                                         </td>
-                                                      </tr>
-                                                   </tbody>
-                                                </table>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-    </>
-  )
+    <div className="row">
+      <div className="row align-items-center gap-3">
+        <h3>Events</h3>
+        <div className="col-12 col-lg-auto">
+          <form
+            className="d-md-flex searchbar align-items-center"
+            role="search"
+            noValidate
+          >
+            <input
+              className="form-control search-input"
+              type="search"
+              placeholder="Search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+
+            <button
+              className="btn btn-outline-primary search-toggle"
+              type="button"
+            >
+              <i className="demo-icon icon-search"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div className="col-12">
+        <ul className="nav nav-tabs">
+          {eventTabs.map((tab) => (
+            <li className="nav-item" key={tab.key}>
+              <button
+                type="button"
+                className={`nav-link ${activeTab === tab.key ? "active" : ""}`}
+                onClick={() => handleTabChange(tab.key)}
+              >
+                {tab.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-4">
+          <div className="col-12 mt-3 mt-xxl-4">
+            <div className="table-responsive" style={{ overflow: "visible" }}>
+              <Tooltip
+                anchorElement="target"
+                position="top"
+                openDelay={100}
+                className="grid-tooltip"
+              >
+                <Grid
+                  data={eventData}
+                  pageable={{
+                    buttonCount: 5,
+                    pageSizes: [5, 10, 20],
+                    info: true,
+                    previousNext: true,
+                  }}
+                  skip={page.skip}
+                  take={page.take}
+                  total={total}
+                  onPageChange={(e) => setPage(e.page)}
+                >
+                  <GridColumn
+                    width={"100px"}
+                    title="Action"
+                    cells={{ data: ActionCell }}
+                  />
+                  <GridColumn title="Host Name/Venue Name" field="venueName" />
+                  <GridColumn title="Event Name" field="eventName" />
+                  <GridColumn
+                    title="Date & Time"
+                    width="250px"
+                    cells={{
+                      data: (props) => (
+                        <DateTimeCell
+                          {...props}
+                          showEndedMessage={activeTab === "passed"}
+                        />
+                      ),
+                    }}
+                  />
+                  <GridColumn
+                    width={"300px"}
+                    title="Address"
+                    field="address"
+                    cells={{ data: DetailsCell }}
+                  />
+                  <GridColumn title="Created By" field="userName" />
+                  <GridColumn
+                    title="Status"
+                    field="approvalStatusName"
+                    cells={{ data: StatusDropdownCell }}
+                  />
+                </Grid>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      </div>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
 }
 
-export default Events
+export default Events;

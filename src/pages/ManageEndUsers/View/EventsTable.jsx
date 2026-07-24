@@ -6,6 +6,7 @@ import "../css/EventsTable.css";
 import { DetailsCell } from "../../../components/GridCells/DetailsCell";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import { useNavigate } from "react-router-dom";
+import DateTimeCell from "../../../components/GridCells/DateTimeCell";
 
 const eventTabs = [
   {
@@ -28,7 +29,7 @@ const eventTabs = [
   },
 ];
 
-function EventsTable({ userId }) {
+function EventsTable({ userId, venueId }) {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
@@ -39,9 +40,10 @@ function EventsTable({ userId }) {
   const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
   const navigate = useNavigate();
   useEffect(() => {
-    if (!userId) return;
+    if (!userId && !venueId) return;
+
     fetchEvent();
-  }, [page, activeTab]);
+  }, [page, activeTab, userId, venueId]);
 
   const fetchEvent = async () => {
     console.log("UserID", userId);
@@ -52,7 +54,9 @@ function EventsTable({ userId }) {
       search: "",
       isUpcomingEvent: selectedTab.isUpcomingEvent,
       statusId: selectedTab.statusId,
-      userId,
+
+      ...(userId && { userId }),
+      ...(venueId && { venueId }),
     };
     try {
       const res = await eventListByUser(body);
@@ -67,6 +71,7 @@ function EventsTable({ userId }) {
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    console.log("Tab Keys ", tabkey);
 
     setPage((prev) => ({
       ...prev,
@@ -75,7 +80,6 @@ function EventsTable({ userId }) {
   };
 
   const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
 
     return (
       <td className="text-center align-middle">
@@ -102,50 +106,7 @@ function EventsTable({ userId }) {
     );
   };
 
-  const DateTimeCell = (props) => {
-    const { dataItem, tdProps } = props;
-
-    const eventDate = dataItem.eventDate
-      ? new Date(`${dataItem.eventDate}Z`)
-      : null;
-
-    const startTime = dataItem.startTime
-      ? new Date(`${dataItem.startTime}Z`)
-      : null;
-
-    const endTime = dataItem.endTime ? new Date(`${dataItem.endTime}Z`) : null;
-
-    const formattedDate = eventDate?.toLocaleDateString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-
-    const formattedStartTime = startTime?.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    const formattedEndTime = endTime?.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    return (
-      <td {...tdProps}>
-        <div>{formattedDate || "-"}</div>
-
-        <div>
-          {formattedStartTime || "-"} - {formattedEndTime || "-"}
-        </div>
-
-        <div>This Event has ended</div>
-      </td>
-    );
-  };
+ 
 
   const StatusDropdownCell = (props) => {
     const value = props.dataItem?.[props.field] ?? "-";
@@ -209,7 +170,12 @@ function EventsTable({ userId }) {
                   title="Date & Time"
                   width="250px"
                   cells={{
-                    data: DateTimeCell,
+                    data: (props) => (
+                      <DateTimeCell
+                        {...props}
+                        showEndedMessage={activeTab === "passed"}
+                      />
+                    ),
                   }}
                 />
                 <GridColumn

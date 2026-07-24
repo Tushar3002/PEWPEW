@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import GunModal from "../../components/Modal/GunModal";
 import EventsTabs from "./Tabs/EventsTabs";
 import ActivityTabs from "./Tabs/ActivityTabs";
+import EventsTable from "../ManageEndUsers/View/EventsTable";
 
 function VenueDetail() {
   const [data, setData] = useState("");
@@ -217,7 +218,7 @@ function VenueDetail() {
             <div className="tab-content mt-4">
               {activeTab === "events" && (
                 <div className="tab-pane fade show active">
-                  <EventsTabs userId={id} />
+                  <EventsTable venueId={data.venueId} />
                 </div>
               )}
 

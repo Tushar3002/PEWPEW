@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import profileImage from "../../../assets/images/user-img.png";
-import badge1 from "../../../assets/images/badge-1.svg";
-import badge2 from "../../../assets/images/badge-2.svg";
-import badge3 from "../../../assets/images/badge-3.svg";
-import badge4 from "../../../assets/images/badge-4.svg";
+// import badge1 from "../../../assets/images/badge-1.svg";
+// import badge2 from "../../../assets/images/badge-2.svg";
+// import badge3 from "../../../assets/images/badge-3.svg";
+// import badge4 from "../../../assets/images/badge-4.svg";
 import { getEndUserById } from "../../../api/EndUsers/endUserViewApi";
 import { useParams } from "react-router-dom";
 import UploadGunsTable from "./UploadGunsTable";
@@ -253,6 +253,47 @@ function ManageEndUserView() {
                   />
                 </div>
               </div>
+              <div className="col-sm-6 mt-3">
+                <div className="form-group">
+                  <label className="fw-semibold">Upload Documents</label>
+
+                  <div className="form-control d-flex flex-column gap-1">
+                    {endUser?.userDocument?.length > 0 ? (
+                      endUser.userDocument.map((document, index) => (
+                        <a
+                          key={index}
+                          href={document}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Document {index + 1}
+                        </a>
+                      ))
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="col-12 mt-2">
+                <div className="form-group"> 
+                  <label className="fw-semibold d-block mb-2">Setting <span className="danger-color">*</span></label>
+
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="form-check form-switch m-0">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        checked={Boolean(endUser?.isVerify)}
+                        readOnly
+                      />
+                    </div>
+
+                    <span>Follower request confirmation</span>
+                  </div>
+                </div>
+              </div>
             </fieldset>
           </form>
         </div>
@@ -283,19 +324,19 @@ function ManageEndUserView() {
 
               {activeTab === "venues" && (
                 <div className="tab-pane fade show active">
-                  <VenuesTable userId={id}/>
+                  <VenuesTable userId={id} />
                 </div>
               )}
 
               {activeTab === "events" && (
                 <div className="tab-pane fade show active">
-                  <EventsTable userId={id}/>
+                  <EventsTable userId={id} />
                 </div>
               )}
 
               {activeTab === "activities" && (
                 <div className="tab-pane fade show active">
-                  <ActivitiesTables userId={id}/>
+                  <ActivitiesTables userId={id} />
                 </div>
               )}
             </div>

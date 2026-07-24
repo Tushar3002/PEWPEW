@@ -51,7 +51,7 @@ function UploadGunsTable({ userId }) {
 
     return (
       <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
+        <div className="d-flex  align-items-center gap-2">
           <button
             type="button"
             className="delete-btn"
@@ -228,6 +228,7 @@ function UploadGunsTable({ userId }) {
                 onPageChange={(e) => setPage(e.page)}
               >
                 <GridColumn
+                width={"120px"}
                   title="Action"
                   headerClassName="text-center"
                   cells={{
