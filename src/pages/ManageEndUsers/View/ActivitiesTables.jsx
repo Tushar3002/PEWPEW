@@ -8,6 +8,9 @@ import {
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
 import ReportListModal from "../../../components/Modal/ReportListModal";
 import { useNavigate } from "react-router-dom";
+import { TextCell } from "../../../components/GridCells/TextCell";
+import StatusCell from "../../../components/GridCells/StatusCell";
+import { DateCell } from "../../../components/GridCells/DateCell";
 
 function ActivitiesTables({ userId }) {
   const [data, setData] = useState([]);
@@ -129,26 +132,6 @@ function ActivitiesTables({ userId }) {
     );
   };
 
-  const DetailsCell = (props) => {
-    const value = props.dataItem[props.field] || "";
-
-    return (
-      <td>
-        <span
-          title={value}
-          style={{
-            display: "block",
-            width: "100px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
 
   const AttachmentCell = (props) => {
     const attachments = props.dataItem.attachmentList || [];
@@ -223,35 +206,7 @@ function ActivitiesTables({ userId }) {
       </td>
     );
   };
-  const DateCell = (props) => {
-    const date = props.dataItem.createdOn;
 
-    const formattedDate = date
-      ? new Date(date).toLocaleDateString("en-GB")
-      : "-";
-
-    return (
-      <td {...props.tdProps}>
-        <span title={formattedDate}>{formattedDate}</span>
-      </td>
-    );
-  };
-
-  const TextCell = (props) => {
-    const value = props.dataItem[props.field] ?? "";
-
-    return (
-      <td {...props.tdProps}>
-        <span
-          title={value}
-          className="text-truncate d-inline-block"
-          style={{ maxWidth: "100%" }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
 
   const updateStatusToggle = async (gunId, isActive) => {
     try {
@@ -281,23 +236,6 @@ function ActivitiesTables({ userId }) {
     }
   };
 
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="form-check form-switch d-inline-flex align-items-center m-0">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={Boolean(props.dataItem.isActive)}
-          onChange={() =>
-            handleStatusToggle(
-              props.dataItem.postId,
-              Boolean(props.dataItem.isActive),
-            )
-          }
-        />
-      </div>
-    </td>
-  );
 
   return (
     <div className="tabbar-section">
@@ -410,8 +348,14 @@ function ActivitiesTables({ userId }) {
                 <GridColumn
                   title="Status"
                   cells={{
-                    data: StatusCell,
-                  }}
+                  data: (props) => (
+                    <StatusCell
+                      {...props}
+                      idField="postId"
+                      onToggle={handleStatusToggle}
+                    />
+                  ),
+                }}
                 />
               </Grid>
             </Tooltip>

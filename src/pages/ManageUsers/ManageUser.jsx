@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { deleteUser, getUsers, updateStatus } from "../../api/userApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { ColumnMenu } from "../../components/columnMenu";
+import StatusCell from "../../components/GridCells/StatusCell";
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -169,23 +170,6 @@ function ManageUser() {
     }
   };
 
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="form-check form-switch d-inline-flex align-items-center m-0">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={Boolean(props.dataItem.isActive)}
-          onChange={() =>
-            handleStatusToggle(
-              props.dataItem.id,
-              Boolean(props.dataItem.isActive),
-            )
-          }
-        />
-      </div>
-    </td>
-  );
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -297,7 +281,13 @@ function ManageUser() {
                 width={"220px"}
                 title="Status"
                 cells={{
-                  data: StatusCell,
+                  data: (props) => (
+                    <StatusCell
+                      {...props}
+                      idField="id"
+                      onToggle={handleStatusToggle}
+                    />
+                  ),
                 }}
               />
             </Grid>

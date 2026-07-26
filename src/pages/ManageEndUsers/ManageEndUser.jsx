@@ -9,6 +9,7 @@ import {
   updateEndUserStatus,
   updateVerification,
 } from "../../api/EndUsers/endUserApi";
+import StatusCell from "../../components/GridCells/StatusCell";
 
 function ManageEndUser() {
   const [users, setUsers] = useState([]);
@@ -210,23 +211,7 @@ function ManageEndUser() {
       updateFn: (nextValue) => updateVerificationData(id, nextValue),
       confirmMessage: "Do you want the user Verified",
     });
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="form-check form-switch d-inline-flex align-items-center m-0">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={Boolean(props.dataItem.isActive)}
-          onChange={() =>
-            handleStatusToggle(
-              props.dataItem.id,
-              Boolean(props.dataItem.isActive),
-            )
-          }
-        />
-      </div>
-    </td>
-  );
+
 
   return (
     <div className="tabbar-section">
@@ -332,7 +317,13 @@ function ManageEndUser() {
                 width={"240px"}
                 title="Status"
                 cells={{
-                  data: StatusCell,
+                  data: (props) => (
+                    <StatusCell
+                      {...props}
+                      idField="id"
+                      onToggle={handleStatusToggle}
+                    />
+                  ),
                 }}
               />
             </Grid>

@@ -3,6 +3,10 @@ import { gunListByUser, updateGunStatus } from "../../../api/EndUsers/endUserVie
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
+import { TextCell } from "../../../components/GridCells/TextCell";
+import StatusCell from "../../../components/GridCells/StatusCell";
+import { DetailsCell } from "../../../components/GridCells/DetailsCell";
+import { DateCell } from "../../../components/GridCells/DateCell";
 
 function UploadGunsTable({ userId }) {
   const [data, setData] = useState([]);
@@ -92,43 +96,6 @@ function UploadGunsTable({ userId }) {
     }
   };
 
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="form-check form-switch d-inline-flex align-items-center m-0">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={Boolean(props.dataItem.isActive)}
-          onChange={() =>
-            handleStatusToggle(
-              props.dataItem.gunId,
-              Boolean(props.dataItem.isActive),
-            )
-          }
-        />
-      </div>
-    </td>
-  );
-  const DetailsCell = (props) => {
-    const value = props.dataItem.details || "";
-
-    return (
-      <td>
-        <span
-          title={value}
-          style={{
-            display: "block",
-            maxWidth: "140px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
   const ImageCell = (props) => {
     const image = props.dataItem.attachmentFullPath;
 
@@ -153,20 +120,6 @@ function UploadGunsTable({ userId }) {
     );
   };
 
-  const DateCell = (props) => {
-    const date = props.dataItem.createdDate;
-
-    const formattedDate = date
-      ? new Date(date).toLocaleDateString("en-GB")
-      : "-";
-
-    return (
-      <td {...props.tdProps}>
-        <span title={formattedDate}>{formattedDate}</span>
-      </td>
-    );
-  };
-
   const ApprovalStatusCell = (props) => {
     const status = props.dataItem.approvalStatus;
 
@@ -178,21 +131,7 @@ function UploadGunsTable({ userId }) {
     return <td>{text}</td>;
   };
 
-  const TextCell = (props) => {
-    const value = props.dataItem[props.field] ?? "";
 
-    return (
-      <td {...props.tdProps}>
-        <span
-          title={value}
-          className="text-truncate d-inline-block"
-          style={{ maxWidth: "100%" }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -268,8 +207,14 @@ function UploadGunsTable({ userId }) {
                 <GridColumn
                   title="Status"
                   cells={{
-                    data: StatusCell,
-                  }}
+                  data: (props) => (
+                    <StatusCell
+                      {...props}
+                      idField="gunId"
+                      onToggle={handleStatusToggle}
+                    />
+                  ),
+                }}
                 />
               </Grid>
             </Tooltip>

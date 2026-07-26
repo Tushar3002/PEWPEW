@@ -2,17 +2,18 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import React, { useEffect, useState } from "react";
 import {
-  
   getVenueGunDetails,
   updateVenueStatus,
   venueListByUser,
 } from "../../../api/EndUsers/endUserViewApi";
 import GunModal from "../../../components/Modal/GunModal";
 import { useNavigate } from "react-router-dom";
-import { DetailsCell } from "../../../components/GridCells/DetailsCell";
 import VenueEditModal from "../../../components/Modal/VenueModal";
 import WebsiteCell from "../../../components/GridCells/WebsiteCell";
 import { deleteVenue } from "../../../api/Venue/venueApi";
+import { TextCell } from "../../../components/GridCells/TextCell";
+import StatusCell from "../../../components/GridCells/StatusCell";
+import { DateCell } from "../../../components/GridCells/DateCell";
 
 function VenuesTable({ userId }) {
   const [data, setData] = useState([]);
@@ -143,24 +144,6 @@ function VenuesTable({ userId }) {
     }
   };
 
-  const StatusCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="form-check form-switch d-inline-flex align-items-center m-0">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={Boolean(props.dataItem.isActive)}
-          onChange={() =>
-            handleStatusToggle(
-              props.dataItem.venueId,
-              Boolean(props.dataItem.isActive),
-            )
-          }
-        />
-      </div>
-    </td>
-  );
-
   const ImageCell = (props) => {
     const image = props.dataItem.attachmentFullPath;
 
@@ -184,19 +167,6 @@ function VenuesTable({ userId }) {
     );
   };
 
-  const DateCell = (props) => {
-    const date = props.dataItem.createdOn;
-
-    const formattedDate = date
-      ? new Date(date).toLocaleDateString("en-GB")
-      : "-";
-
-    return (
-      <td {...props.tdProps}>
-        <span title={formattedDate}>{formattedDate}</span>
-      </td>
-    );
-  };
 
   const ApprovalStatusCell = (props) => {
     const status = props.dataItem.approvalStatus;
@@ -208,23 +178,6 @@ function VenuesTable({ userId }) {
 
     return <td>{text}</td>;
   };
-
-  const TextCell = (props) => {
-    const value = props.dataItem[props.field] ?? "";
-
-    return (
-      <td {...props.tdProps}>
-        <span
-          title={value}
-          className="text-truncate d-inline-block"
-          style={{ maxWidth: "100%" }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
-  
 
   const handleDelete = async (id) => {
     try {
@@ -329,7 +282,13 @@ function VenuesTable({ userId }) {
                 <GridColumn
                   title="Status"
                   cells={{
-                    data: StatusCell,
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="venueId"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
                   }}
                 />
               </Grid>

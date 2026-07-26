@@ -69,26 +69,6 @@ function ActivityTabs({ userId }) {
     );
   };
 
-  const DetailsCell = (props) => {
-    const value = props.dataItem[props.field] || "";
-
-    return (
-      <td>
-        <span
-          title={value}
-          style={{
-            display: "block",
-            width: "100px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {value}
-        </span>
-      </td>
-    );
-  };
 
   const updateStatusToggle = async (postId, isActive) => {
     try {
