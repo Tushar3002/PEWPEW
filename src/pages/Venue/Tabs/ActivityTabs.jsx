@@ -19,17 +19,16 @@ function ActivityTabs({ userId }) {
   });
 
   const [activities, setActivities] = useState([]);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [showViewer, setShowViewer] = useState(false);
-    const [attachments, setAttachments] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const [attachments, setAttachments] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const openViewer = (files, index) => {
     setAttachments(files);
     setCurrentIndex(index);
     setShowViewer(true);
   };
-
 
   useEffect(() => {
     getActivitiesData();
@@ -69,7 +68,6 @@ function ActivityTabs({ userId }) {
     );
   };
 
-
   const updateStatusToggle = async (postId, isActive) => {
     try {
       const res = await updateActivitiesStatus(postId, isActive);
@@ -107,7 +105,7 @@ function ActivityTabs({ userId }) {
         className="grid-tooltip"
       >
         <Grid data={activities}>
-          <GridColumn title="Actions" cells={{data:ActionCell}} />
+          <GridColumn title="Actions" cells={{ data: ActionCell }} />
           <GridColumn
             title="Uploaded By"
             field="userName"
@@ -119,9 +117,8 @@ function ActivityTabs({ userId }) {
             cells={{ data: DateCell }}
           />
           <GridColumn
-          width={"300px"}
+            width={"300px"}
             title="Image/Video"
-
             cells={{
               data: (props) => (
                 <AttachmentCell {...props} onOpen={openViewer} />

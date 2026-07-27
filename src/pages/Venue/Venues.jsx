@@ -13,6 +13,7 @@ import VenueModal from "../../components/Modal/VenueModal";
 import { DateCell } from "../../components/GridCells/DateCell";
 import { getVenueApprovalStatus } from "../../api/Common/commonApi";
 import GunModal from "../../components/Modal/GunModal";
+import { GunCountCell } from "../../components/GridCells/GunCountCell";
 
 function Venues() {
   const [data, setData] = useState([]);
@@ -158,22 +159,6 @@ function Venues() {
     }
   };
 
-  const GunCountCell = (props) => {
-    const count = props.dataItem.totalGun;
-    const venueId = props.dataItem.venueId;
-
-    return (
-      <td {...props.tdProps}>
-        <button
-          type="button"
-          className="btn btn-link p-0"
-          onClick={() => handleGunClick(venueId)}
-        >
-          {count}
-        </button>
-      </td>
-    );
-  };
 
   const editUserCell = (props) => {
     const userId = props.dataItem.userId;
@@ -327,7 +312,7 @@ function Venues() {
               <GridColumn
                 width={"150px"}
                 title="Owner Name"
-                field="venueOwnerUserName"
+                // field="venueOwnerUserName"
                 cells={{ data: editUserCell }}
               />
               <GridColumn

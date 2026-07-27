@@ -1,8 +1,83 @@
 import React, { useEffect, useState } from "react";
 import { getPostComments } from "../../api/EndUsers/endUserViewApi";
 
+const CommentItem = ({ item, isReply = false }) => {
+  const formatDateTime = (date) => {
+    if (!date) return "";
+
+    const formatted = new Date(`${date}Z`).toLocaleString("en-GB", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    return formatted.replace(",", "");
+  };
+  return (
+    <div className={`mb-3 ${isReply ? "ms-5" : ""}`}>
+      <div>
+        <h2>Comments:</h2>
+        <hr />
+      </div>
+      <div className="d-flex gap-3">
+        <img
+          src={item.profileImagePath}
+          alt={item.userName || "User"}
+          width="45"
+          height="45"
+          className="rounded-circle"
+          style={{ objectFit: "cover" }}
+        />
+
+        <div className="flex-grow-1">
+          <div className="d-flex align-items-center gap-2 flex-wrap">
+            <span className="fw-bold text-dark">{item.userName}</span>
+
+            {item.isVerify && (
+              <span>
+                <i className="demo-icon icon-verified ng-star-inserted"></i>
+              </span>
+            )}
+
+            <small className="text-muted">
+              {formatDateTime(item.createdOn)}
+            </small>
+          </div>
+
+          {item.comment && (
+            <p className="mb-1 mt-2 fw-bold text-dark" style={{ fontSize: "17px" }}>
+              {item.comment}
+            </p>
+          )}
+
+          <div className="d-flex gap-3">
+            <small className="text-muted">{item.totalLike || 0} Likes</small>
+
+            <small className="text-muted">
+              {item.replies?.length || 0} Replies
+            </small>
+          </div>
+
+          {item.replies?.length > 0 && (
+            <div className="mt-3">
+              {item.replies.map((reply) => (
+                <CommentItem key={reply.commentId} item={reply} isReply />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function ActivityComments({ postId }) {
   const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState({
     skip: 0,
@@ -13,7 +88,7 @@ function ActivityComments({ postId }) {
     if (!postId) return;
 
     getCommentsData();
-  }, [postId]);
+  }, [postId, page.skip, page.take]);
 
   const getCommentsData = async () => {
     const body = {
@@ -22,79 +97,30 @@ function ActivityComments({ postId }) {
       postId,
       search: "",
     };
-    try {
-      const res = await getPostComments(body);
-      console.log(res.data);
 
-      setComments(res.data.data);
+    try {
+      setLoading(true);
+
+      const res = await getPostComments(body);
+
+      console.log("Comments Data:", res.data);
+
+      setComments(res.data?.data || []);
     } catch (error) {
-      console.log(error.response);
+      console.log("Failed to fetch comments:", error.response);
+      setComments([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const CommentItem = ({ item, isReply = false }) => {
+  if (loading) {
     return (
-      <div className={`mb-3 ${isReply ? "ms-5" : ""}`}>
-        <div className="d-flex gap-3">
-          <img
-            src={item.profileImagePath}
-            alt={item.userName}
-            width="45"
-            height="45"
-            className="rounded-circle"
-            style={{
-              objectFit: "cover",
-            }}
-          />
-
-          <div className="flex-grow-1">
-            <div className="d-flex justify-content-between">
-              <div>
-                <span className="fw-bold">{item.userName}</span>
-
-                {item.isVerify && <span className="ms-1">✓</span>}
-              </div>
-
-              <small className="text-muted">
-                {new Date(item.createdOn).toLocaleString()}
-              </small>
-            </div>
-
-            {item.comment && <p className="mb-1 mt-1">{item.comment}</p>}
-
-            {/* {item.gifUrl && (
-              <img
-                src={item.gifUrl}
-                alt="GIF"
-                style={{
-                  maxWidth: "200px",
-                  maxHeight: "200px",
-                  objectFit: "contain",
-                }}
-              />
-            )} */}
-
-            <div className="d-flex gap-3">
-              <small className="text-muted">{item.totalLike || 0} Likes</small>
-
-              <small className="text-muted">
-                {item.replies?.length || 0} Replies
-              </small>
-            </div>
-
-            {/* Replies */}
-            {item.replies?.length > 0 && (
-              <div className="mt-3">
-                {item.replies.map((reply) => (
-                  <CommentItem key={reply.commentId} item={reply} isReply />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="border rounded p-3">
+        <p className="mb-0">Loading comments...</p>
       </div>
     );
-  };
+  }
 
   return (
     <div
@@ -107,7 +133,7 @@ function ActivityComments({ postId }) {
       {comments.length > 0 ? (
         comments.map((item) => <CommentItem key={item.commentId} item={item} />)
       ) : (
-        <p className="mb-0">No comments available.</p>
+        <p className="mb-0 text-muted">No comments available.</p>
       )}
     </div>
   );

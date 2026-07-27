@@ -61,21 +61,23 @@ function VenueDetail() {
 
       <div className="border rounded p-4">
         <div className="row g-4 align-items-center mb-4">
-          <div className="col-12 col-md-4">
+          <div className="col-12 col-md-auto text-center">
             <img
               src={data.imageFullPath}
-              alt={data.venueName}
-              className="w-100 rounded"
+              alt={data.venueName || "Profile"}
+              className="rounded-circle border"
               style={{
-                height: "220px",
-                objectFit: "contain",
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
               }}
             />
           </div>
-          <div className="col-12 col-md-8">
-            <h3 className="fw-bold mb-3">{data.venueName || "-"}</h3>
 
-            <p className="mb-0">{data.description || "-"}</p>
+          <div className="col-12 col-md">
+            <h3 className="fw-bold mb-2">{data.venueName || "-"}</h3>
+
+            <p className="mb-0 text-muted">{data.description || "-"}</p>
           </div>
         </div>
 

@@ -10,21 +10,31 @@ import bulletsIcon from "../../assets/images/icons/bullets.svg";
 import TableCard from "../../components/TableComponent";
 import { getDashBoardData } from "../../api/DashBoard/dashboardApi";
 import { getCommonDashBoardFilters } from "../../api/Common/commonApi";
+import { useAuth } from "../../context/AuthContext";
+import { Grid, GridCell, GridColumn } from "@progress/kendo-react-grid";
+import { DateCell } from "../../components/GridCells/DateCell";
+import StatusCell from "../../components/GridCells/StatusCell";
+import { updateActivitiesStatus } from "../../api/EndUsers/endUserViewApi";
+import { useNavigate } from "react-router-dom";
 
 function DashBoard() {
   const [data, setData] = useState({});
   const [filterDropDown, setFilterDropDown] = useState([]);
-  const [filter,setFilter]=useState('')
+  const [selectedFilter, setSelectedFilter] = useState(0);
   const total = data?.totals || {};
+  const navigate = useNavigate();
+  const { user } = useAuth();
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(selectedFilter);
     fetchDashboardFilters();
-  }, []);
+  }, [selectedFilter]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (filterId = 0) => {
     try {
-      const res = await getDashBoardData();
+      const res = await getDashBoardData(filterId);
       console.log("Dashboard Data", res);
+      // console.log("User Data",user);
+
       setData(res.data);
     } catch (error) {
       console.log(error.response);
@@ -33,24 +43,78 @@ function DashBoard() {
 
   const fetchDashboardFilters = async () => {
     try {
-      const res = await getCommonDashBoardFilters(filter);
+      const res = await getCommonDashBoardFilters(selectedFilter);
       console.log(res.data);
       setFilterDropDown(res.data);
     } catch (error) {
       console.log(error.response);
     }
   };
+
+  const handleFilterChange = (e) => {
+    const filterId = Number(e.target.value);
+
+    setSelectedFilter(filterId);
+  };
+
+  const handleStatusToggle = async (id, currentValue) => {
+    const nextValue = !currentValue;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to ${
+        nextValue ? "activate" : "deactivate"
+      } this role?`,
+    );
+
+    if (!confirmed) return;
+
+    const isSuccess = await updateActivitiesStatus(id, nextValue);
+    await fetchDashboardData(selectedFilter);
+    if (!isSuccess) {
+      alert("Failed to update status.");
+    }
+  };
+
+  const ActionCell = (props) => {
+    return (
+      <td className="text-center align-middle p-1">
+        <div className="d-flex align-items-center justify-content-center gap-2">
+          <button
+            type="button"
+            className="eye-btn"
+            title="View"
+            onClick={() => navigate(`/activity/view/${props.dataItem.postId}`)}
+          >
+            <i className="fa fa-eye"></i>
+          </button>
+
+          <StatusCell
+            {...props}
+            idField="postId"
+            onToggle={handleStatusToggle}
+          />
+        </div>
+      </td>
+    );
+  };
+
   return (
     <>
       <div className="page-heading">
         <div className="row align-items-center gap-3 mb-3 mb-xxl-4">
           <div className="col-12 col-md">
-            <h2 className="page-title">Welcome to Dashboard, John!</h2>
+            <h2 className="page-title">
+              Welcome to Dashboard, {user?.firstName} {user?.lastName}!
+            </h2>
           </div>
 
           <div className="col-12 col-md-auto">
-            <select className="form-select w-100">
-              {filterDropDown.map((data)=>(
+            <select
+              className="form-select w-100"
+              value={selectedFilter}
+              onChange={handleFilterChange}
+            >
+              {filterDropDown.map((data) => (
                 <option key={data.id} value={data.id}>
                   {data.description}
                 </option>
@@ -101,6 +165,20 @@ function DashBoard() {
                   View All
                 </a>
               </div>
+              <Grid data={data?.topLikedPosts}>
+                <GridColumn
+                  title="Action"
+                  cells={{ data: ActionCell }}
+                  width={"180px"}
+                />
+                <GridColumn title="Username" field="userName" width={"280px"} />
+                <GridColumn
+                  title="Uploaded Date"
+                  field="createdOn"
+                  cells={{ data: DateCell }}
+                />
+                <GridColumn title="Likes" field="totalLike" />
+              </Grid>
             </div>
           </div>
 
@@ -115,14 +193,17 @@ function DashBoard() {
                   View All
                 </a>
               </div>
+              <Grid data={data?.topReportingUsers}>
+                <GridColumn title="Action" cells={{ data: ActionCell }} />
+                <GridColumn title="Username" field="userName" />
+                <GridColumn title="Reports" field="totalCount" />
+              </Grid>
             </div>
           </div>
           <div className="col-xl-12 mt-3 mt-xxl-4">
             <div className="row">
               <div className="col">
-                <h3 className="fw-bold theme-color">
-                  Recently Prohibited Words Used by Users
-                </h3>
+                <h3 className="fw-bold theme-color">Most Reported Posts</h3>
               </div>
 
               <div className="col-auto">
@@ -130,11 +211,24 @@ function DashBoard() {
                   View All
                 </a>
               </div>
+              <Grid data={data?.topReportedPosts}>
+                <GridColumn title="Action" cells={{ data: ActionCell }} />
+                <GridColumn title="Posted By" field="userName" />
+                <GridColumn title="Total Reports" field="totalCount" />
+                <GridColumn
+                  title="Uploaded Date"
+                  field="createdOn"
+                  cells={{ data: DateCell }}
+                />
+                <GridColumn title="Likes" field="totalLike" />
+                <GridColumn title="Comments" field="totalComment" />
+                <GridColumn title="Shares" field="totalShare" />
+              </Grid>
             </div>
 
-            <div className="row mt-3">
+            {/* <div className="row mt-3">
               <div className="col-12"></div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

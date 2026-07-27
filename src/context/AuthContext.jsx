@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const user = await getCurrentUser();
 
-        setUser(user);
+        setUser(user.data);
         // console.log("Get Current",user);
         
       } catch {

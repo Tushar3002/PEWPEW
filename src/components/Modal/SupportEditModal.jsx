@@ -41,7 +41,7 @@ function SupportEditModal({ ticketId, show, onClose, onSuccess }) {
       const res = await getSupportTicketDatabyId(ticketId);
       const ticketData = res?.data?.data || res?.data || res;
 
-      // Remember status received from API
+
       setOriginalStatusId(Number(ticketData?.statusId));
 
       reset({

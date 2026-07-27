@@ -14,18 +14,18 @@ const eventTabs = [
     key: "upcoming",
     label: "Upcoming Events",
     isUpcomingEvents: true,
-    isAdminRequest: null,
+    isAdminRequest: "null",
   },
   {
     key: "passed",
     label: "Passed Events",
     isUpcomingEvents: false,
-    isAdminRequest: null,
+    isAdminRequest: "null",
   },
   {
     key: "requests",
     label: "Admin-added venues' Events requests",
-    isUpcomingEvents: null,
+    isUpcomingEvents: "null",
     isAdminRequest: true,
   },
 ];
@@ -85,6 +85,8 @@ function Events() {
       })),
       CustomSearch: search,
     };
+    console.log("Upcoming:", selectedTab.isUpcomingEvents);
+    console.log("Admin:", selectedTab.isAdminRequest);
     try {
       const res = await getAllEventList(
         body,

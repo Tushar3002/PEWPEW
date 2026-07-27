@@ -38,4 +38,10 @@ export const getCommonDashBoardFilters=async()=>{
 
 export const getCommunicatedDropdown=async()=>{
     const res=await api.get('/Common/GetCommincateWith')
+    return res.data
+}
+
+export const getActivityType=async()=>{
+  const res=await api.get('/Common/GetActivityType')
+  return res.data
 }
