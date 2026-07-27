@@ -26,7 +26,7 @@ function Activity() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [showReport, setShowReport] = useState(false);
-    const [reportedIdData, setReportedIdData] = useState("");
+  const [reportedIdData, setReportedIdData] = useState("");
 
   const navigate = useNavigate();
 
@@ -44,9 +44,9 @@ function Activity() {
         ...prev,
         skip: 0,
       }));
-
-      return () => clearTimeout(timer);
     }, 500);
+
+    return () => clearTimeout(timeOut);
   }, [searchInput]);
 
   useEffect(() => {
@@ -129,20 +129,20 @@ function Activity() {
     const postId = props.dataItem.postId;
     const field = props.field;
 
-  const value = props.dataItem[field];
+    const value = props.dataItem[field];
     return (
       <td {...props.tdProps}>
         {value === 0 ? (
-        <span>{value}</span>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-link p-0"
-          onClick={() => navigate(`/activity/view/${postId}`)}
-        >
-          {value}
-        </button>
-      )}
+          <span>{value}</span>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-link p-0"
+            onClick={() => navigate(`/activity/view/${postId}`)}
+          >
+            {value}
+          </button>
+        )}
       </td>
     );
   };
@@ -261,25 +261,35 @@ function Activity() {
               <GridColumn width={"240px"} title="Description" field="post" />
               <GridColumn width={"120px"} title="Ratings" field="rate" />
               <GridColumn width={"120px"} title="Guns" field="totalGun" />
-              <GridColumn width={"120px"} title="Likes" field="totalLike" cells={{data:viewDetailCell}} />
+              <GridColumn
+                width={"120px"}
+                title="Likes"
+                field="totalLike"
+                cells={{ data: viewDetailCell }}
+              />
               <GridColumn
                 width={"120px"}
                 title="Comments"
                 field="totalComment"
-                cells={{data:viewDetailCell}}
+                cells={{ data: viewDetailCell }}
               />
-              <GridColumn width={"120px"} title="Shares" field="totalShare"  cells={{data:viewDetailCell}}/>
+              <GridColumn
+                width={"120px"}
+                title="Shares"
+                field="totalShare"
+                cells={{ data: viewDetailCell }}
+              />
               <GridColumn
                 width={"120px"}
                 title="Hide Count"
                 field="totalHide"
-                cells={{data:viewDetailCell}}
+                cells={{ data: viewDetailCell }}
               />
               <GridColumn
                 width={"120px"}
                 title="Reported"
                 field="totalReport"
-                cells={{data:ReportedDataCell}}
+                cells={{ data: ReportedDataCell }}
               />
               <GridColumn
                 width={"120px"}

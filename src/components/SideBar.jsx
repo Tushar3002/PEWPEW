@@ -23,6 +23,13 @@ function SideBar() {
             </li>
 
             <li>
+              <NavLink to={"/groups"}>
+                <i className="demo-icon icon-users"></i>
+                <span>Groups</span>
+              </NavLink>
+            </li>
+
+            <li>
               <NavLink to={"/events"}>
                 <i className="demo-icon icon-roles"></i>
                 <span>Events</span>

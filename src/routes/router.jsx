@@ -21,6 +21,8 @@ import ManageEndUserView from "../pages/ManageEndUsers/View/ManageEndUserView.js
 import ActivityDetail from "../pages/Activity/ActivityDetail.jsx";
 import VenueDetail from "../pages/Venue/VenueDetail.jsx";
 import EventsDetail from "../pages/Events/EventsDetail.jsx";
+import Group from "../pages/Groups/Group.jsx";
+import GroupDetails from "../pages/Groups/GroupDetails.jsx";
 
 
 const router = createBrowserRouter([
@@ -118,6 +120,19 @@ const router = createBrowserRouter([
           },{
             path:'view/:id',
             element:<EventsDetail/>
+          }
+        ]
+      },
+      {
+        path:'groups',
+        children:[
+          {
+            index:true,
+            element:<Group/>
+          },
+          {
+            path:'view/:id',
+            element:<GroupDetails/>
           }
         ]
       },
