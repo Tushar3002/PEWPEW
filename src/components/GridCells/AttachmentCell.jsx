@@ -58,7 +58,8 @@ const AttachmentCell = ({
               <img
                 key={index}
                 src={file}
-                alt={`Attachment ${index + 1}`}
+                // alt={`Attachment ${index + 1}`}
+                alt={`#`}
                 onClick={() => onOpen(attachments, index)}
                 style={{
                   width: "100%",

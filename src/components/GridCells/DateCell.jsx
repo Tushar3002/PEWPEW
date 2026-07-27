@@ -2,7 +2,7 @@ export const DateCell = (props) => {
     const date = props.dataItem.createdOn;
 
     const formattedDate = date
-      ? new Date(date).toLocaleDateString("en-GB")
+      ? new Date(date).toLocaleDateString("en-US")
       : "-";
 
     return (
