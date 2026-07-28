@@ -11,6 +11,7 @@ import StatusCell from "../../../components/GridCells/StatusCell";
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
 import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 import { useNavigate } from "react-router-dom";
+import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 
 function ActivityTabs({ userId }) {
   const [page, setPage] = useState({
@@ -20,15 +21,15 @@ function ActivityTabs({ userId }) {
 
   const [activities, setActivities] = useState([]);
   const navigate = useNavigate();
-  const [showViewer, setShowViewer] = useState(false);
-  const [attachments, setAttachments] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const openViewer = (files, index) => {
-    setAttachments(files);
-    setCurrentIndex(index);
-    setShowViewer(true);
-  };
+  const {
+    showViewer,
+    attachments,
+    currentIndex,
+    setCurrentIndex,
+    openViewer,
+    closeViewer,
+  } = useAttachmentViewer();
 
   useEffect(() => {
     getActivitiesData();
@@ -119,6 +120,7 @@ function ActivityTabs({ userId }) {
           <GridColumn
             width={"300px"}
             title="Image/Video"
+            field="attachmentList"
             cells={{
               data: (props) => (
                 <AttachmentCell {...props} onOpen={openViewer} />
@@ -149,7 +151,7 @@ function ActivityTabs({ userId }) {
 
       <AttachmentViewerModal
         show={showViewer}
-        onClose={() => setShowViewer(false)}
+        onClose={closeViewer}
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}

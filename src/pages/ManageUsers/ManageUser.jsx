@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser, getUsers, updateStatus } from "../../api/userApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
-import { ColumnMenu } from "../../components/columnMenu";
+
 import StatusCell from "../../components/GridCells/StatusCell";
 
 function ManageUser() {
@@ -178,7 +178,7 @@ function ManageUser() {
           <form
             className="d-md-flex searchbar align-items-center"
             role="search"
-            noValidate
+            
           >
             <input
               className="form-control search-input"
@@ -269,7 +269,7 @@ function ManageUser() {
                 width={"180px"}
                 field="firstName"
                 title="First Name"
-                // columnMenu={ColumnMenu}
+
               />
               <GridColumn width={"180px"} field="lastName" title="Last Name" />
               <GridColumn width={"180px"} field="userName" title="User Name" />

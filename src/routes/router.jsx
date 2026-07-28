@@ -23,12 +23,19 @@ import VenueDetail from "../pages/Venue/VenueDetail.jsx";
 import EventsDetail from "../pages/Events/EventsDetail.jsx";
 import Group from "../pages/Groups/Group.jsx";
 import GroupDetails from "../pages/Groups/GroupDetails.jsx";
-
+import GroupActivity from "../pages/Groups/GroupActivity.jsx";
+import GroupMembers from "../pages/Groups/GroupMembers.jsx";
+import GuestRoute from "./GuestRoute.jsx";
 
 const router = createBrowserRouter([
   {
-    path: "/login",
-    element: <Login />,
+    element: <GuestRoute />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+      },
+    ],
   },
   {
     element: <PrivateLayout />,
@@ -56,85 +63,103 @@ const router = createBrowserRouter([
       },
       {
         path: "/roles-permissions",
-        children:[
+        children: [
           {
-            index:true,
+            index: true,
             element: <RolesPermission />,
-          },{
-            path:"add",
-            element:<RolesPermissionFormPage/>
-          },{
-            path:"edit/:id",
-            element:<RolesPermissionFormPage/>
-          }
-        ]
+          },
+          {
+            path: "add",
+            element: <RolesPermissionFormPage />,
+          },
+          {
+            path: "edit/:id",
+            element: <RolesPermissionFormPage />,
+          },
+        ],
       },
       {
         path: "/manage-end-users",
-        children:[
+        children: [
           {
-            index:true,
-            element:<ManageEndUser/>
+            index: true,
+            element: <ManageEndUser />,
           },
           {
-            path:'view/:id',
-            element:<ManageEndUserView/>
-          }
-        ]
+            path: "view/:id",
+            element: <ManageEndUserView />,
+          },
+        ],
       },
-      
+
       {
         path: "/activity",
-        children:[
+        children: [
           {
-            index:true,
-            element:<Activity/>
-          },{
-            path:"view/:id",
-            element:<ActivityDetail/>
-          }
-        ]
-      },
-      {
-        path:"/venue",
-        children:[
-          {
-            index:true,
-            element:<Venues/>
-          },{
-            path:"add",
-            element:<VenueDetail/>  
-          }
-          ,{
-            path:"view/:id",
-            element:<VenueDetail/>
-          },
-        ]
-      },
-      {
-        path:'/events',
-        children:[
-          {
-            index:true,
-            element:<Events/>
-          },{
-            path:'view/:id',
-            element:<EventsDetail/>
-          }
-        ]
-      },
-      {
-        path:'groups',
-        children:[
-          {
-            index:true,
-            element:<Group/>
+            index: true,
+            element: <Activity />,
           },
           {
-            path:'view/:id',
-            element:<GroupDetails/>
-          }
-        ]
+            path: "view/:id",
+            element: <ActivityDetail />,
+          },
+        ],
+      },
+      {
+        path: "/venue",
+        children: [
+          {
+            index: true,
+            element: <Venues />,
+          },
+          {
+            path: "add",
+            element: <VenueDetail />,
+          },
+          {
+            path: "view/:id",
+            element: <VenueDetail />,
+          },
+        ],
+      },
+      {
+        path: "/events",
+        children: [
+          {
+            index: true,
+            element: <Events />,
+          },
+          {
+            path: "view/:id",
+            element: <EventsDetail />,
+          },
+        ],
+      },
+      {
+        path: "/groups",
+        children: [
+          {
+            index: true,
+            element: <Group />,
+          },
+          {
+            path: "view/:id",
+            children: [
+              {
+                index: true,
+                element: <GroupDetails />,
+              },
+              {
+                path: "members",
+                element: <GroupMembers />,
+              },
+            ],
+          },
+          {
+            path: "activity/:id",
+            element: <GroupActivity />,
+          },
+        ],
       },
       {
         path: "/manage-badges",
@@ -149,7 +174,7 @@ const router = createBrowserRouter([
         path: "/managebadges",
         element: <ManageBadges />,
       },
-      
+
       {
         path: "/messaging",
         element: <Messaging />,
@@ -158,7 +183,7 @@ const router = createBrowserRouter([
         path: "/reported-users",
         element: <ReportedUsers />,
       },
-      
+
       {
         path: "/supportTicket",
         element: <SupportTicket />,

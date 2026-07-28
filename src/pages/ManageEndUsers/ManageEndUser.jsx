@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
-import { ColumnMenu } from "../../components/columnMenu";
+
 import {
   deleteEndUser,
   getEndUsers,
@@ -221,7 +221,7 @@ function ManageEndUser() {
           <form
             className="d-md-flex searchbar align-items-center"
             role="search"
-            noValidate
+            
           >
             <input
               className="form-control search-input"
@@ -305,7 +305,7 @@ function ManageEndUser() {
                 width={"210px"}
                 field="firstName"
                 title="First Name"
-                // columnMenu={ColumnMenu}
+
               />
               <GridColumn width={"210px"} field="lastName" title="Last Name" />
               <GridColumn width={"210px"} field="userName" title="User Name" />

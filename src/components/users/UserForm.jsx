@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker } from "@progress/kendo-react-dateinputs";
+import {
+  DatePicker,
+  Calendar,
+  CalendarCell,
+} from "@progress/kendo-react-dateinputs";
 import defaultProfilePic from "../../assets/images/user-img.png";
 import { useForm, Controller } from "react-hook-form";
 import { initialUserForm } from "../../constants/userForm";
@@ -19,6 +23,28 @@ function UserForm({
     preview || defaultProfilePic,
   );
   const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const DisabledFutureCell = (props) => {
+  const cellDate = new Date(props.value);
+  cellDate.setHours(0, 0, 0, 0);
+
+  return (
+    <CalendarCell
+      {...props}
+      isDisabled={cellDate > today}
+    />
+  );
+};
+
+const BirthdayCalendar = (props) => {
+  return (
+    <Calendar
+      {...props}
+      cell={DisabledFutureCell}
+    />
+  );
+};
   const {
     register,
     handleSubmit,
@@ -212,11 +238,11 @@ function UserForm({
                     <Controller
                       name="birthDay"
                       control={control}
-                      max={today}
                       rules={{ required: "Birthday is required" }}
                       render={({ field }) => (
                         <DatePicker
                           value={field.value ? new Date(field.value) : null}
+                          max={new Date()}
                           onChange={(e) => {
                             field.onChange(
                               e.value
@@ -248,7 +274,6 @@ function UserForm({
                         required: "Select One Gender",
                       })}
                     >
-                      <option value="">Select Gender</option>
                       {genders.map((gender) => (
                         <option key={gender.id} value={gender.id}>
                           {gender.description}

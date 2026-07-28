@@ -2,9 +2,15 @@ const AttachmentCell = ({
   dataItem,
   tdProps,
   onOpen,
-  field = "attachmentList",
+  field,
 }) => {
-  const attachments = dataItem[field] || [];
+  const value = dataItem[field];
+
+const attachments = Array.isArray(value)
+  ? value
+  : value
+    ? [value]
+    : [];
 
   const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
 
@@ -22,7 +28,7 @@ const AttachmentCell = ({
             isVideo(file) ? (
               <div
                 key={index}
-                onClick={() => onOpen(attachments, index)}
+                onClick={() => onOpen?.(attachments, index)}
                 style={{
                   position: "relative",
                   cursor: "pointer",
@@ -63,7 +69,7 @@ const AttachmentCell = ({
                 onClick={() => onOpen(attachments, index)}
                 style={{
                   width: "100%",
-                  height: "70px",
+                  height: "60px",
                   objectFit: "cover",
                   borderRadius: "6px",
                   cursor: "pointer",

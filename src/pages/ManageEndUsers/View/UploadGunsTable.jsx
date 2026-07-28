@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { gunListByUser, updateGunStatus } from "../../../api/EndUsers/endUserViewApi";
+import {
+  gunListByUser,
+  updateGunStatus,
+} from "../../../api/EndUsers/endUserViewApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
@@ -7,6 +10,8 @@ import { TextCell } from "../../../components/GridCells/TextCell";
 import StatusCell from "../../../components/GridCells/StatusCell";
 import { DetailsCell } from "../../../components/GridCells/DetailsCell";
 import { DateCell } from "../../../components/GridCells/DateCell";
+import AttachmentCell from "../../../components/GridCells/AttachmentCell";
+import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 
 function UploadGunsTable({ userId }) {
   const [data, setData] = useState([]);
@@ -16,16 +21,14 @@ function UploadGunsTable({ userId }) {
     take: 10,
   });
   const [search, setSearch] = useState("");
-
-  const [showViewer, setShowViewer] = useState(false);
-    const [attachments, setAttachments] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-  
-    const openViewer = (files, index) => {
-      setAttachments(files);
-      setCurrentIndex(index);
-      setShowViewer(true);
-    };
+const {
+  showViewer,
+  attachments,
+  currentIndex,
+  setCurrentIndex,
+  openViewer,
+  closeViewer,
+} = useAttachmentViewer();
 
   useEffect(() => {
     fetchUploadGun();
@@ -69,55 +72,31 @@ function UploadGunsTable({ userId }) {
     );
   };
 
-  const updateStatusData=async(id,isActive)=>{
+  const updateStatusData = async (id, isActive) => {
     try {
-      const res=await updateGunStatus(id,isActive)
-      fetchUploadGun()
-      return res
+      const res = await updateGunStatus(id, isActive);
+      fetchUploadGun();
+      return res;
     } catch (error) {
       console.log(error.response);
     }
-  }
+  };
 
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
 
-      const confirmed = window.confirm(
-        `Are you sure you want to ${
-          nextValue ? "activate" : "deactivate"
-        } this role?`,
-      );
+    const confirmed = window.confirm(
+      `Are you sure you want to ${
+        nextValue ? "activate" : "deactivate"
+      } this role?`,
+    );
 
-      if (!confirmed) return;
-    
+    if (!confirmed) return;
+
     const isSuccess = await updateStatusData(id, nextValue);
     if (!isSuccess) {
       alert("Failed to update status.");
     }
-  };
-
-  const ImageCell = (props) => {
-    const image = props.dataItem.attachmentFullPath;
-
-    return (
-      <td className="text-center">
-        {image ? (
-          <img
-            src={image}
-            alt="Gun"
-            onClick={() => openViewer([image],0)}
-            style={{
-              width: "60px",
-              height: "60px",
-              objectFit: "cover",
-              borderRadius: "6px",
-            }}
-          />
-        ) : (
-          "-"
-        )}
-      </td>
-    );
   };
 
   const ApprovalStatusCell = (props) => {
@@ -130,8 +109,6 @@ function UploadGunsTable({ userId }) {
 
     return <td>{text}</td>;
   };
-
-
 
   const handleDelete = async (id) => {
     try {
@@ -167,7 +144,7 @@ function UploadGunsTable({ userId }) {
                 onPageChange={(e) => setPage(e.page)}
               >
                 <GridColumn
-                width={"120px"}
+                  width={"120px"}
                   title="Action"
                   headerClassName="text-center"
                   cells={{
@@ -192,7 +169,14 @@ function UploadGunsTable({ userId }) {
                   cells={{ data: TextCell }}
                 />
                 <GridColumn title="Details" cells={{ data: DetailsCell }} />
-                <GridColumn title="Images" cells={{ data: ImageCell }} />
+                <GridColumn
+                width={"200px"}
+                  title="Images"
+                  field="attachmentFullPath"
+                  cells={{
+                    data: (props) => <AttachmentCell {...props} onOpen={openViewer}/>,
+                  }}
+                />
                 <GridColumn
                   field="ammunitions"
                   title="Ammunition"
@@ -207,14 +191,14 @@ function UploadGunsTable({ userId }) {
                 <GridColumn
                   title="Status"
                   cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="gunId"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="gunId"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
                 />
               </Grid>
             </Tooltip>
@@ -223,7 +207,7 @@ function UploadGunsTable({ userId }) {
       </div>
       <AttachmentViewerModal
         show={showViewer}
-        onClose={() => setShowViewer(false)}
+        onClose={closeViewer}
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}

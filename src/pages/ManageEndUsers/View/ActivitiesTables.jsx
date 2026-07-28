@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import StatusCell from "../../../components/GridCells/StatusCell";
 import { DateCell } from "../../../components/GridCells/DateCell";
+import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
+import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 
 function ActivitiesTables({ userId }) {
   const [data, setData] = useState([]);
@@ -20,22 +22,20 @@ function ActivitiesTables({ userId }) {
     take: 10,
   });
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-
-  const [showViewer, setShowViewer] = useState(false);
-  const [attachments, setAttachments] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
   const [showReport, setShowReport] = useState(false);
   const [reportedIdData, setReportedIdData] = useState("");
 
-  const openViewer = (files, index) => {
-    setAttachments(files);
-    setCurrentIndex(index);
-    setShowViewer(true);
-  };
+  const {
+    showViewer,
+    attachments,
+    currentIndex,
+    setCurrentIndex,
+    openViewer,
+    closeViewer,
+  } = useAttachmentViewer();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -115,98 +115,18 @@ function ActivitiesTables({ userId }) {
     return (
       <td className="text-center align-middle">
         <div className="d-flex justify-content-center align-items-center gap-2">
-
           <button
             type="button"
             className="eye-btn"
             title="View"
-            onClick={() =>
-              navigate(`/activity/view/${props.dataItem.postId}`)
-            }
+            onClick={() => navigate(`/activity/view/${props.dataItem.postId}`)}
           >
             <i className="fa fa-eye"></i>
           </button>
-          
         </div>
       </td>
     );
   };
-
-
-  const AttachmentCell = (props) => {
-    const attachments = props.dataItem.attachmentList || [];
-
-    const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
-
-    return (
-      <td>
-        {attachments.length > 0 ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "6px",
-            }}
-          >
-            {attachments.map((file, index) =>
-              isVideo(file) ? (
-                <div
-                  onClick={() => openViewer(attachments, index)}
-                  style={{
-                    position: "relative",
-                    cursor: "pointer",
-                  }}
-                  key={index}
-                >
-                  <video
-                    style={{
-                      width: "100%",
-                      height: "70px",
-                      objectFit: "cover",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    <source src={file} />
-                  </video>
-
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      color: "#fff",
-                      fontSize: "24px",
-                      background: "rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    ▶
-                  </div>
-                </div>
-              ) : (
-                <img
-                  key={index}
-                  src={file}
-                  alt={`Attachment ${index + 1}`}
-                  onClick={() => openViewer(attachments, index)}
-                  style={{
-                    width: "100%",
-                    height: "70px",
-                    objectFit: "cover",
-                    borderRadius: "6px",
-                  }}
-                />
-              ),
-            )}
-          </div>
-        ) : (
-          "-"
-        )}
-      </td>
-    );
-  };
-
 
   const updateStatusToggle = async (gunId, isActive) => {
     try {
@@ -236,15 +156,10 @@ function ActivitiesTables({ userId }) {
     }
   };
 
-
   return (
     <div className="tabbar-section">
       <div className="col-12 col-lg-auto">
-        <form
-          className="d-md-flex searchbar align-items-center"
-          role="search"
-          noValidate
-        >
+        <form className="d-md-flex searchbar align-items-center" role="search">
           <input
             className="form-control search-input"
             type="search"
@@ -302,7 +217,11 @@ function ActivitiesTables({ userId }) {
                   width={"250px"}
                   field="attachmentList"
                   title="Image/Video"
-                  cells={{ data: AttachmentCell }}
+                  cells={{
+                    data: (props) => (
+                      <AttachmentCell {...props} onOpen={openViewer} />
+                    ),
+                  }}
                 />
                 <GridColumn
                   field="post"
@@ -348,14 +267,14 @@ function ActivitiesTables({ userId }) {
                 <GridColumn
                   title="Status"
                   cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="postId"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="postId"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
                 />
               </Grid>
             </Tooltip>
@@ -364,7 +283,7 @@ function ActivitiesTables({ userId }) {
       </div>
       <AttachmentViewerModal
         show={showViewer}
-        onClose={() => setShowViewer(false)}
+        onClose={closeViewer}
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}

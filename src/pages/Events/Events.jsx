@@ -174,7 +174,6 @@ function Events() {
           <form
             className="d-md-flex searchbar align-items-center"
             role="search"
-            noValidate
           >
             <input
               className="form-control search-input"

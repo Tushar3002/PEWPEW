@@ -128,30 +128,6 @@ function VenuesTable({ userId }) {
     }
   };
 
-  const ImageCell = (props) => {
-    const image = props.dataItem.attachmentFullPath;
-
-    return (
-      <td className="text-center">
-        {image ? (
-          <img
-            src={image}
-            alt="Gun"
-            style={{
-              width: "60px",
-              height: "60px",
-              objectFit: "cover",
-              borderRadius: "6px",
-            }}
-          />
-        ) : (
-          "-"
-        )}
-      </td>
-    );
-  };
-
-
   const ApprovalStatusCell = (props) => {
     const status = props.dataItem.approvalStatus;
 

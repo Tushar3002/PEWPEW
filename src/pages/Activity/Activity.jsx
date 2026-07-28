@@ -9,6 +9,7 @@ import { DateCell } from "../../components/GridCells/DateCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { updatePostStatus } from "../../api/Activity/activity";
 import ReportListModal from "../../components/Modal/ReportListModal";
+import useAttachmentViewer from "../../hooks/useAttachmentViewer";
 
 function Activity() {
   const [data, setData] = useState([]);
@@ -21,20 +22,19 @@ function Activity() {
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState([]);
 
-  const [showViewer, setShowViewer] = useState(false);
-  const [attachments, setAttachments] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
   const [showReport, setShowReport] = useState(false);
   const [reportedIdData, setReportedIdData] = useState("");
 
-  const navigate = useNavigate();
+  const {
+    showViewer,
+    attachments,
+    currentIndex,
+    setCurrentIndex,
+    openViewer,
+    closeViewer,
+  } = useAttachmentViewer();
 
-  const openViewer = (files, index) => {
-    setAttachments(files);
-    setCurrentIndex(index);
-    setShowViewer(true);
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -112,7 +112,7 @@ function Activity() {
 
   const viewUserCell = (props) => {
     const userId = props.dataItem.userId;
-    const userName = props.dataItem.userName;
+    const userName = props.dataItem[props.field];
     return (
       <td {...props.tdProps}>
         <button
@@ -184,7 +184,6 @@ function Activity() {
           <form
             className="d-md-flex searchbar align-items-center"
             role="search"
-            noValidate
           >
             <input
               className="form-control search-input"
@@ -252,6 +251,7 @@ function Activity() {
               <GridColumn
                 width={"210px"}
                 title="Image/Video"
+                field="attachmentList"
                 cells={{
                   data: (props) => (
                     <AttachmentCell {...props} onOpen={openViewer} />
@@ -310,7 +310,7 @@ function Activity() {
       </div>
       <AttachmentViewerModal
         show={showViewer}
-        onClose={() => setShowViewer(false)}
+        onClose={closeViewer}
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
