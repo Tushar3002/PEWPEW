@@ -153,7 +153,7 @@ function ManageBadges() {
                 setShowBadgeModal(true);
               }}
             >
-              Add Venue
+              Add Badge
             </button>
           </div>
         </div>

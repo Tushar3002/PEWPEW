@@ -20,13 +20,15 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
     },
   });
   const [applicableForOptions, setApplicableForOptions] = useState([]);
+  const [existingImageName, setExistingImageName] = useState("");
 
   useEffect(() => {
     if (!show) return;
+
     getApplicableForOptions();
 
     if (isEditable) {
-    fetchBadgeById(badgeId);
+      fetchBadgeById(badgeId);
     } else {
       reset({
         badgeName: "",
@@ -34,6 +36,7 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
         checkIns: "",
         badgeImage: null,
       });
+      setExistingImageName("");
     }
   }, [show, badgeId, isEditable, reset]);
 
@@ -50,43 +53,46 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
 
   const fetchBadgeById = async (badgeId) => {
     try {
-        const res = await getBadgeById(badgeId);
-        console.log("Badge Id",res.data);
-        reset({
-            badgeName: res.data.name,
-            applicableFor: res.data.applicableFor,
-            checkIns: res.data.noOfCheckIns,
-            badgeImage: null,
-        })
-        
+      const res = await getBadgeById(badgeId);
+      console.log("Badge Id", res.data);
+
+      reset({
+        badgeName: res.data.name,
+        applicableFor: res.data.applicableFor,
+        checkIns: res.data.noOfCheckIns,
+        badgeImage: null,
+      });
+
+      setExistingImageName(res.data.imageName || "");
     } catch (error) {
-        console.log(error.response);
-        
+      console.log(error.response);
     }
-  }
+  };
   
 
   const onSubmit = async (data) => {
-    try {
-      const body = {
-        name: data.badgeName,
-        applicableFor: data.applicableFor,
-        noOfCheckIns: Number(data.checkIns),
-        imageName:""
-      };
+  try {
+    const body = {
+      name: data.badgeName,
+      applicableFor: Number(data.applicableFor),
+      noOfCheckIns: String(data.checkIns),
+      imageName: existingImageName || "",
+    };
 
-      if (isEditable) {
-        await updateBadge(badgeId, body);
-      } else {
-        await createBadge(body);
-      }
+    console.log("Badge body:", body);
 
-      onSuccess?.();
-      onClose();
-    } catch (error) {
-      console.error("Failed to save badge:", error);
+    if (isEditable) {
+      await updateBadge(badgeId, body);
+    } else {
+      await createBadge(body);
     }
-  };
+
+    onSuccess?.();
+    onClose();
+  } catch (error) {
+    console.error(error.response?.data);
+  }
+};
 
   if (!show) return null;
 
