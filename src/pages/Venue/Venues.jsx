@@ -160,7 +160,6 @@ function Venues() {
     }
   };
 
-
   const editUserCell = (props) => {
     const userId = props.dataItem.userId;
     const userName = props.dataItem.venueOwnerUserName;
@@ -232,14 +231,13 @@ function Venues() {
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
         <Breadcrumbs
-            items={[
-              {
-                id: "venues",
-                text: "Venues",
-              },
-              
-            ]}
-          />
+          items={[
+            {
+              id: "venues",
+              text: "Venues",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
@@ -301,7 +299,7 @@ function Venues() {
               data={data}
               pageable={{
                 buttonCount: 5,
-                pageSizes: [5, 10, 20],
+                pageSizes: [5, 10, 20, 50, 100, 500],
                 info: true,
                 previousNext: true,
               }}
@@ -352,7 +350,15 @@ function Venues() {
                 width={"160px"}
                 title="No. of Gun"
                 field="totalGun"
-                cells={{ data: GunCountCell }}
+                cells={{
+                  data: (props) => (
+                    <GunCountCell
+                      {...props}
+                      onClick={handleGunClick}
+                      idField="venueId"
+                    />
+                  ),
+                }}
               />
               <GridColumn
                 width={"160px"}

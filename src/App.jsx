@@ -11,10 +11,10 @@ function App() {
     <>
       <LoaderProvider>
         <AuthProvider>
-        <Loader />
-        <RouterProvider router={router} />
-        <ToastContainer position="top-right" autoClose={3000} />
-      </AuthProvider>
+          <Loader />
+          <RouterProvider router={router} />
+          <ToastContainer position="top-right" autoClose={3000} />
+        </AuthProvider>
       </LoaderProvider>
     </>
   );

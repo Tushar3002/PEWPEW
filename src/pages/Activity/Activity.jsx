@@ -178,16 +178,16 @@ function Activity() {
   };
 
   return (
-    <div className="row">
+    <div className="tabbar-section">
       <div className="row align-items-center gap-3">
         <Breadcrumbs
-            items={[
-              {
-                id: "activity",
-                text: "Activity",
-              }
-            ]}
-          />
+          items={[
+            {
+              id: "activity",
+              text: "Activity",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
@@ -222,7 +222,7 @@ function Activity() {
               data={data}
               pageable={{
                 buttonCount: 5,
-                pageSizes: [5, 10, 20],
+                pageSizes: [5, 10, 20, 50, 100, 500],
                 info: true,
                 previousNext: true,
               }}

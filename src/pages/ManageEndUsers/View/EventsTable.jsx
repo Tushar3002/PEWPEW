@@ -150,7 +150,7 @@ function EventsTable({ userId, venueId }) {
                 data={data}
                 pageable={{
                   buttonCount: 5,
-                  pageSizes: [5, 10, 20],
+                  pageSizes: [5, 10, 20, 50, 100, 500],
                   info: true,
                   previousNext: true,
                 }}

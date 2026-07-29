@@ -167,7 +167,7 @@ function VenuesTable({ userId }) {
                 data={data}
                 pageable={{
                   buttonCount: 5,
-                  pageSizes: [5, 10, 20],
+                  pageSizes: [5, 10, 20, 50, 100, 500],
                   info: true,
                   previousNext: true,
                 }}
@@ -215,7 +215,15 @@ function VenuesTable({ userId }) {
                 <GridColumn
                   field="totalGun"
                   title="No. of Gun"
-                  cells={{ data: GunCountCell }}
+                  cells={{
+                    data: (props) => (
+                      <GunCountCell
+                        {...props}
+                        onClick={handleGunClick}
+                        idField="venueId"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   field="avgRate"

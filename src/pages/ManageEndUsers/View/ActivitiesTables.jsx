@@ -189,7 +189,7 @@ function ActivitiesTables({ userId }) {
                 data={data}
                 pageable={{
                   buttonCount: 4,
-                  pageSizes: [5, 10, 20],
+                  pageSizes: [5, 10, 20, 50, 100, 500],
                   info: true,
                   previousNext: true,
                 }}

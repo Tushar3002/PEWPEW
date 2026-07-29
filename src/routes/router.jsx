@@ -3,7 +3,6 @@ import Login from "../auth/Login.jsx";
 import DashBoard from "../pages/DashBoard/DashBoard.jsx";
 import PrivateLayout from "../layouts/PrivateLayout.jsx";
 import Activity from "../pages/Activity/Activity.jsx";
-import ManageBadges from "../pages/ManageBadges.jsx";
 import ManageUser from "../pages/ManageUsers/ManageUser.jsx";
 import Events from "../pages/Events/Events.jsx";
 import LeaderBoard from "../pages/LeaderBoard.jsx";
@@ -26,6 +25,7 @@ import GroupDetails from "../pages/Groups/GroupDetails.jsx";
 import GroupActivity from "../pages/Groups/GroupActivity.jsx";
 import GroupMembers from "../pages/Groups/GroupMembers.jsx";
 import GuestRoute from "./GuestRoute.jsx";
+import ManageBadges from "../pages/Badges/ManageBadges.jsx";
 
 const router = createBrowserRouter([
   {

@@ -1,0 +1,230 @@
+import { Grid, GridColumn } from "@progress/kendo-react-grid";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import React, { useEffect, useState } from "react";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { getBadgesList } from "../../api/ManageBadges/managebadges";
+import AttachmentCell from "../../components/GridCells/AttachmentCell";
+import useAttachmentViewer from "../../hooks/useAttachmentViewer";
+import AttachmentViewerModal from "../../components/Modal/AttachmentViewerModal";
+import BadgeModal from "../../components/Modal/BadgeModal";
+
+function ManageBadges() {
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState({
+    skip: 0,
+    take: 10,
+  });
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [sort, setSort] = useState([]);
+
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [selectedBadgeId, setSelectedBadgeId] = useState(null);
+
+  const {
+    showViewer,
+    attachments,
+    currentIndex,
+    setCurrentIndex,
+    openViewer,
+    closeViewer,
+  } = useAttachmentViewer();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+
+      setPage((prev) => ({
+        ...prev,
+        skip: 0,
+      }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
+    fetchBadgesList();
+  }, [page, sort, search]);
+  const fetchBadgesList = async () => {
+    const body = {
+      Page: page.skip / page.take + 1,
+      PageSize: page.take,
+      CustomSearch: search,
+      Sorts: sort.map((s) => ({
+        field: s.field,
+        direction: s.dir === "asc" ? 0 : 1,
+      })),
+    };
+
+    try {
+      const res = await getBadgesList(body);
+      console.log(res.data);
+      setData(res.data.data);
+      setTotal(res.data.totalRecord);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  const getBadgeApplicableFor = (value) => {};
+
+  const handleAddBadge = () => {
+    setSelectedBadgeId(null);
+    setShowBadgeModal(true);
+  };
+
+  const handleEditBadge = (id) => {
+    setSelectedBadgeId(id);
+    setShowBadgeModal(true);
+  };
+
+  const handleCloseBadgeModal = () => {
+    setShowBadgeModal(false);
+    setSelectedBadgeId(null);
+  };
+
+  const ActionCell = (props) => {
+    const isVerified = Boolean(props.dataItem.isVerify);
+
+    return (
+      <td className="text-center align-middle">
+        <div className="d-flex justify-content-center align-items-center gap-2">
+          <button
+            type="button"
+            className="edit-btn"
+            title="Edit"
+            onClick={() => handleEditBadge(props.dataItem.id)}
+          >
+            <i className="icon-edit-1"></i>
+          </button>
+          <button
+            type="button"
+            className="delete-btn"
+            title="Delete"
+            onClick={() => handleDelete(props.dataItem.venueId)}
+          >
+            <i className="icon-delete-1"></i>
+          </button>
+        </div>
+      </td>
+    );
+  };
+  return (
+    <div className="tabbar-section">
+      <div className="row align-items-center gap-3">
+        <Breadcrumbs
+          items={[
+            {
+              id: "manage-badges",
+              text: "Manage Badges",
+            },
+          ]}
+        />
+        <div className="col-12 col-lg-auto">
+          <form
+            className="d-md-flex searchbar align-items-center"
+            role="search"
+          >
+            <input
+              className="form-control search-input"
+              type="search"
+              placeholder="Search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+
+            <button
+              className="btn btn-outline-primary search-toggle"
+              type="button"
+            >
+              <i className="demo-icon icon-search"></i>
+            </button>
+          </form>
+        </div>
+        <div className="col-12 col-lg">
+          <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
+            <button
+              type="button"
+              className="btn main-btn w-auto"
+              onClick={() => {
+                setSelectedBadgeId(null);
+                setShowBadgeModal(true);
+              }}
+            >
+              Add Venue
+            </button>
+          </div>
+        </div>
+        <div className="row w-100">
+          <div className="col-12 mt-3 mt-xxl-4 w-100 ">
+            <div
+              className="table-responsive w-100"
+              style={{ overflow: "visible" }}
+            >
+              <Tooltip
+                anchorElement="target"
+                position="top"
+                openDelay={100}
+                className="grid-tooltip"
+              >
+                <Grid
+                  style={{ width: "100%", overflow: "visible" }}
+                  data={data}
+                  pageable={{
+                    buttonCount: 5,
+                    pageSizes: [5, 10, 20, 50, 100, 500],
+                    info: true,
+                    previousNext: true,
+                  }}
+                  skip={page.skip}
+                  take={page.take}
+                  total={total}
+                  onPageChange={(e) => setPage(e.page)}
+                  sortable
+                  sort={sort}
+                  onSortChange={(e) => setSort(e.sort)}
+                >
+                  <GridColumn title="Actions" cells={{ data: ActionCell }} />
+                  <GridColumn
+                    title="Images"
+                    field="imageFullPath"
+                    cells={{
+                      data: (props) => (
+                        <AttachmentCell {...props} onOpen={openViewer} />
+                      ),
+                    }}
+                  />
+                  <GridColumn title="Name" field="name" />
+                  <GridColumn
+                    title="Badge Applicable For"
+                    field="applicableFor"
+                  />
+                  <GridColumn title="No. of Check-ins" field="noOfCheckIns" />
+                </Grid>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AttachmentViewerModal
+        show={showViewer}
+        onClose={closeViewer}
+        attachments={attachments}
+        currentIndex={currentIndex}
+        setCurrentIndex={setCurrentIndex}
+      />
+      <BadgeModal
+        show={showBadgeModal}
+        onClose={handleCloseBadgeModal}
+        badgeId={selectedBadgeId}
+        onSuccess={() => {
+          fetchBadgesList();
+        }}
+      />
+    </div>
+  );
+}
+
+export default ManageBadges;

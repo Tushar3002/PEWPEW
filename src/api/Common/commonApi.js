@@ -45,3 +45,8 @@ export const getActivityType=async()=>{
   const res=await api.get('/Common/GetActivityType')
   return res.data
 }
+
+export const getBadgeApplicablefor=async()=>{
+  const res=await api.get('/Common/GetBadgeApplicableFor')
+  return res.data
+}

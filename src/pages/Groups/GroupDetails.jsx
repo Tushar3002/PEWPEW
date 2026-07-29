@@ -20,7 +20,8 @@ function GroupDetails() {
     }
   };
   return (
-    <div className="container-fluid">
+    <div className="tabbar-section">
+      <div className="container-fluid">
       <div className="row">
         <div className="col-12">
           <Breadcrumbs
@@ -111,6 +112,7 @@ function GroupDetails() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

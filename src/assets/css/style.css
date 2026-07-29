@@ -187,7 +187,9 @@ p.large {
     border-radius: 10px;
     border: solid var(--border-color) 1px;
     width: 100%;
-    overflow: visible !important;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: visible;
 }
 
 .table-responsive .k-grid-pager,
@@ -314,6 +316,11 @@ table.table tbody td+td {
     min-height: calc(100vh - 54px);
     display: flex;
     flex-direction: column;
+    min-width: 0;
+}
+
+.page-content-wrapper {
+    flex: 1 1 auto;
 }
 
 .content-wrapper {
@@ -325,6 +332,10 @@ table.table tbody td+td {
     background-position: center center;
 }
 
+.content-wrapper {
+    width: 100%;
+}
+
 .content-inside {
     transition: ease all 0s;
     background: var(--white);
@@ -332,12 +343,39 @@ table.table tbody td+td {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    overflow: auto;
 }
 
 .content-inside > .container-fluid {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* Prevent flex children from creating unexpected overflow/shrink when zooming */
+.content-inside,
+.content-inside > .container-fluid,
+.content-inside .row,
+.tabbar-section,
+.page-heading,
+.cards-section,
+.card-section {
+    min-width: 0;
+}
+
+/* Nested rows inside the content area can shrink unexpectedly at non-default zoom levels; prevent that */
+.content-inside .row,
+.tabbar-section .row,
+.container-fluid > .row {
+    min-width: 0;
+}
+
+/* Ensure button lists don't get clipped by overflow on narrow viewports */
+.btn-list {
+    min-width: 0;
 }
 
 .toggled .content-inside {

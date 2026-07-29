@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { getReportList } from "../api/Report/report";
-import { GridColumn } from "@progress/kendo-react-grid";
+import React, { useEffect, useState } from "react";
+import { getReportList, updateReportStatus } from "../api/Report/report";
+import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import StatusCell from "../components/GridCells/StatusCell";
+import Breadcrumbs from "../components/BreadCrumbs/Breadcrumbs";
+import { Tooltip } from "@progress/kendo-react-tooltip";
 
 function ReportedUsers() {
   const [data, setData] = useState([]);
@@ -52,7 +54,7 @@ function ReportedUsers() {
     }
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
+  const handleStatusToggle = async (userId, currentValue) => {
     const nextValue = !currentValue;
 
     const confirmed = window.confirm(
@@ -63,7 +65,12 @@ function ReportedUsers() {
 
     if (!confirmed) return;
 
-    // const isSuccess = await updateStatusToggle(id, nextValue);
+    const body={
+      userId,
+      isActive: nextValue
+    }
+
+    const isSuccess = await updateReportStatus(body);
 
     if (!isSuccess) {
       alert("Failed to update status.");
@@ -75,8 +82,8 @@ function ReportedUsers() {
         <Breadcrumbs
           items={[
             {
-              id: "support-tickets",
-              text: "Support Tickets",
+              id: "reported-users",
+              text: "Reported Users",
             },
           ]}
         />
@@ -119,7 +126,7 @@ function ReportedUsers() {
                   data={data}
                   pageable={{
                     buttonCount: 5,
-                    pageSizes: [5, 10, 20],
+                    pageSizes: [5, 10, 20, 50, 100, 500],
                     info: true,
                     previousNext: true,
                   }}
@@ -138,7 +145,7 @@ function ReportedUsers() {
                   data: (props) => (
                     <StatusCell
                       {...props}
-                      idField="id"
+                      idField="userId"
                       onToggle={handleStatusToggle}
                     />
                   ),
