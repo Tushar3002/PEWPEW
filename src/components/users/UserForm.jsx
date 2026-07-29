@@ -7,6 +7,7 @@ import {
 import defaultProfilePic from "../../assets/images/user-img.png";
 import { useForm, Controller } from "react-hook-form";
 import { initialUserForm } from "../../constants/userForm";
+import Breadcrumbs from "../BreadCrumbs/Breadcrumbs";
 
 function UserForm({
   genders = [],
@@ -14,6 +15,7 @@ function UserForm({
   countryCodeData = [],
   onSubmit,
   preview,
+  isEditMode,
   defaultValues,
   handleImageChange,
 
@@ -103,18 +105,19 @@ const BirthdayCalendar = (props) => {
       <div className="tabbar-section">
         <div className="row">
           <div className="col-12">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb m-0">
-                <li className="breadcrumb-item">
-                  <i className="demo-icon icon-down-arrow"></i>
-                </li>
-                <li className="breadcrumb-item">
-                  <a href="javascript:void(0);">
-                    <h2>Add/Edit Users</h2>
-                  </a>
-                </li>
-              </ol>
-            </nav>
+            <Breadcrumbs
+              items={[
+                {
+                  id: "manage-users",
+                  text: "Manage Users",
+                  path: "/manage-users",
+                },
+                {
+                  id: isEditMode ? "edit-user" : "add-user",
+                  text: isEditMode ? "Edit User" : "Add User",
+                },
+              ]}
+            />
           </div>
         </div>
         <div className="row">

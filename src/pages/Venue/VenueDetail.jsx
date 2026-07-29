@@ -9,6 +9,7 @@ import GunModal from "../../components/Modal/GunModal";
 import EventsTabs from "./Tabs/EventsTabs";
 import ActivityTabs from "./Tabs/ActivityTabs";
 import EventsTable from "../ManageEndUsers/View/EventsTable";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function VenueDetail() {
   const [data, setData] = useState("");
@@ -52,14 +53,28 @@ function VenueDetail() {
   };
 
   return (
-    <div className="container-fluid py-4">
+    <div className="container-fluid">
+      <Breadcrumbs
+            items={[
+              {
+                id: "venues",
+                text: "Venues",
+                path: "/venues",
+              },
+              {
+                id: "venue-details",
+                text: "Venue Details",
+              },
+            ]}
+          />
       {/* Page Heading */}
-      <div className="d-flex align-items-center gap-2 mb-4">
+      
+
+      <div className="border rounded p-4">
+        <div className="d-flex align-items-center gap-2 mb-4">
         <h3 className="mb-0 fw-bold">Check-In Posts/Activities:</h3>
         <span className="fs-4">{data.totalPost || 0}</span>
       </div>
-
-      <div className="border rounded p-4">
         <div className="row g-4 align-items-center mb-4">
           <div className="col-12 col-md-auto text-center">
             <img

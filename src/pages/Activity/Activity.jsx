@@ -10,6 +10,7 @@ import StatusCell from "../../components/GridCells/StatusCell";
 import { updatePostStatus } from "../../api/Activity/activity";
 import ReportListModal from "../../components/Modal/ReportListModal";
 import useAttachmentViewer from "../../hooks/useAttachmentViewer";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function Activity() {
   const [data, setData] = useState([]);
@@ -179,7 +180,14 @@ function Activity() {
   return (
     <div className="row">
       <div className="row align-items-center gap-3">
-        <h3>Activity</h3>
+        <Breadcrumbs
+            items={[
+              {
+                id: "activity",
+                text: "Activity",
+              }
+            ]}
+          />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

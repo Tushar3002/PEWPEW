@@ -14,6 +14,7 @@ import { DateCell } from "../../components/GridCells/DateCell";
 import { getVenueApprovalStatus } from "../../api/Common/commonApi";
 import GunModal from "../../components/Modal/GunModal";
 import { GunCountCell } from "../../components/GridCells/GunCountCell";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function Venues() {
   const [data, setData] = useState([]);
@@ -230,7 +231,15 @@ function Venues() {
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <h3>Venues</h3>
+        <Breadcrumbs
+            items={[
+              {
+                id: "venues",
+                text: "Venues",
+              },
+              
+            ]}
+          />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

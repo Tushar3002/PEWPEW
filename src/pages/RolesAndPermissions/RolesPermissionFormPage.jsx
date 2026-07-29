@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import PermissionTable from "../../components/rolesAndPermissions/PermissionTable";
-import { addRoles, getRoleById, updateRoles } from "../../api/rolesandPermission";
+import {
+  addRoles,
+  getRoleById,
+  updateRoles,
+} from "../../api/rolesandPermission";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function RolesPermissionFormPage() {
   const [permissions, setPermissions] = useState([]);
@@ -109,8 +114,6 @@ function RolesPermissionFormPage() {
     }
   };
 
-  
-
   const handleFormSubmit = async (data) => {
     try {
       const payload = buildPayload(data);
@@ -121,7 +124,7 @@ function RolesPermissionFormPage() {
         await addRole(payload);
       }
 
-      navigate('/roles-permissions')
+      navigate("/roles-permissions");
     } catch (error) {
       console.log(error?.response);
     }
@@ -131,20 +134,19 @@ function RolesPermissionFormPage() {
       <div className="tabbar-section">
         <div className="row">
           <div className="col-12">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb m-0">
-                <li className="breadcrumb-item">
-                  <i className="demo-icon icon-down-arrow"></i>
-                </li>
-                <li className="breadcrumb-item">
-                  <a href="javascript:void(0);">
-                    <div>
-                      <h2>Add/Edit Roles</h2>
-                    </div>
-                  </a>
-                </li>
-              </ol>
-            </nav>
+            <Breadcrumbs
+              items={[
+                {
+                  id: "roles-permissions",
+                  text: "Roles & Permissions",
+                  path: "/roles-permissions",
+                },
+                {
+                  id: isEditMode ? "edit-role" : "add-role",
+                  text: isEditMode ? "Edit Role & Permission" : "Add Role & Permission",
+                },
+              ]}
+            />
           </div>
         </div>
         <div className="row">

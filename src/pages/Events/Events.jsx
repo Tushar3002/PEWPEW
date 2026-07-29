@@ -8,6 +8,7 @@ import DateTimeCell from "../../components/GridCells/DateTimeCell";
 import { useNavigate } from "react-router-dom";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 const eventTabs = [
   {
@@ -169,7 +170,14 @@ function Events() {
   return (
     <div className="row">
       <div className="row align-items-center gap-3">
-        <h3>Events</h3>
+        <Breadcrumbs
+            items={[
+              {
+                id: "events",
+                text: "Events",
+              }
+            ]}
+          />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

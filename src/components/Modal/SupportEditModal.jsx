@@ -220,14 +220,14 @@ function SupportEditModal({ ticketId, show, onClose, onSuccess }) {
               <div className="d-flex justify-content-end gap-2 mt-4">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn main-btn border-btn"
                   onClick={onClose}
                 >
                   Close
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
+                  className="btn main-btn w-auto"
                   disabled={isSaving}
                 >
                   {isSaving ? "Saving..." : "Save Changes"}

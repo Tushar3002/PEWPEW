@@ -4,6 +4,7 @@ import { deleteUser, getUsers, updateStatus } from "../../api/userApi";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 
 import StatusCell from "../../components/GridCells/StatusCell";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -173,7 +174,14 @@ function ManageUser() {
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <h3>Manage User</h3>
+        <Breadcrumbs
+              items={[
+                {
+                  id: "manage-users",
+                  text: "Manage User"
+                }
+              ]}
+            />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

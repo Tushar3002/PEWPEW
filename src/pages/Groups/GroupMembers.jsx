@@ -2,6 +2,7 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import React, { useEffect, useState } from "react";
 import { getGroupMembers } from "../../api/Group/group";
 import { useNavigate, useParams } from "react-router-dom";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function GroupMembers() {
   const [data, setData] = useState([]);
@@ -89,7 +90,24 @@ function GroupMembers() {
   return (
     <div className="row">
       <div className="row align-items-center gap-3">
-        <h3>Activity</h3>
+        <Breadcrumbs
+          items={[
+            {
+              id: "groups",
+              text: "Groups",
+              path: "/groups",
+            },
+            {
+              id: "group-details",
+              text: "Group Details",
+              path: `/groups/view/${id}`,
+            },
+            {
+              id: "group-members",
+              text: "Group Members",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

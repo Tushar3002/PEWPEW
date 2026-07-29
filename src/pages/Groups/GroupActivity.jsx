@@ -8,6 +8,7 @@ import { DateCell } from "../../components/GridCells/DateCell";
 import { updatePostStatus } from "../../api/Activity/activity";
 import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import { TextCell } from "../../components/GridCells/TextCell";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function GroupActivity() {
   const [data, setData] = useState([]);
@@ -114,7 +115,20 @@ function GroupActivity() {
   return (
     <div className="row">
       <div className="row align-items-center gap-3">
-        <h3>Group Activity</h3>
+        <Breadcrumbs
+          items={[
+            {
+              id: "groups",
+              text: "Groups",
+              path: "/groups",
+            },
+            
+            {
+              id: "group-activity",
+              text: "Group Activity",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

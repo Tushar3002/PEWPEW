@@ -1,0 +1,24 @@
+.custom-breadcrumb {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* First item when there are multiple breadcrumbs */
+.custom-breadcrumb .k-breadcrumb-root-link {
+  color: #c1272d;
+}
+
+/* Middle breadcrumb links */
+.custom-breadcrumb .k-breadcrumb-link {
+  color: #c1272d;
+}
+
+/* Current/last item */
+.custom-breadcrumb .k-breadcrumb-link[aria-current="page"] {
+  color: #212529;
+}
+
+/* When there is only one breadcrumb, it is the current page */
+.single-breadcrumb .k-breadcrumb-root-link {
+  color: #212529;
+}

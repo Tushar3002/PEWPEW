@@ -13,6 +13,7 @@
     "@progress/kendo-data-query": "^1.7.4",
     "@progress/kendo-react-dateinputs": "^15.1.0",
     "@progress/kendo-react-grid": "^15.1.0",
+    "@progress/kendo-react-layout": "^15.1.0",
     "@progress/kendo-react-tooltip": "^15.1.0",
     "@progress/kendo-theme-default": "^14.3.0",
     "axios": "^1.18.1",

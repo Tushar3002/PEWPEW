@@ -48,7 +48,7 @@ function SupportStatusModal({
           <div className="modal-footer">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn main-btn w-auto"
               onClick={onClose}
             >
               Cancel
@@ -56,7 +56,7 @@ function SupportStatusModal({
 
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn main-btn w-auto"
               onClick={onConfirm}
             >
               Confirm

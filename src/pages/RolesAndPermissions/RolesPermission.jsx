@@ -7,6 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import StatusCell from "../../components/GridCells/StatusCell";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function RolesPermission() {
   const [data, setData] = useState([]);
@@ -142,7 +143,14 @@ function RolesPermission() {
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <h3>Role & Permission</h3>
+        <Breadcrumbs
+            items={[
+              {
+                id: "roles-permissions",
+                text: "Roles & Permissions",
+              }
+            ]}
+          />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

@@ -11,6 +11,7 @@ import UploadGunsTable from "./UploadGunsTable";
 import VenuesTable from "./VenuesTable";
 import EventsTable from "./EventsTable";
 import ActivitiesTables from "./ActivitiesTables";
+import Breadcrumbs from "../../../components/BreadCrumbs/Breadcrumbs";
 
 function ManageEndUserView() {
   const [endUser, setEndUser] = useState({});
@@ -70,18 +71,19 @@ function ManageEndUserView() {
     <div className="tabbar-section">
       <div className="row">
         <div className="col-12">
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb m-0">
-              <li className="breadcrumb-item">
-                <i className="demo-icon icon-down-arrow"></i>
-              </li>
-              <li className="breadcrumb-item">
-                <a href="javascript:void(0);">
-                  <h2>View End Users</h2>
-                </a>
-              </li>
-            </ol>
-          </nav>
+          <Breadcrumbs
+            items={[
+              {
+                id: "manage-end-users",
+                text: "Manage End Users",
+                path: "/manage-end-users",
+              },
+              {
+                id: "view-end-user",
+                text: "View End User",
+              },
+            ]}
+          />
         </div>
       </div>
       <div className="row">
@@ -276,8 +278,10 @@ function ManageEndUserView() {
                 </div>
               </div>
               <div className="col-12 mt-2">
-                <div className="form-group"> 
-                  <label className="fw-semibold d-block mb-2">Setting <span className="danger-color">*</span></label>
+                <div className="form-group">
+                  <label className="fw-semibold d-block mb-2">
+                    Setting <span className="danger-color">*</span>
+                  </label>
 
                   <div className="d-flex align-items-center gap-2">
                     <div className="form-check form-switch m-0">

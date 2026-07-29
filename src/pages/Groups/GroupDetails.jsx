@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getGroupDataById } from "../../api/Group/group";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function GroupDetails() {
   const [data, setData] = useState([]);
@@ -19,7 +20,24 @@ function GroupDetails() {
     }
   };
   return (
-    <div className="container-fluid py-4">
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-12">
+          <Breadcrumbs
+            items={[
+              {
+                id: "groups",
+                text: "Groups",
+                path: "/groups",
+              },
+              {
+                id: "group-details",
+                text: "Group Details",
+              },
+            ]}
+          />
+        </div>
+      </div>
       <div className="row justify-content-center">
         <div className="col-12 ">
           <div className="d-flex flex-column align-items-center text-center">

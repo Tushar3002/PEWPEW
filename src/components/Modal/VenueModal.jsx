@@ -489,13 +489,13 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                 <div className="modal-footer px-0 mt-4">
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn main-btn border-btn"
                     onClick={onClose}
                   >
                     Cancel
                   </button>
 
-                  <button type="submit" className="btn btn-danger">
+                  <button type="submit" className="btn main-btn w-auto">
                     Save
                   </button>
                 </div>

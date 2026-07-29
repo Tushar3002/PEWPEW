@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getEventDetail } from "../../api/Events/eventApi";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function EventsDetail() {
   const [data, setData] = useState("");
@@ -32,6 +33,19 @@ function EventsDetail() {
     : false;
   return (
     <div className="container-fluid">
+      <Breadcrumbs
+        items={[
+          {
+            id: "events",
+            text: "Events",
+            path: "/events",
+          },
+          {
+            id: "event-details",
+            text: "Event Details",
+          },
+        ]}
+      />
       <div className=" p-3 mb-4">
         <div className="row g-3 align-items-center">
           <div className="col-12 col-md-4">

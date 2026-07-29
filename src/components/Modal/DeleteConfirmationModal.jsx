@@ -37,7 +37,7 @@ function DeleteConfirmationModal({
           <div className="modal-footer">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn main-btn border-btn"
               onClick={onClose}
               disabled={isDeleting}
             >
@@ -46,7 +46,7 @@ function DeleteConfirmationModal({
 
             <button
               type="button"
-              className="btn btn-danger"
+              className="btn main-btn w-auto"
               onClick={onConfirm}
               disabled={isDeleting}
             >

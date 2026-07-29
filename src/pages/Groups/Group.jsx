@@ -4,6 +4,7 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { Link, useNavigate } from "react-router-dom";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function Group() {
   const [data, setData] = useState([]);
@@ -128,7 +129,10 @@ function Group() {
     return (
       <td {...tdProps}>
         {value > 0 ? (
-          <Link to={getPath(dataItem)} className="fw-semibold text-primary text-decoration-underline" >
+          <Link
+            to={getPath(dataItem)}
+            className="fw-semibold text-primary text-decoration-underline"
+          >
             {value}
           </Link>
         ) : (
@@ -141,7 +145,14 @@ function Group() {
   return (
     <div className="row">
       <div className="row align-items-center gap-3">
-        <h3>Group</h3>
+        <Breadcrumbs
+          items={[
+            {
+              id: "groups",
+              text: "Groups",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

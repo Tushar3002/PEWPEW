@@ -20,6 +20,12 @@ html {
 }
 
 html,
+body,
+#root {
+    height: 100%;
+}
+
+html,
 body {
     overflow-x: hidden;
 }
@@ -305,9 +311,14 @@ table.table tbody td+td {
 
 .page-content-wrapper {
     padding-top: 54px;
+    min-height: calc(100vh - 54px);
+    display: flex;
+    flex-direction: column;
 }
 
 .content-wrapper {
+    min-height: 100vh;
+    display: flex;
     background-image: url(../images/gradient-bg.png);
     background-attachment: fixed;
     background-size: cover;
@@ -318,6 +329,15 @@ table.table tbody td+td {
     transition: ease all 0s;
     background: var(--white);
     padding: 15px 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-inside > .container-fluid {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .toggled .content-inside {

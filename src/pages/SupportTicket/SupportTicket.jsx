@@ -12,6 +12,7 @@ import SupportEditModal from "../../components/Modal/SupportEditModal";
 import SupportStatusModal from "../../components/Modal/SupportStatusModal";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function SupportTicket() {
   const [page, setPage] = useState({
@@ -224,7 +225,14 @@ function SupportTicket() {
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <h3>Support Tickets</h3>
+        <Breadcrumbs 
+          items={[
+              {
+                id: "support-tickets",
+                text: "Support Tickets",
+              }
+            ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"

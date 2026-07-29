@@ -10,6 +10,7 @@ import {
   updateVerification,
 } from "../../api/EndUsers/endUserApi";
 import StatusCell from "../../components/GridCells/StatusCell";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 
 function ManageEndUser() {
   const [users, setUsers] = useState([]);
@@ -212,16 +213,21 @@ function ManageEndUser() {
       confirmMessage: "Do you want the user Verified",
     });
 
-
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <h3>Manage User</h3>
+        <Breadcrumbs
+          items={[
+            {
+              id: "manage-end-users",
+              text: "Manage End Users",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
             role="search"
-            
           >
             <input
               className="form-control search-input"
@@ -305,7 +311,6 @@ function ManageEndUser() {
                 width={"210px"}
                 field="firstName"
                 title="First Name"
-
               />
               <GridColumn width={"210px"} field="lastName" title="Last Name" />
               <GridColumn width={"210px"} field="userName" title="User Name" />
