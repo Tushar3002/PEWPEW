@@ -140,10 +140,10 @@ function SupportTicket() {
     }
   };
 
-  const handleDeleteClick = (ticketId) => {
-    setDeleteId(ticketId);
-    setShowDeleteModal(true);
-  };
+  // const handleDeleteClick = (ticketId) => {
+  //   setDeleteId(ticketId);
+  //   setShowDeleteModal(true);
+  // };
 
   const ActionCell = (props) => {
     const statusId = props.dataItem.statusId;

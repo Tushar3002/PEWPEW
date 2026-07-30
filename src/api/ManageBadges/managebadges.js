@@ -15,7 +15,12 @@ export const createBadge = async (body) => {
     return res.data
 }
 
-export const updateBadge = async (badgeId, body) => {
-    const res=await api.put(`/ManageBadges/Update/${badgeId}`, body)
+export const updateBadge = async ( body) => {
+    const res=await api.put(`/ManageBadges/Update`, body)
+    return res.data
+}
+
+export const deleteBadge = async (badgeId) => {
+    const res=await api.delete(`/ManageBadges/Delete/${badgeId}`)
     return res.data
 }

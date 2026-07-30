@@ -50,3 +50,8 @@ export const getBadgeApplicablefor=async()=>{
   const res=await api.get('/Common/GetBadgeApplicableFor')
   return res.data
 }
+
+export const getGunApprovalStatus = async()=>{
+  const res=await api.get('/Common/GetGunApprovalStatus')
+  return res.data
+}

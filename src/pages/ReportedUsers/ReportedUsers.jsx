@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getReportList, updateReportStatus } from "../api/Report/report";
+import { getReportList, updateReportStatus } from "../../api/Report/report";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
-import StatusCell from "../components/GridCells/StatusCell";
-import Breadcrumbs from "../components/BreadCrumbs/Breadcrumbs";
+import StatusCell from "../../components/GridCells/StatusCell";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 
 function ReportedUsers() {

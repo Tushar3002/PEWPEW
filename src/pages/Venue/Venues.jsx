@@ -95,7 +95,7 @@ function Venues() {
             type="button"
             className="eye-btn"
             title="View"
-            onClick={() => navigate(`/venue/view/${props.dataItem.venueId}`)}
+            onClick={() => navigate(`/venues/view/${props.dataItem.venueId}`)}
           >
             <i className="fa fa-eye"></i>
           </button>

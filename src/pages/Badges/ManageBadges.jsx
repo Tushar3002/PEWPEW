@@ -2,11 +2,16 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import React, { useEffect, useState } from "react";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
-import { getBadgesList } from "../../api/ManageBadges/managebadges";
+import {
+  deleteBadge,
+  getBadgesList,
+} from "../../api/ManageBadges/managebadges";
 import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import useAttachmentViewer from "../../hooks/useAttachmentViewer";
 import AttachmentViewerModal from "../../components/Modal/AttachmentViewerModal";
 import BadgeModal from "../../components/Modal/BadgeModal";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 
 function ManageBadges() {
   const [data, setData] = useState([]);
@@ -30,6 +35,15 @@ function ManageBadges() {
     openViewer,
     closeViewer,
   } = useAttachmentViewer();
+
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -70,11 +84,6 @@ function ManageBadges() {
 
   const getBadgeApplicableFor = (value) => {};
 
-  const handleAddBadge = () => {
-    setSelectedBadgeId(null);
-    setShowBadgeModal(true);
-  };
-
   const handleEditBadge = (id) => {
     setSelectedBadgeId(id);
     setShowBadgeModal(true);
@@ -83,6 +92,23 @@ function ManageBadges() {
   const handleCloseBadgeModal = () => {
     setShowBadgeModal(false);
     setSelectedBadgeId(null);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteBadge(deleteId);
+
+      closeDeleteModal();
+      await fetchBadgesList();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const ActionCell = (props) => {
@@ -103,7 +129,7 @@ function ManageBadges() {
             type="button"
             className="delete-btn"
             title="Delete"
-            onClick={() => handleDelete(props.dataItem.venueId)}
+            onClick={() => openDeleteModal(props.dataItem.id)}
           >
             <i className="icon-delete-1"></i>
           </button>
@@ -222,6 +248,13 @@ function ManageBadges() {
         onSuccess={() => {
           fetchBadgesList();
         }}
+      />
+
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getBadgeApplicablefor } from "../../api/Common/commonApi";
-import { createBadge, getBadgeById, updateBadge } from "../../api/ManageBadges/managebadges";
+import {
+  createBadge,
+  getBadgeById,
+  updateBadge,
+} from "../../api/ManageBadges/managebadges";
 
 const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
   const isEditable = Boolean(badgeId);
@@ -10,6 +14,8 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -19,6 +25,10 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
       badgeImage: null,
     },
   });
+  const selectedImage = watch("badgeImage");
+
+  const [imagePreview, setImagePreview] = useState("");
+
   const [applicableForOptions, setApplicableForOptions] = useState([]);
   const [existingImageName, setExistingImageName] = useState("");
 
@@ -36,10 +46,22 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
         checkIns: "",
         badgeImage: null,
       });
+      setImagePreview("");
       setExistingImageName("");
     }
   }, [show, badgeId, isEditable, reset]);
+  useEffect(() => {
+    if (!selectedImage?.length) return;
 
+    const file = selectedImage[0];
+    const previewUrl = URL.createObjectURL(file);
+
+    setImagePreview(previewUrl);
+
+    return () => {
+      URL.revokeObjectURL(previewUrl);
+    };
+  }, [selectedImage]);
 
   const getApplicableForOptions = async () => {
     try {
@@ -62,39 +84,45 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
         checkIns: res.data.noOfCheckIns,
         badgeImage: null,
       });
-
+      setImagePreview(res.data.imageFullPath || "");
       setExistingImageName(res.data.imageName || "");
     } catch (error) {
       console.log(error.response);
     }
   };
-  
 
   const onSubmit = async (data) => {
-  try {
-    const body = {
-      name: data.badgeName,
-      applicableFor: Number(data.applicableFor),
-      noOfCheckIns: String(data.checkIns),
-      imageName: existingImageName || "",
-    };
+    try {
+      const body = {
+        name: data.badgeName,
+        applicableFor: Number(data.applicableFor),
+        noOfCheckIns: String(data.checkIns),
+        imageName: existingImageName || "",
+        id: isEditable && badgeId ? badgeId : null,
+      };
 
-    console.log("Badge body:", body);
+      console.log("Badge body:", body);
 
-    if (isEditable) {
-      await updateBadge(badgeId, body);
-    } else {
-      await createBadge(body);
+      if (isEditable) {
+        await updateBadge(body);
+      } else {
+        await createBadge(body);
+      }
+
+      onSuccess?.();
+      onClose();
+    } catch (error) {
+      console.error(error.response?.data);
     }
-
-    onSuccess?.();
-    onClose();
-  } catch (error) {
-    console.error(error.response?.data);
-  }
-};
+  };
 
   if (!show) return null;
+
+  const handleRemoveImage = () => {
+    setImagePreview("");
+    setExistingImageName("");
+    setValue("badgeImage", null);
+  };
 
   return (
     <div
@@ -153,7 +181,7 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
                     required: "Badge Applicable For is required.",
                   })}
                 >
-                    <option value="">Select Applicable For</option>
+                  <option value="">Select Applicable For</option>
                   {applicableForOptions.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -213,6 +241,31 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
                   {...register("badgeImage")}
                 />
 
+                <div>
+                  {imagePreview && (
+                    <div
+                      className="position-relative d-inline-block mt-3 "
+                      style={{ width: "85px", height: "85px" }}
+                    >
+                      <img
+                        src={imagePreview}
+                        alt="Badge Preview"
+                        className="rounded border w-100 h-100"
+                        style={{ objectFit: "cover" }}
+                      />
+
+                      <button
+                        type="button"
+                        className="btn btn-danger position-absolute top-0 end-0 image-cross-icon rounded-circle p-1"
+                        onClick={handleRemoveImage}
+                        style={{ width: "20px", height: "20px", fontSize: "10px", lineHeight: "1" }}
+                      >
+                        <i className="fa fa-times" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {errors.badgeImage && (
                   <div className="invalid-feedback">
                     {errors.badgeImage.message}
@@ -224,7 +277,7 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
             <div className="modal-footer">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn main-btn border-btn"
                 onClick={onClose}
                 disabled={isSubmitting}
               >
@@ -233,7 +286,7 @@ const BadgeModal = ({ show, onClose, badgeId, onSuccess }) => {
 
               <button
                 type="submit"
-                className="btn btn-primary"
+                className="btn main-btn w-auto"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving..." : isEditable ? "Update" : "Add"}

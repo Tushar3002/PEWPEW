@@ -1,13 +1,17 @@
-export const DateCell = (props) => {
-    const date = props.dataItem.createdOn;
+export const DateCell = ({
+  dataItem,
+  tdProps,
+  field = "createdOn",
+}) => {
+  const date = dataItem[field];
 
-    const formattedDate = date
-      ? new Date(date).toLocaleDateString("en-US")
-      : "-";
+  const formattedDate = date
+    ? new Date(date).toLocaleDateString("en-US")
+    : "-";
 
-    return (
-      <td {...props.tdProps}>
-        <span title={formattedDate}>{formattedDate}</span>
-      </td>
-    );
-  };
+  return (
+    <td {...tdProps}>
+      <span title={formattedDate}>{formattedDate}</span>
+    </td>
+  );
+};

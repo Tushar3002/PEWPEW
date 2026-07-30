@@ -121,23 +121,23 @@ function SideBar() {
                 style={{ display: open ? "block" : "none" }}
               >
                 <li>
-                  <NavLink to="javascript:void(0);">Category Master</NavLink>
+                  <NavLink to="/master/prohibited-words">Prohibited Words</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/master/gun">Gun Master</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/master/ammunition">Ammunition Master</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/master/accessories">Accessories Master</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/master/category">Category Master</NavLink>
                 </li>
 
                 <li>
-                  <NavLink to="javascript:void(0);">
-                    Sub-Category Master
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="javascript:void(0);">
-                    Prohibited Words Master
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="javascript:void(0);">Holiday Master</NavLink>
+                  <NavLink to="/master/manufacturer">Manufacturer Master</NavLink>
                 </li>
               </ul>
             </li>
