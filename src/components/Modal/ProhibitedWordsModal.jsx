@@ -9,8 +9,8 @@ export const ProhibitedWordsModal = ({ show, onClose, id, onSuccess }) => {
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
+    // watch,
+    // setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
