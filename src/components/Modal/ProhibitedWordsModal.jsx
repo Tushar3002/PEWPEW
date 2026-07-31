@@ -112,12 +112,12 @@ export const ProhibitedWordsModal = ({ show, onClose, id, onSuccess }) => {
                   Description <span className="text-danger">*</span>
                 </label>
 
-                <input
-                  type="text"
+                <textarea
+                
+                  rows={4}
                   className={`form-control ${
                     errors.description ? "is-invalid" : ""
                   }`}
-                  placeholder="Enter badge name"
                   {...register("description", {
                     required: "Description is required.",
                   })}
