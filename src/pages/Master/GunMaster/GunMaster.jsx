@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
-import { deleteGunById, getGunList } from "../../../api/Gun/gunApi";
+import {
+  deleteGunById,
+  getGunList,
+  updateGunApprovalStatus,
+} from "../../../api/Gun/gunApi";
 import { GunMasterModal } from "../../../components/Modal/GunMasterModal";
 import { updateGunStatus } from "../../../api/EndUsers/endUserViewApi";
 import Breadcrumbs from "../../../components/BreadCrumbs/Breadcrumbs";
@@ -13,6 +17,8 @@ import { TextCell } from "../../../components/GridCells/TextCell";
 import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
+import { ApprovalStatusDropdownCell } from "../../../components/GridCells/ApprovalStatusDropdownCell";
+import { getGunApprovalStatus } from "../../../api/Common/commonApi";
 
 function GunMaster() {
   const [data, setData] = useState([]);
@@ -27,6 +33,8 @@ function GunMaster() {
 
   const [showGunModal, setShowGunModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+
+  const [approvalStatusDropdown, setApprovalStatusDropdown] = useState([]);
 
   const {
     showDeleteModal,
@@ -48,6 +56,7 @@ function GunMaster() {
 
   useEffect(() => {
     fetchGuns();
+    getApprovalStatusList();
   }, [page, sort, search]);
 
   const fetchGuns = async () => {
@@ -63,7 +72,8 @@ function GunMaster() {
     try {
       const res = await getGunList(body);
       console.log(res.data);
-      setData(res.data);
+      setData(res.data.data);
+      setTotal(res.data.totalRecord);
     } catch (error) {
       console.log(error.response);
     }
@@ -95,6 +105,30 @@ function GunMaster() {
       setIsDeleting(false);
     }
   };
+  const getApprovalStatusList = async () => {
+    try {
+      const res = await getGunApprovalStatus();
+      console.log(res.data);
+      setApprovalStatusDropdown(res.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  const handleApprovalStatusChange = async (gunId, statusId) => {
+  try {
+    const body = {
+      gunId,
+      reason: "",
+      statusId,
+    };
+
+    await updateGunApprovalStatus(body);
+    await fetchGuns();
+  } catch (error) {
+    console.log(error.response);
+  }
+};
 
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
@@ -133,7 +167,7 @@ function GunMaster() {
             type="button"
             className="eye-btn"
             title="View"
-            onClick={() => handleEdit(props.dataItem.id)}
+            onClick={() => handleEdit(props.dataItem.gunId)}
           >
             <i className="fa fa-eye"></i>
           </button>
@@ -142,11 +176,38 @@ function GunMaster() {
             type="button"
             className="delete-btn"
             title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.id)}
+            onClick={() => openDeleteModal(props.dataItem.gunId)}
           >
             <i className="icon-delete-1"></i>
           </button>
         </div>
+      </td>
+    );
+  };
+
+  const StatusDropdownCell = (props) => {
+    const currentStatus = props.dataItem?.[props.field] ?? "";
+
+    return (
+      <td {...props.tdProps}>
+        <select
+          className="form-select"
+          value={currentStatus}
+          disabled={props.dataItem.isCreateAdmin}
+          onChange={(e) => {
+            const selectedStatus = approvals.find(
+              (approval) => approval.description === e.target.value,
+            );
+
+            console.log("Selected approval:", selectedStatus);
+          }}
+        >
+          {approvals.map((approval) => (
+            <option key={approval.id} value={approval.description}>
+              {approval.description}
+            </option>
+          ))}
+        </select>
       </td>
     );
   };
@@ -264,6 +325,21 @@ function GunMaster() {
                   cells={{ data: DateCell }}
                 />
                 <GridColumn title="Modified By" field="updatedByUserName" />
+
+                <GridColumn
+                width={"180px"}
+                  title="Approval Status"
+                  field="approvalStatus"
+                  cells={{
+                    data: (props) => (
+                      <ApprovalStatusDropdownCell
+                        {...props}
+                        approvalStatusDropdown={approvalStatusDropdown}
+                        onStatusChange={handleApprovalStatusChange}
+                      />
+                    ),
+                  }}
+                />
                 <GridColumn
                   title="Status"
                   field="status"

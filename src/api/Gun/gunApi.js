@@ -1,7 +1,7 @@
 import { api } from "../api"
 
 export const getGunDropDownAll=async()=>{
-    const res=await api.get('Gun/GetGunDropdownAll')
+    const res=await api.get('/Gun/GetGunDropdownAll')
     return res.data
 }
 
@@ -11,7 +11,7 @@ export const getGunList=async(body)=>{
 }
 
 export const updateGunApprovalStatus=async(body)=>{
-    const res=await api.put('/Gun/GunApprovalUpdateAsync',body)
+    const res=await api.post('/Gun/GunApprovalUpdateAsync',body)
     return res.data
 }
 

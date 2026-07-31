@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { addGuns, editGunById, getGunById } from "../../api/Gun/gunApi";
 import { categoryDropDown } from "../../api/Gun/gunCategoryMaster";
 import { getManufacturerDropdownData } from "../../api/Manufacturer/manufacturer";
-import { getDropdownAmmunitions } from "../../Ammunition/ammunition";
+import { getDropdownAmmunitions } from "../../api/Ammunition/ammunition";
 import "../../assets/css/dropdown.css";
 import { DropDownList, MultiSelect } from "@progress/kendo-react-dropdowns";
+import { getGunApprovalStatus } from "../../api/Common/commonApi";
 
 export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
   const isEditable = Boolean(id);
@@ -13,7 +14,8 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [manufacturerDropdown, setManufacturerDropdown] = useState([]);
   const [ammunitionDropdown, setAmmunitionDropdown] = useState([]);
-
+  const [approvalStatusDropdown, setApprovalStatusDropdown] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
   const {
     register,
     handleSubmit,
@@ -34,6 +36,8 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
       imageNames: [],
     },
   });
+
+  const selectedImage = watch("imageNames");
 
   const getCategoryDropDown = async () => {
     try {
@@ -64,11 +68,22 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
     }
   };
 
+  const getApprovalStatusList = async () => {
+    try {
+      const res = await getGunApprovalStatus();
+      console.log(res.data);
+      setApprovalStatusDropdown(res.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
   useEffect(() => {
     if (!show) return;
     getCategoryDropDown();
     getManufacturerDropDown();
     getAmmunitionDropDown();
+    getApprovalStatusList();
     if (isEditable) {
       fetchDataById(id);
     } else {
@@ -82,6 +97,7 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
         approvalStatus: 1,
         imageNames: [],
       });
+      setImagePreview(null);
     }
   }, [show, id, isEditable, reset]);
 
@@ -98,12 +114,26 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
         barrelLength: res.data.barrelLength,
         details: res.data.details,
         approvalStatus: res.data.approvalStatus,
-        imageNames: res.data.imageNames,
+        imageNames: [],
       });
+      if (res.data.attachments?.length > 0) {
+        setImagePreview(res.data.attachments[0].attachmentFullPath);
+      }
     } catch (error) {
       console.log(error.response);
     }
   };
+
+  useEffect(() => {
+    if (selectedImage && selectedImage.length > 0) {
+      const file = selectedImage[0];
+      const imageUrl = URL.createObjectURL(file);
+
+      setImagePreview(imageUrl);
+
+      return () => URL.revokeObjectURL(imageUrl);
+    }
+  }, [selectedImage]);
 
   const onSubmit = async (data) => {
     try {
@@ -114,8 +144,8 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
         ammunitionIds: data.ammunitionIds,
         barrelLength: data.barrelLength,
         details: data.details,
-        approvalStatus: data.approvalStatus,
-        imageNames: data.imageNames,
+        approvalStatus: Number(data.approvalStatus),
+        imageNames: [],
       };
 
       if (isEditable) {
@@ -300,7 +330,7 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
                       type="text"
                       className={`form-control `}
                       placeholder="In Inch, e.g. 7.5"
-                      {...register("barrelLength",{
+                      {...register("barrelLength", {
                         valueAsNumber: true,
                       })}
                     />
@@ -318,16 +348,34 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
                       Approval Status <span className="text-danger">*</span>
                     </label>
 
-                    <select
-                      className="form-select"
-                      defaultValue={1}
-                      {...register("approvalStatus")}
-                      disabled
-                    >
-                      <option value={1}>Approve</option>
-                      <option value={2}>Reject</option>
-                      <option value={3}>Pending</option>
-                    </select>
+                    <Controller
+                      name="approvalStatus"
+                      control={control}
+                      rules={{
+                        required: "Approval Status is required",
+                      }}
+                      render={({ field }) => (
+                        <DropDownList
+                          data={approvalStatusDropdown}
+                          textField="name"
+                          dataItemKey="id"
+                          value={
+                            approvalStatusDropdown.find(
+                              (item) => item.id === field.value,
+                            ) || null
+                          }
+                          onChange={(e) => field.onChange(e.value?.id)}
+                          disabled={!isEditable}
+                          className={errors.approvalStatus ? "k-invalid" : ""}
+                        />
+                      )}
+                    />
+
+                    {errors.approvalStatus && (
+                      <div className="text-danger small mt-1">
+                        {errors.approvalStatus.message}
+                      </div>
+                    )}
                   </div>
 
                   {/* Image */}
@@ -338,6 +386,7 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
 
                     <input
                       type="file"
+                      accept="image/*"
                       className={`form-control ${
                         errors.imageNames ? "is-invalid" : ""
                       }`}
@@ -347,6 +396,32 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
                     {errors.imageNames && (
                       <div className="invalid-feedback">
                         {errors.imageNames.message}
+                      </div>
+                    )}
+
+                    {imagePreview && (
+                      <div
+                        className="position-relative d-inline-block mt-3"
+                        style={{ width: "90px", height: "90px" }}
+                      >
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="img-thumbnail w-100 h-100"
+                          style={{ objectFit: "cover" }}
+                        />
+
+                        <button
+                          type="button"
+                          className="btn btn-danger rounded-circle image-cross-icon position-absolute"
+                          style={{ top: "4px", right: "4px" }}
+                          onClick={() => {
+                            setImagePreview(null);
+                            setValue("imageNames", null);
+                          }}
+                        >
+                          <i className="fa fa-times" />
+                        </button>
                       </div>
                     )}
                   </div>
