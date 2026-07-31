@@ -53,7 +53,8 @@ function ProhibitedWords() {
     try {
       const res = await getProhibitedWords(body);
       console.log(res.data);
-      setData(res.data);
+      setData(res.data.data);
+      setTotal(res.data.totalRecord)
     } catch (error) {
       console.log(error.response);
     }
