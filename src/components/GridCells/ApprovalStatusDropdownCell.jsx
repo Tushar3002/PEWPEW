@@ -18,11 +18,13 @@ export const ApprovalStatusDropdownCell = ({
           ) || null
         }
         disabled={dataItem.isAdminAdd}
+        popupSettings={{
+          appendTo: typeof window !== "undefined" ? document.body : undefined,
+          positionMode: "fixed",
+        }}
+        style={{ width: "100%" }}
         onChange={(e) => {
-          onStatusChange(
-            dataItem.gunId,
-            e.value.id
-          );
+          onStatusChange(dataItem.gunId, e.value.id);
         }}
       />
     </td>
