@@ -4,6 +4,30 @@
   border-radius: 8px;
   overflow: hidden;
   background: #fcf7f7;
+  width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.k-grid .k-grid-table {
+  width: 100% !important;
+  min-width: 100%;
+  table-layout: fixed;
+}
+
+.k-grid .k-grid-header-wrap,
+.k-grid .k-grid-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.k-grid .k-grid-table > thead > tr > th,
+.k-grid .k-grid-table > tbody > tr > td {
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Header */
