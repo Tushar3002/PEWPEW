@@ -12,6 +12,9 @@ import AttachmentViewerModal from "../../components/Modal/AttachmentViewerModal"
 import BadgeModal from "../../components/Modal/BadgeModal";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import { getBadgeApplicablefor } from "../../api/Common/commonApi";
+import { ApplicableForCell } from "../../components/GridCells/ApplicableForCell";
+import { TextCell } from "../../components/GridCells/TextCell";
 
 function ManageBadges() {
   const [data, setData] = useState([]);
@@ -26,6 +29,8 @@ function ManageBadges() {
 
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [selectedBadgeId, setSelectedBadgeId] = useState(null);
+
+  const [applicableForOptions, setApplicableForOptions] = useState([]);
 
   const {
     showViewer,
@@ -46,21 +51,29 @@ function ManageBadges() {
   } = useDeleteConfirmation();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
 
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeout);
   }, [searchInput]);
 
   useEffect(() => {
     fetchBadgesList();
+    getApplicableForOptions()
   }, [page, sort, search]);
+
   const fetchBadgesList = async () => {
     const body = {
       Page: page.skip / page.take + 1,
@@ -81,8 +94,6 @@ function ManageBadges() {
       console.log(error.response);
     }
   };
-
-  const getBadgeApplicableFor = (value) => {};
 
   const handleEditBadge = (id) => {
     setSelectedBadgeId(id);
@@ -108,6 +119,16 @@ function ManageBadges() {
       console.log(error.response);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const getApplicableForOptions = async () => {
+    try {
+      const res = await getBadgeApplicablefor();
+      setApplicableForOptions(res.data);
+      console.log("applicable", res.data);
+    } catch (error) {
+      console.log(error.response);
     }
   };
 
@@ -179,7 +200,7 @@ function ManageBadges() {
                 setShowBadgeModal(true);
               }}
             >
-              Add Badge
+              Add
             </button>
           </div>
         </div>
@@ -222,12 +243,20 @@ function ManageBadges() {
                       ),
                     }}
                   />
-                  <GridColumn title="Name" field="name" />
+                  <GridColumn title="Name" field="name" cells={{data:TextCell}}/>
                   <GridColumn
                     title="Badge Applicable For"
                     field="applicableFor"
+                    cells={{
+                      data: (props) => (
+                        <ApplicableForCell
+                          {...props}
+                          applicableForOptions={applicableForOptions}
+                        />
+                      ),
+                    }}
                   />
-                  <GridColumn title="No. of Check-ins" field="noOfCheckIns" />
+                  <GridColumn title="No. of Check-ins" field="noOfCheckIns" cells={{data:TextCell}}/>
                 </Grid>
               </Tooltip>
             </div>

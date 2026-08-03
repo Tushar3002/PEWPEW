@@ -5,6 +5,8 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 
 import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import { TextCell } from "../../components/GridCells/TextCell";
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -30,16 +32,22 @@ function ManageUser() {
     fetchUsers();
   }, [page, sort, search]);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
 
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeout);
   }, [searchInput]);
 
   const updateStatusData = async (id, isActive) => {
@@ -175,18 +183,17 @@ function ManageUser() {
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
         <Breadcrumbs
-              items={[
-                {
-                  id: "manage-users",
-                  text: "Manage User"
-                }
-              ]}
-            />
+          items={[
+            {
+              id: "manage-users",
+              text: "Manage User",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
             role="search"
-            
           >
             <input
               className="form-control search-input"
@@ -238,67 +245,89 @@ function ManageUser() {
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
           <div className="table-responsive" style={{ overflow: "visible" }}>
-            <Grid
-              // style={{ width: "100%", overflow: "visible" }}
-              // style={{ height: "600px" }}
-              data={users}
-              pageable={{
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-                previousNext: true,
-              }}
-              skip={page.skip}
-              take={page.take}
-              total={total}
-              onPageChange={(e) => setPage(e.page)}
-              sortable
-              sort={sort}
-              onSortChange={(e) => setSort(e.sort)}
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
             >
-              {/* Checkbox */}
-              <GridColumn
-                width="60px"
-                headerClassName="text-center"
-                cells={{
-                  data: CheckboxCell,
+              <Grid
+                // style={{ width: "100%", overflow: "visible" }}
+                // style={{ height: "600px" }}
+                data={users}
+                pageable={{
+                  buttonCount: 5,
+                  pageSizes: [5, 10, 20, 50, 100, 500],
+                  info: true,
+                  previousNext: true,
                 }}
-              />
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
+              >
+                {/* Checkbox */}
+                <GridColumn
+                  width="60px"
+                  headerClassName="text-center"
+                  cells={{
+                    data: CheckboxCell,
+                  }}
+                />
 
-              <GridColumn
-                title="Action"
-                width="150px"
-                headerClassName="text-center"
-                cells={{
-                  data: ActionCell,
-                }}
-              />
-              <GridColumn
-                width={"180px"}
-                field="firstName"
-                title="First Name"
+                <GridColumn
+                  title="Action"
+                  width="150px"
+                  headerClassName="text-center"
+                  cells={{
+                    data: ActionCell,
+                  }}
+                />
+                <GridColumn
+                  width={"180px"}
+                  field="firstName"
+                  title="First Name"
+                  cells={{data:TextCell}}
+                />
+                <GridColumn
+                  width={"180px"}
+                  field="lastName"
+                  title="Last Name"
+                  cells={{data:TextCell}}
+                />
+                <GridColumn
+                  width={"180px"}
+                  field="userName"
+                  title="User Name"
+                  cells={{data:TextCell}}
+                />
+                <GridColumn width={"150px"} field="roleName" title="Role" cells={{data:TextCell}}/>
+                <GridColumn
+                  width={"170px"}
+                  field="contactNumber"
+                  title="Phone"
+                  cells={{data:TextCell}}
+                />
+                <GridColumn width={"300px"} field="email" title="Email" cells={{data:TextCell}}/>
 
-              />
-              <GridColumn width={"180px"} field="lastName" title="Last Name" />
-              <GridColumn width={"180px"} field="userName" title="User Name" />
-              <GridColumn width={"150px"} field="roleName" title="Role" />
-              <GridColumn width={"170px"} field="contactNumber" title="Phone" />
-              <GridColumn width={"300px"} field="email" title="Email" />
-
-              <GridColumn
-                width={"220px"}
-                title="Status"
-                cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="id"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
-              />
-            </Grid>
+                <GridColumn
+                  width={"220px"}
+                  title="Status"
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="id"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
+              </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>

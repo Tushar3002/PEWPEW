@@ -12,39 +12,71 @@ import { getDashBoardData } from "../../api/DashBoard/dashboardApi";
 import { getCommonDashBoardFilters } from "../../api/Common/commonApi";
 import { useAuth } from "../../context/AuthContext";
 import { Grid, GridCell, GridColumn } from "@progress/kendo-react-grid";
+import { DatePicker } from "@progress/kendo-react-dateinputs";
 import { DateCell } from "../../components/GridCells/DateCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { updateActivitiesStatus } from "../../api/EndUsers/endUserViewApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function DashBoard() {
   const [data, setData] = useState({});
   const [filterDropDown, setFilterDropDown] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState(0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const [customFrom, setCustomFrom] = useState(new Date(today));
+  const [customTo, setCustomTo] = useState(new Date(today));
   const total = data?.totals || {};
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const formatDateForApi = (date) => {
+    if (!date) return "";
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
+    if (selectedFilter === 9) {
+      if (customFrom && customTo) {
+        fetchDashboardData(
+          9,
+          formatDateForApi(customFrom),
+          formatDateForApi(customTo),
+        );
+      }
+      fetchDashboardFilters(9);
+      return;
+    }
+
     fetchDashboardData(selectedFilter);
-    fetchDashboardFilters();
-  }, [selectedFilter]);
+    fetchDashboardFilters(selectedFilter);
+  }, [selectedFilter, customFrom, customTo]);
 
-  const fetchDashboardData = async (filterId = 0) => {
+  const fetchDashboardData = async (
+    filterId = 0,
+    customFromDate = "",
+    customToDate = "",
+  ) => {
     try {
-      const res = await getDashBoardData(filterId);
-      console.log("Dashboard Data", res);
-      // console.log("User Data",user);
-
+      const res = await getDashBoardData(
+        filterId,
+        customFromDate,
+        customToDate,
+      );
       setData(res.data);
     } catch (error) {
       console.log(error.response);
     }
   };
 
-  const fetchDashboardFilters = async () => {
+  const fetchDashboardFilters = async (filterId = 0) => {
     try {
-      const res = await getCommonDashBoardFilters(selectedFilter);
-      console.log(res.data);
+      const res = await getCommonDashBoardFilters(filterId);
       setFilterDropDown(res.data);
     } catch (error) {
       console.log(error.response);
@@ -55,6 +87,26 @@ function DashBoard() {
     const filterId = Number(e.target.value);
 
     setSelectedFilter(filterId);
+
+    if (filterId === 9) {
+      const defaultDate = new Date();
+      defaultDate.setHours(0, 0, 0, 0);
+      setCustomFrom(new Date(defaultDate));
+      setCustomTo(new Date(defaultDate));
+      return;
+    }
+
+    setCustomFrom(null);
+    setCustomTo(null);
+  };
+
+  const handleCustomDateChange = (value, field) => {
+    if (field === "from") {
+      setCustomFrom(value);
+      return;
+    }
+
+    setCustomTo(value);
   };
 
   const handleStatusToggle = async (id, currentValue) => {
@@ -122,9 +174,40 @@ function DashBoard() {
             </select>
           </div>
         </div>
+
+        {selectedFilter === 9 && (
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            <h6 className="fw-bold mb-0 fs-5">Select Date Range : </h6>
+
+            <label className="form-label mb-0 ms-3 fs-6">From Date:</label>
+            <div style={{ width: "200px" }}>
+              <DatePicker
+                className="form-control"
+                value={customFrom}
+                onChange={(e) => handleCustomDateChange(e.value, "from")}
+                format="yyyy-MM-dd"
+                max={new Date(today)}
+                placeholder={formatDateForApi(new Date(today))}
+              />
+            </div>
+
+            <label className="form-label mb-0 fs-6">To Date:</label>
+            <div style={{ width: "200px" }}>
+              <DatePicker
+                className="form-control"
+                value={customTo}
+                onChange={(e) => handleCustomDateChange(e.value, "to")}
+                format="yyyy-MM-dd"
+                min={customFrom || undefined}
+                max={new Date(today)}
+                placeholder={formatDateForApi(new Date(today))}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="cards-section">
+      <div className="cards-section mt-3">
         <div className="row g-3 g-xxl-4">
           <StatsCard
             value={total.totalUsers}
@@ -161,9 +244,20 @@ function DashBoard() {
               </div>
 
               <div className="col-auto">
-                <a className="basic-links" href="#">
+                <Link
+                  to="/activity"
+                  state={{
+                    sort: [
+                      {
+                        field: "totalLike",
+                        dir: "desc",
+                      },
+                    ],
+                  }}
+                  className="basic-links"
+                >
                   View All
-                </a>
+                </Link>
               </div>
               <Grid data={data?.topLikedPosts}>
                 <GridColumn
@@ -189,9 +283,20 @@ function DashBoard() {
               </div>
 
               <div className="col-auto">
-                <a className="basic-links" href="#">
+                <Link
+                  to="/reported-users"
+                  state={{
+                    sort: [
+                      {
+                        field: "reportCount",
+                        dir: "desc",
+                      },
+                    ],
+                  }}
+                  className="basic-links"
+                >
                   View All
-                </a>
+                </Link>
               </div>
               <Grid data={data?.topReportingUsers}>
                 <GridColumn title="Action" cells={{ data: ActionCell }} />
@@ -207,9 +312,20 @@ function DashBoard() {
               </div>
 
               <div className="col-auto">
-                <a className="basic-links" href="#">
+                <Link
+                  to="/activity"
+                  state={{
+                    sort: [
+                      {
+                        field: "totalReport",
+                        dir: "desc",
+                      },
+                    ],
+                  }}
+                  className="basic-links"
+                >
                   View All
-                </a>
+                </Link>
               </div>
               <Grid data={data?.topReportedPosts}>
                 <GridColumn title="Action" cells={{ data: ActionCell }} />

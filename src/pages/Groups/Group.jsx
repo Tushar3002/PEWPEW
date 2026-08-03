@@ -5,6 +5,9 @@ import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { TextCell } from "../../components/GridCells/TextCell";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import { DateCell } from "../../components/GridCells/DateCell";
 
 function Group() {
   const [data, setData] = useState([]);
@@ -20,14 +23,22 @@ function Group() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setSearch(searchInput);
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
+
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
-    return () => clearTimeout(timeOut);
+
+    return () => clearTimeout(timeout);
   }, [searchInput]);
 
   useEffect(() => {
@@ -59,6 +70,7 @@ function Group() {
     return (
       <td {...props.tdProps}>
         <button
+          title="userName"
           type="button"
           className="btn btn-link p-0"
           onClick={() => navigate(`/manage-end-users/view/${userId}`)}
@@ -182,81 +194,113 @@ function Group() {
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
           >
-            <Grid
-              data={data}
-              total={total}
-              pageable={{
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-                previousNext: true,
-              }}
-              skip={page.skip}
-              take={page.take}
-              onPageChange={(e) => setPage(e.page)}
-              sortable
-              sort={sort}
-              onSortChange={(e) => setSort(e.sort)}
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
             >
-              <GridColumn title="Action" cells={{ data: ActionCell }} />
-              <GridColumn title="Group Name" field="groupName" />
-              <GridColumn
-                title="Group Image"
-                field="groupImageFullUrl"
-                cells={{
-                  data: (props) => <AttachmentCell {...props} />,
+              <Grid
+                data={data}
+                total={total}
+                pageable={{
+                  buttonCount: 5,
+                  pageSizes: [5, 10, 20, 50, 100, 500],
+                  info: true,
+                  previousNext: true,
                 }}
-              />
-              <GridColumn title="About Group" field="about" />
-              <GridColumn
-                title="Group Type"
-                field="isPublic"
-                cells={{ data: GroupTypeCell }}
-              />
-              <GridColumn
-                title="Members"
-                field="totalMember"
-                cells={{
-                  data: (props) => (
-                    <CountLinkCell
-                      {...props}
-                      getPath={(item) => `/groups/view/${item.id}/members`}
-                    />
-                  ),
-                }}
-              />
-              <GridColumn
-                title="activities"
-                field="totalActivity"
-                cells={{
-                  data: (props) => (
-                    <CountLinkCell
-                      {...props}
-                      getPath={(item) => `/groups/activity/${item.id}`}
-                    />
-                  ),
-                }}
-              />
-              <GridColumn title="Reported" field="totalReport" />
-              <GridColumn
-                title="Created By"
-                field="userName"
-                cells={{ data: viewUserCell }}
-              />
-              <GridColumn title="Created On" field="createdOn" />
-              <GridColumn
-                title="Status"
-                cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="id"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
-              />
-            </Grid>
+                skip={page.skip}
+                take={page.take}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
+              >
+                <GridColumn
+                  width={"100px"}
+                  title="Action"
+                  cells={{ data: ActionCell }}
+                />
+                <GridColumn
+                  width={"180px"}
+                  title="Group Name"
+                  field="groupName"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  width={"180px"}
+                  title="Group Image"
+                  field="groupImageFullUrl"
+                  cells={{
+                    data: (props) => <AttachmentCell {...props} />,
+                  }}
+                />
+                <GridColumn
+                width={"240px"}
+                  title="About Group"
+                  field="about"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                width={"160px"}
+                  title="Group Type"
+                  field="isPublic"
+                  cells={{ data: GroupTypeCell }}
+                />
+                <GridColumn
+                width={"140px"}
+                  title="Members"
+                  field="totalMember"
+                  cells={{
+                    data: (props) => (
+                      <CountLinkCell
+                        {...props}
+                        getPath={(item) => `/groups/view/${item.id}/members`}
+                      />
+                    ),
+                  }}
+                />
+                <GridColumn
+                width={"140px"}
+                  title="activities"
+                  field="totalActivity"
+                  cells={{
+                    data: (props) => (
+                      <CountLinkCell
+                        {...props}
+                        getPath={(item) => `/groups/activity/${item.id}`}
+                      />
+                    ),
+                  }}
+                />
+                <GridColumn title="Reported" field="totalReport" width={"140px"}/>
+                <GridColumn
+                  title="Created By"
+                  field="userName"
+                  cells={{ data: viewUserCell }}
+                  width={"140px"}
+                />
+                <GridColumn
+                  title="Created On"
+                  field="createdOn"
+                  cells={{ data: DateCell }}
+                  width={"140px"}
+                />
+                <GridColumn
+                  title="Status"
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="id"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                  width={"120px"}
+                />
+              </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>

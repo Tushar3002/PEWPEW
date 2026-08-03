@@ -5,6 +5,7 @@ const StatusCell = ({ dataItem, tdProps, onToggle, idField = "id" ,statusField =
     <td {...tdProps} className="text-center align-middle">
       <div className="form-check form-switch d-inline-flex align-items-center m-0">
         <input
+          title={dataItem[statusField]?"Active":"Inactive"}
           className="form-check-input"
           type="checkbox"
           checked={Boolean(dataItem[statusField])}

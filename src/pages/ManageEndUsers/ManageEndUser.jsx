@@ -11,6 +11,8 @@ import {
 } from "../../api/EndUsers/endUserApi";
 import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import { TextCell } from "../../components/GridCells/TextCell";
 
 function ManageEndUser() {
   const [users, setUsers] = useState([]);
@@ -36,17 +38,23 @@ function ManageEndUser() {
     fetchUsers();
   }, [page, sort, search]);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
-
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchInput]);
+      const timeout = setTimeout(() => {
+        if (search !== searchInput) {
+          setSearch(searchInput);
+        }
+  
+        setPage((prev) => {
+          if (prev.skip === 0) return prev;
+  
+          return {
+            ...prev,
+            skip: 0,
+          };
+        });
+      }, 500);
+  
+      return () => clearTimeout(timeout);
+    }, [searchInput]);
 
   const fetchUsers = async () => {
     try {
@@ -272,6 +280,12 @@ function ManageEndUser() {
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
           <div className="table-responsive" style={{ overflow: "visible" }}>
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
+            >
             <Grid
               //   style={{ width: "100%", overflow: "visible" }}
               // style={{ height: "600px" }}
@@ -311,12 +325,13 @@ function ManageEndUser() {
                 width={"210px"}
                 field="firstName"
                 title="First Name"
+                cells={{data:TextCell}}
               />
-              <GridColumn width={"210px"} field="lastName" title="Last Name" />
-              <GridColumn width={"210px"} field="userName" title="User Name" />
+              <GridColumn width={"210px"} field="lastName" title="Last Name" cells={{data:TextCell}} />
+              <GridColumn width={"210px"} field="userName" title="User Name" cells={{data:TextCell}}/>
 
-              <GridColumn width={"210px"} field="contactNumber" title="Phone" />
-              <GridColumn width={"350px"} field="email" title="Email" />
+              <GridColumn width={"210px"} field="contactNumber" title="Phone" cells={{data:TextCell}}/>
+              <GridColumn width={"350px"} field="email" title="Email" cells={{data:TextCell}}/>
 
               <GridColumn
                 width={"240px"}
@@ -332,6 +347,7 @@ function ManageEndUser() {
                 }}
               />
             </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>

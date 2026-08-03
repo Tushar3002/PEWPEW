@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { TextCell } from "../../components/GridCells/TextCell";
 
 const eventTabs = [
   {
@@ -60,17 +61,23 @@ function Events() {
   } = useDeleteConfirmation();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
-
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchInput]);
+      const timeout = setTimeout(() => {
+        if (search !== searchInput) {
+          setSearch(searchInput);
+        }
+  
+        setPage((prev) => {
+          if (prev.skip === 0) return prev;
+  
+          return {
+            ...prev,
+            skip: 0,
+          };
+        });
+      }, 500);
+  
+      return () => clearTimeout(timeout);
+    }, [searchInput]);
 
   useEffect(() => {
     getEvents();
@@ -242,8 +249,8 @@ function Events() {
                     title="Action"
                     cells={{ data: ActionCell }}
                   />
-                  <GridColumn title="Host Name/Venue Name" field="venueName" />
-                  <GridColumn title="Event Name" field="eventName" />
+                  <GridColumn width={"220px"} title="Host Name/Venue Name" field="venueName" cells={{data:TextCell}}/>
+                  <GridColumn width={"220px"} title="Event Name" field="eventName" cells={{data:TextCell}} />
                   <GridColumn
                     title="Date & Time"
                     width="250px"
@@ -262,8 +269,9 @@ function Events() {
                     field="address"
                     cells={{ data: DetailsCell }}
                   />
-                  <GridColumn title="Created By" field="userName" />
+                  <GridColumn width={"220px"} title="Created By" field="userName" cells={{data:TextCell}}/>
                   <GridColumn
+                  width={"220px"}
                     title="Status"
                     field="approvalStatusName"
                     cells={{ data: StatusDropdownCell }}

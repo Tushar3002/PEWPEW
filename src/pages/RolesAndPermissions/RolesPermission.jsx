@@ -8,6 +8,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import { TextCell } from "../../components/GridCells/TextCell";
+import { GunCountCell } from "../../components/GridCells/GunCountCell";
 
 function RolesPermission() {
   const [data, setData] = useState([]);
@@ -29,16 +32,22 @@ function RolesPermission() {
     rolesandpermissionData();
   }, [page, sort, filter, search]);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
 
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeout);
   }, [searchInput]);
 
   const updateStatusData = async (id, isActive) => {
@@ -144,13 +153,13 @@ function RolesPermission() {
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
         <Breadcrumbs
-            items={[
-              {
-                id: "roles-permissions",
-                text: "Roles & Permissions",
-              }
-            ]}
-          />
+          items={[
+            {
+              id: "roles-permissions",
+              text: "Roles & Permissions",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
@@ -203,6 +212,12 @@ function RolesPermission() {
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
           >
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
+            >
             <Grid
               style={{ width: "100%", overflow: "visible" }}
               data={data}
@@ -229,20 +244,22 @@ function RolesPermission() {
                 }}
               />
               <GridColumn
-                width={"320px"}
+                width={"330px"}
                 field="role"
                 title="Role Name"
-                // columnMenu={ColumnMenu}
+                cells={{data:TextCell}}
               />
               <GridColumn
-                width={"550px"}
+                width={"580px"}
                 field="description"
                 title="Description"
+                cells={{data:TextCell}}
               />
               <GridColumn
-                width={"200px"}
+                width={"240px"}
                 field="noOfUser"
                 title="No. Of User"
+                cells={{data: GunCountCell}}
               />
 
               <GridColumn
@@ -259,6 +276,7 @@ function RolesPermission() {
                 }}
               />
             </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>

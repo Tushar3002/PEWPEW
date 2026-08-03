@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import CreateChatModal from "../components/CreateChatModal";
 
+import threeDots from '../assets/images/icons/triple-dots-v.svg'
+
 function Messaging() {
   const [showModal, setShowModal] = useState(false);
   return (
@@ -34,7 +36,7 @@ function Messaging() {
                               data-bs-toggle="dropdown"
                               aria-expanded="false"
                             >
-                              <img src="images/icons/triple-dots-v.svg" />
+                              <img src={threeDots} />
                             </button>
                           </div>
                         </span>
@@ -48,257 +50,7 @@ function Messaging() {
                           aria-label="search"
                         />
                       </div>
-                      <div className="modal-body">
-                        {/* <!-- chat-list --> */}
-                        <div className="chat-lists">
-                          {/* <!-- chat-list --> */}
-                          <div className="chat-list">
-                            <ul>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center current"
-                                >
-                                  <div className="flex-shrink-0 position-relative">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                    <span className="active"></span>
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">1m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center current"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">4+ Messages</p>
-                                    <span className="chat-time">10m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="d-flex align-items-center"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <img
-                                      className="img-fluid"
-                                      src="images/profile-img.png"
-                                      alt="user img"
-                                    />
-                                  </div>
-                                  <div className="ms-3">
-                                    <h3>
-                                      John Doe{" "}
-                                      <i className="demo-icon icon-verified"></i>
-                                    </h3>
-                                    <p className="fw-semibold">
-                                      Please check the above document.
-                                    </p>
-                                    <span className="chat-time">50m</span>
-                                  </div>
-                                </a>
-                              </li>
-                            </ul>
-                          </div>
-                          {/* <!-- chat-list --> */}
-                        </div>
-                        {/* <!-- chat-list --> */}
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -317,7 +69,7 @@ function Messaging() {
                               <div className="flex-shrink-0">
                                 <img
                                   className="img-fluid"
-                                  src="https://mehedihtml.com/chatbox/assets/img/user.png"
+                                  src=""
                                   alt="user img"
                                 />
                               </div>
@@ -355,79 +107,7 @@ function Messaging() {
                       </div>
                       <div className="modal-body">
                         <div className="msg-body">
-                          <ul>
-                            <li className="sender">
-                              <p> Hey, Are you there? </p>
-                              <span className="time">10:06 AM</span>
-                            </li>
-                            <li className="repaly">
-                              <p>How are you?</p>
-                              <span className="time">10:35 AM</span>
-                            </li>
-                            <li>
-                              <div className="divider">
-                                <h6>New Message</h6>
-                              </div>
-                            </li>
-                            <li className="repaly">
-                              <p> yes, tell me</p>
-                              <span className="time">10:36 AM</span>
-                            </li>
-                            <li className="repaly">
-                              <p>yes... on it</p>
-                              <span className="time">Just Now</span>
-                            </li>
-                            <li className="sender">
-                              <p> Hey, Are you there? </p>
-                              <span className="time">10:16 AM</span>
-                            </li>
-                            <li className="repaly">
-                              <p>yes!</p>
-                              <span className="time">10:20 AM</span>
-                            </li>
-                            <li className="sender">
-                              <p> Hey, Are you there? </p>
-                              <span className="time">10:26 AM</span>
-                            </li>
-                            <li className="sender">
-                              <p> Hey, Are you there? </p>
-                              <span className="time">10:32 AM</span>
-                            </li>
-                            <li className="repaly">
-                              <p>How are you?</p>
-                              <span className="time">10:35 AM</span>
-                            </li>
-                            <li>
-                              <div className="divider">
-                                <h6>New Message</h6>
-                              </div>
-                            </li>
-                            <li className="repaly">
-                              <p> yes, tell me</p>
-                              <span className="time">10:36 AM</span>
-                            </li>
-                            <li className="repaly">
-                              <p>yes... on it</p>
-                              <span className="time">Just Now</span>
-                            </li>
-                            <li className="repaly">
-                              <p>How are you?</p>
-                              <span className="time">10:35 AM</span>
-                            </li>
-                            <li>
-                              <div className="divider">
-                                <h6>New Message</h6>
-                              </div>
-                            </li>
-                            <li className="repaly">
-                              <p> yes, tell me</p>
-                              <span className="time">10:36 AM</span>
-                            </li>
-                            <li className="repaly">
-                              <p>yes... on it</p>
-                              <span className="time">Just Now</span>
-                            </li>
-                          </ul>
+                          
                         </div>
                       </div>
                       <div className="send-box d-flex gap-2">

@@ -1,5 +1,5 @@
 export const TextCell = (props) => {
-    const value = props.dataItem[props.field] ?? "";
+    const value = props.value ?? props.dataItem[props.field] ?? "";
 
     return (
       <td {...props.tdProps}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import profileImage from "../../../assets/images/user-img.png";
+import profileImage from "../../../assets/images/profile-img.png";
 // import badge1 from "../../../assets/images/badge-1.svg";
 // import badge2 from "../../../assets/images/badge-2.svg";
 // import badge3 from "../../../assets/images/badge-3.svg";

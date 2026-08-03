@@ -28,7 +28,7 @@ const attachments = Array.isArray(value)
             isVideo(file) ? (
               <div
                 key={index}
-                onClick={() => onOpen?.(attachments, index)}
+                onClick={onOpen ?() => onOpen?.(attachments, index):undefined}
                 style={{
                   position: "relative",
                   cursor: "pointer",
@@ -66,11 +66,11 @@ const attachments = Array.isArray(value)
                 src={file}
                 // alt={`Attachment ${index + 1}`}
                 alt={`#`}
-                onClick={() => onOpen(attachments, index)}
+                onClick={onOpen ? () => onOpen(attachments, index): undefined}
                 style={{
-                  width: "100%",
-                  height: "60px",
-                  objectFit: "cover",
+                  width: "80px",
+                  height: "70px",
+                  objectFit: "contain",
                   borderRadius: "6px",
                   cursor: "pointer",
                 }}

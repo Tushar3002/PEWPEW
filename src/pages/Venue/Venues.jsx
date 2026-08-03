@@ -15,6 +15,8 @@ import { getVenueApprovalStatus } from "../../api/Common/commonApi";
 import GunModal from "../../components/Modal/GunModal";
 import { GunCountCell } from "../../components/GridCells/GunCountCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { Tooltip } from "@progress/kendo-react-tooltip";
+import { PhoneCell } from "../../components/GridCells/PhoneCell";
 
 function Venues() {
   const [data, setData] = useState([]);
@@ -40,16 +42,22 @@ function Venues() {
     approvalStatusData();
   }, [page, sort, search]);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
 
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeout);
   }, [searchInput]);
 
   const venueData = async () => {
@@ -166,6 +174,7 @@ function Venues() {
     return (
       <td {...props.tdProps}>
         <button
+          title="userName"
           type="button"
           className="btn btn-link p-0"
           onClick={() => navigate(`/manage-users/edit/${userId}`)}
@@ -294,114 +303,127 @@ function Venues() {
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
           >
-            <Grid
-              style={{ width: "100%", overflow: "visible" }}
-              data={data}
-              pageable={{
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-                previousNext: true,
-              }}
-              skip={page.skip}
-              take={page.take}
-              total={total}
-              onPageChange={(e) => setPage(e.page)}
-              sortable
-              sort={sort}
-              onSortChange={(e) => setSort(e.sort)}
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
             >
-              <GridColumn
-                width={"125px"}
-                title="Action"
-                cells={{ data: ActionCell }}
-              />
-              <GridColumn
-                width={"150px"}
-                title="Owner Name"
-                // field="venueOwnerUserName"
-                cells={{ data: editUserCell }}
-              />
-              <GridColumn
-                width={"180px"}
-                title="Venue Name"
-                field="venueName"
-              />
-              <GridColumn
-                width={"220px"}
-                title="Description"
-                field="description"
-                cells={{ data: TextCell }}
-              />
-              <GridColumn
-                width={"190px"}
-                title="Website"
-                field="website"
-                cells={{ data: WebsiteCell }}
-              />
-              <GridColumn width={"120px"} title="Phone" field="phone" />
-              <GridColumn
-                width={"260px"}
-                title="Address"
-                field="address"
-                cells={{ data: TextCell }}
-              />
-              <GridColumn
-                width={"160px"}
-                title="No. of Gun"
-                field="totalGun"
-                cells={{
-                  data: (props) => (
-                    <GunCountCell
-                      {...props}
-                      onClick={handleGunClick}
-                      idField="venueId"
-                    />
-                  ),
+              <Grid
+                style={{ width: "100%", overflow: "visible" }}
+                data={data}
+                pageable={{
+                  buttonCount: 5,
+                  pageSizes: [5, 10, 20, 50, 100, 500],
+                  info: true,
+                  previousNext: true,
                 }}
-              />
-              <GridColumn
-                width={"160px"}
-                title="Avg Venue Ratings"
-                field="avgRate"
-              />
-              <GridColumn
-                width={"160px"}
-                title="No. of Check-Ins"
-                field="noOfChackin"
-              />
-              <GridColumn
-                width={"160px"}
-                title="No. of Event Created "
-                field="noOfEvent"
-              />
-              <GridColumn width={"160px"} title="Created By" field="userName" />
-              <GridColumn
-                width={"160px"}
-                title="Created On"
-                field="createdOn"
-                cells={{ data: DateCell }}
-              />
-              <GridColumn
-                width={"220px"}
-                title="Approval Status"
-                field="approvalStatusName"
-                cells={{ data: StatusDropdownCell }}
-              />
-              <GridColumn
-                width={"160px"}
-                title="Status"
-                cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="venueId"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
-              />
-            </Grid>
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
+              >
+                <GridColumn
+                  width={"125px"}
+                  title="Action"
+                  cells={{ data: ActionCell }}
+                />
+                <GridColumn
+                  width={"150px"}
+                  title="Owner Name"
+                  // field="venueOwnerUserName"
+                  cells={{ data: editUserCell }}
+                />
+                <GridColumn
+                  width={"180px"}
+                  title="Venue Name"
+                  field="venueName"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  width={"220px"}
+                  title="Description"
+                  field="description"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  width={"190px"}
+                  title="Website"
+                  field="website"
+                  cells={{ data: WebsiteCell }}
+                />
+                <GridColumn width={"140px"} title="Phone" cells={{ data: PhoneCell }}/>
+                <GridColumn
+                  width={"260px"}
+                  title="Address"
+                  field="address"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="No. of Gun"
+                  field="totalGun"
+                  cells={{
+                    data: (props) => (
+                      <GunCountCell
+                        {...props}
+                        onClick={handleGunClick}
+                        idField="venueId"
+                      />
+                    ),
+                  }}
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="Avg Venue Ratings"
+                  field="avgRate"
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="No. of Check-Ins"
+                  field="noOfChackin"
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="No. of Event Created "
+                  field="noOfEvent"
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="Created By"
+                  field="userName"
+                  cells={{data:TextCell}}
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="Created On"
+                  field="createdOn"
+                  cells={{ data: DateCell }}
+                />
+                <GridColumn
+                  width={"220px"}
+                  title="Approval Status"
+                  field="approvalStatusName"
+                  cells={{ data: StatusDropdownCell }}
+                />
+                <GridColumn
+                  width={"160px"}
+                  title="Status"
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="venueId"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
+              </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>

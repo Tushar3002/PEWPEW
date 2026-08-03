@@ -5,7 +5,7 @@ import PrivateLayout from "../layouts/PrivateLayout.jsx";
 import Activity from "../pages/Activity/Activity.jsx";
 import ManageUser from "../pages/ManageUsers/ManageUser.jsx";
 import Events from "../pages/Events/Events.jsx";
-import LeaderBoard from "../pages/LeaderBoard.jsx";
+import LeaderBoard from "../pages/LeaderBoard/LeaderBoard.jsx";
 
 import Messaging from "../pages/Messaging.jsx";
 import ReportedUsers from "../pages/ReportedUsers/ReportedUsers.jsx";

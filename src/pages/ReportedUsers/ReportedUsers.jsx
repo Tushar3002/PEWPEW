@@ -4,6 +4,7 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
+import { useLocation } from "react-router-dom";
 
 function ReportedUsers() {
   const [data, setData] = useState([]);
@@ -14,20 +15,28 @@ function ReportedUsers() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [sort, setSort] = useState([]);
+
+  const location=useLocation()
+  const [sort, setSort] = useState(location.state?.sort || []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
-
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchInput]);
+      const timeout = setTimeout(() => {
+        if (search !== searchInput) {
+          setSearch(searchInput);
+        }
+  
+        setPage((prev) => {
+          if (prev.skip === 0) return prev;
+  
+          return {
+            ...prev,
+            skip: 0,
+          };
+        });
+      }, 500);
+  
+      return () => clearTimeout(timeout);
+    }, [searchInput]);
 
   useEffect(() => {
     fetchReportList();

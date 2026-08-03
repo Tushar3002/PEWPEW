@@ -28,6 +28,7 @@ export const GunCountCell = ({
   <td {...tdProps}>
     {count > 0 ? (
       <button
+        title={count}
         type="button"
         className="btn btn-link p-0"
         onClick={() => onClick(id)}

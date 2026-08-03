@@ -4,7 +4,7 @@ import {
   Calendar,
   CalendarCell,
 } from "@progress/kendo-react-dateinputs";
-import defaultProfilePic from "../../assets/images/user-img.png";
+import defaultProfilePic from "../../assets/images/profile-img.png";
 import { useForm, Controller } from "react-hook-form";
 import { initialUserForm } from "../../constants/userForm";
 import Breadcrumbs from "../BreadCrumbs/Breadcrumbs";

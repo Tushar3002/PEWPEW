@@ -44,16 +44,22 @@ function SupportTicket() {
     closeDeleteModal,
   } = useDeleteConfirmation();
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
 
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeout);
   }, [searchInput]);
   useEffect(() => {
     getSupportTickets();
@@ -204,6 +210,7 @@ function SupportTicket() {
     return (
       <td {...props.tdProps}>
         <select
+         title={status.find((s) => s.id === currentStatusId)?.description}
           className="form-select"
           value={currentStatusId}
           onChange={handleStatusChange}
@@ -225,13 +232,13 @@ function SupportTicket() {
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
-        <Breadcrumbs 
+        <Breadcrumbs
           items={[
-              {
-                id: "support-tickets",
-                text: "Support Tickets",
-              }
-            ]}
+            {
+              id: "support-tickets",
+              text: "Support Tickets",
+            },
+          ]}
         />
         <div className="col-12 col-lg-auto">
           <form

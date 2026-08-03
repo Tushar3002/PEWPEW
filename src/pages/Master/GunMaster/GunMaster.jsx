@@ -298,11 +298,12 @@ function GunMaster() {
                   title="Action"
                   cells={{ data: ActionCell }}
                 />
-                <GridColumn title="Gun Name" field="gunName" />
-                <GridColumn title="Category Name" field="categoryNames" />
+                <GridColumn title="Gun Name" field="gunName" cells={{data:TextCell}} />
+                <GridColumn title="Category Name" field="categoryNames" cells={{data:TextCell}} />
                 <GridColumn
                   title="Manyfacturer Name"
                   field="manufacturerNames"
+                  cells={{data:TextCell}}
                 />
                 <GridColumn
                   title="Details"
@@ -318,13 +319,13 @@ function GunMaster() {
                     ),
                   }}
                 />
-                <GridColumn title="Ammunition" field="ammunitions" />
+                <GridColumn title="Ammunition" field="ammunitions" cells={{data:TextCell}}/>
                 <GridColumn
                   title="Created On"
                   field="createdDate"
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" />
+                <GridColumn title="Modified By" field="updatedByUserName" cells={{data:TextCell}} />
 
                 <GridColumn
                 width={"180px"}

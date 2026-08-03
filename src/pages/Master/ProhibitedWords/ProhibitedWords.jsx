@@ -12,6 +12,7 @@ import StatusCell from "../../../components/GridCells/StatusCell";
 import { ProhibitedWordsModal } from "../../../components/Modal/ProhibitedWordsModal";
 import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
+import { TextCell } from "../../../components/GridCells/TextCell";
 
 function ProhibitedWords() {
   const [data, setData] = useState([]);
@@ -228,15 +229,15 @@ function ProhibitedWords() {
                   title="Action"
                   cells={{ data: ActionCell }}
                 />
-                <GridColumn title="Prohibited Words" field="words" />
-                <GridColumn title="Description" field="description" />
-                <GridColumn title="Created By" field="createdByUserName" />
+                <GridColumn title="Prohibited Words" field="words" cells={{data:TextCell}}/>
+                <GridColumn title="Description" field="description" cells={{data:TextCell}}/>
+                <GridColumn title="Created By" field="createdByUserName" cells={{data:TextCell}}/>
                 <GridColumn
                   title="Created On"
                   field="createdOn"
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" />
+                <GridColumn title="Modified By" field="updatedByUserName" cells={{data:TextCell}}/>
                 <GridColumn
                   title="Status"
                   field="status"

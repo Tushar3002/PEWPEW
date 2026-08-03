@@ -75,7 +75,7 @@ function EventsDetail() {
 
           <div className="col-12 col-md-8">
             <div className="mb-2">
-              <span className="border rounded px-2 py-1">
+              <span className="border rounded px-2 py-1 ">
                 {data.venueTypeName || "-"}
               </span>
             </div>

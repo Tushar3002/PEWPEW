@@ -9,12 +9,17 @@ export const ApprovalStatusDropdownCell = ({
   return (
     <td {...tdProps}>
       <DropDownList
+        title={
+          approvalStatusDropdown.find(
+            (item) => item.id === dataItem.approvalStatus,
+          )?.description || ""
+        }
         data={approvalStatusDropdown}
         textField="description"
         dataItemKey="id"
         value={
           approvalStatusDropdown.find(
-            (item) => item.id === dataItem.approvalStatus
+            (item) => item.id === dataItem.approvalStatus,
           ) || null
         }
         disabled={dataItem.isAdminAdd}

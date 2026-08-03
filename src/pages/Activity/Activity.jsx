@@ -4,13 +4,15 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { getActivities } from "../../api/EndUsers/endUserViewApi";
 import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import AttachmentViewerModal from "../../components/Modal/AttachmentViewerModal";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DateCell } from "../../components/GridCells/DateCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { updatePostStatus } from "../../api/Activity/activity";
 import ReportListModal from "../../components/Modal/ReportListModal";
 import useAttachmentViewer from "../../hooks/useAttachmentViewer";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { DetailsCell } from "../../components/GridCells/DetailsCell";
+import { Tooltip } from "@progress/kendo-react-tooltip";
 
 function Activity() {
   const [data, setData] = useState([]);
@@ -21,7 +23,8 @@ function Activity() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [sort, setSort] = useState([]);
+  const location = useLocation();
+  const [sort, setSort] = useState(location.state?.sort || []);
 
   const [showReport, setShowReport] = useState(false);
   const [reportedIdData, setReportedIdData] = useState("");
@@ -38,23 +41,31 @@ function Activity() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setSearch(searchInput);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
 
-      setPage((prev) => ({
-        ...prev,
-        skip: 0,
-      }));
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
     }, 500);
 
-    return () => clearTimeout(timeOut);
+    return () => clearTimeout(timeout);
   }, [searchInput]);
 
   useEffect(() => {
+
     getActivitiesData();
   }, [page, sort, search]);
 
   const getActivitiesData = async () => {
+    console.log("getActivitiesData called");
     const body = {
       Page: page.skip / page.take + 1,
       PageSize: page.take,
@@ -217,6 +228,12 @@ function Activity() {
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
           >
+            <Tooltip
+                            anchorElement="target"
+                            position="top"
+                            openDelay={100}
+                            className="grid-tooltip"
+                          >
             <Grid
               style={{ width: "100%", overflow: "visible" }}
               data={data}
@@ -236,28 +253,28 @@ function Activity() {
             >
               <GridColumn
                 title="Actions"
-                width={"80px"}
+                width={"95px"}
                 cells={{ data: ActionCell }}
               />
               <GridColumn
                 title="Created By"
-                width={"140px"}
+                width={"150px"}
                 field="userName"
                 cells={{ data: viewUserCell }}
               />
               <GridColumn
                 title="Created On"
-                width={"140px"}
+                width={"150px"}
                 field="createdOn"
                 cells={{ data: DateCell }}
               />
               <GridColumn
                 title="Post Type"
-                width={"140px"}
+                width={"150px"}
                 field="postTypeName"
               />
               <GridColumn
-                width={"210px"}
+                width={"225px"}
                 title="Image/Video"
                 field="attachmentList"
                 cells={{
@@ -266,7 +283,7 @@ function Activity() {
                   ),
                 }}
               />
-              <GridColumn width={"240px"} title="Description" field="post" />
+              <GridColumn width={"240px"} title="Description" field="post" cells={{data:DetailsCell}}/>
               <GridColumn width={"120px"} title="Ratings" field="rate" />
               <GridColumn width={"120px"} title="Guns" field="totalGun" />
               <GridColumn
@@ -313,6 +330,7 @@ function Activity() {
                 }}
               />
             </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>
