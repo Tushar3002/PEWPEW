@@ -13,7 +13,7 @@
 .k-grid .k-grid-pager {
   overflow: visible !important;
   position: relative;
-  z-index: 20;
+  z-index: 20;  
 }
 
 .k-grid .k-grid-pager .k-pager-wrap {
@@ -61,9 +61,7 @@
 }
 
 .k-grid .k-grid-table {
-  width: 100% !important;
-  min-width: 100%;
-  table-layout: fixed;
+  box-sizing: border-box;
 }
 
 .k-grid .k-grid-header-wrap,
@@ -73,12 +71,18 @@
   box-sizing: border-box;
 }
 
+.k-grid .k-grid-header-wrap {
+  overflow-x: hidden !important;
+}
+
+.k-grid .k-grid-content {
+  overflow-x: auto !important;
+}
+
 .k-grid .k-grid-table > thead > tr > th,
 .k-grid .k-grid-table > tbody > tr > td {
   box-sizing: border-box;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* Header */
