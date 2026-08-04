@@ -294,7 +294,6 @@ function GunMaster() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  width={"125px"}
                   title="Action"
                   cells={{ data: ActionCell }}
                 />
@@ -328,7 +327,6 @@ function GunMaster() {
                 <GridColumn title="Modified By" field="updatedByUserName" cells={{data:TextCell}} />
 
                 <GridColumn
-                width={"180px"}
                   title="Approval Status"
                   field="approvalStatus"
                   cells={{

@@ -9,6 +9,8 @@ import { useForm, Controller } from "react-hook-form";
 import { initialUserForm } from "../../constants/userForm";
 import Breadcrumbs from "../BreadCrumbs/Breadcrumbs";
 
+import { DropDownList, MultiSelect } from "@progress/kendo-react-dropdowns";
+
 function UserForm({
   genders = [],
   roles = [],
@@ -25,28 +27,18 @@ function UserForm({
     preview || defaultProfilePic,
   );
   const today = new Date();
-today.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
 
-const DisabledFutureCell = (props) => {
-  const cellDate = new Date(props.value);
-  cellDate.setHours(0, 0, 0, 0);
+  const DisabledFutureCell = (props) => {
+    const cellDate = new Date(props.value);
+    cellDate.setHours(0, 0, 0, 0);
 
-  return (
-    <CalendarCell
-      {...props}
-      isDisabled={cellDate > today}
-    />
-  );
-};
+    return <CalendarCell {...props} isDisabled={cellDate > today} />;
+  };
 
-const BirthdayCalendar = (props) => {
-  return (
-    <Calendar
-      {...props}
-      cell={DisabledFutureCell}
-    />
-  );
-};
+  const BirthdayCalendar = (props) => {
+    return <Calendar {...props} cell={DisabledFutureCell} />;
+  };
   const {
     register,
     handleSubmit,
@@ -270,22 +262,34 @@ const BirthdayCalendar = (props) => {
                     <label htmlFor="gender" className="fw-semibold">
                       Gender
                     </label>
-                    <select
-                      id="gender"
-                      className={`form-select ${errors.gender ? "is-invalid" : ""}`}
-                      {...register("gender", {
+
+                    <Controller
+                      name="gender"
+                      control={control}
+                      rules={{
                         required: "Select One Gender",
-                      })}
-                    >
-                      {genders.map((gender) => (
-                        <option key={gender.id} value={gender.id}>
-                          {gender.description}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="invalid-feedback">
-                      {errors.gender?.message}
-                    </div>
+                      }}
+                      render={({ field }) => (
+                        <DropDownList
+                          data={genders}
+                          textField="description"
+                          dataItemKey="id"
+                          value={
+                            genders.find(
+                              (gender) => gender.id === field.value,
+                            ) || null
+                          }
+                          onChange={(e) => field.onChange(e.value?.id ?? "")}
+                          className={`form-control ${errors.gender ? "is-invalid" : ""}`}
+                        />
+                      )}
+                    />
+
+                    {errors.gender && (
+                      <div className="invalid-feedback d-block">
+                        {errors.gender.message}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -368,19 +372,22 @@ const BirthdayCalendar = (props) => {
                         control={control}
                         rules={{ required: "Country Code is required" }}
                         render={({ field }) => (
-                          <select
-                            className={`form-select ${errors.countryCode ? "is-invalid" : ""}`}
+                          <DropDownList
+                            data={countryCodeData}
+                            textField="phoneInternationalCode"
+                            dataItemKey="countryId"
                             style={{
                               width: "90px",
                               minWidth: "90px",
                               maxWidth: "90px",
                             }}
-                            value={field.value ?? ""}
+                            value={
+                              countryCodeData.find(
+                                (country) => country.countryId === field.value,
+                              ) || null
+                            }
                             onChange={(e) => {
-                              const selectedCountry = countryCodeData.find(
-                                (country) =>
-                                  String(country.countryId) === e.target.value,
-                              );
+                              const selectedCountry = e.value;
 
                               if (!selectedCountry) {
                                 field.onChange("");
@@ -395,24 +402,14 @@ const BirthdayCalendar = (props) => {
                                   selectedCountry.phoneInternationalCode,
                               );
                             }}
-                          >
-                            <option value="">+1</option>
-                            {countryCodeData.map((country) => (
-                              <option
-                                key={country.countryId}
-                                value={country.countryId}
-                              >
-                                {country.phoneInternationalCode}{" "}
-                                {country.countryName}
-                              </option>
-                            ))}
-                          </select>
+                            defaultItem={{
+                              countryId: "",
+                              phoneInternationalCode: "+1",
+                            }}
+                            className={`form-control ${errors.countryCode ? "is-invalid" : ""}`}
+                          />
                         )}
                       />
-
-                      {/* {errors.countryCode && (
-                        <div className="invalid-feedback d-block">{errors.countryCode.message}</div>
-                      )} */}
 
                       <input
                         id="contactNumber"
@@ -425,6 +422,7 @@ const BirthdayCalendar = (props) => {
                           },
                         })}
                       />
+
                       <div className="invalid-feedback">
                         {errors.contactNumber?.message}
                       </div>
@@ -463,26 +461,41 @@ const BirthdayCalendar = (props) => {
                     <label htmlFor="role" className="fw-semibold">
                       Role
                     </label>
-                    <select
-                      id="role"
-                      className={`form-select ${errors.role ? "is-invalid" : ""}`}
-                      {...register("role", {
+
+                    <Controller
+                      name="role"
+                      control={control}
+                      rules={{
                         required: "Role is required",
-                        onChange: (e) => {
-                          onRoleChange(e.target.value);
-                        },
-                      })}
-                    >
-                      <option value="">Select Role</option>
-                      {roles.map((role) => (
-                        <option key={role.key} value={role.key}>
-                          {role.value}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="invalid-feedback">
-                      {errors.role?.message}
-                    </div>
+                      }}
+                      render={({ field }) => (
+                        <DropDownList
+                          data={roles}
+                          textField="value"
+                          dataItemKey="key"
+                          value={
+                            roles.find((role) => role.key === field.value) ||
+                            null
+                          }
+                          onChange={(e) => {
+                            const value = e.value?.key ?? "";
+                            field.onChange(value);
+                            onRoleChange(value);
+                          }}
+                          defaultItem={{
+                            key: "",
+                            value: "Select Role",
+                          }}
+                          className={`form-control ${errors.role ? "is-invalid" : ""}`}
+                        />
+                      )}
+                    />
+
+                    {errors.role && (
+                      <div className="invalid-feedback d-block">
+                        {errors.role.message}
+                      </div>
+                    )}
                   </div>
                 </div>
 

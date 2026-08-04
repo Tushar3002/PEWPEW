@@ -208,7 +208,7 @@ function ProhibitedWords() {
               className="grid-tooltip"
             >
               <Grid
-                style={{ width: "100%", overflow: "visible" }}
+                // style={{ width: "100%", overflow: "visible" }}
                 data={data}
                 pageable={{
                   buttonCount: 5,
@@ -225,7 +225,7 @@ function ProhibitedWords() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  width={"125px"}
+
                   title="Action"
                   cells={{ data: ActionCell }}
                 />

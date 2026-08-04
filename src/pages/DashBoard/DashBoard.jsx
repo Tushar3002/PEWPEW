@@ -17,6 +17,7 @@ import { DateCell } from "../../components/GridCells/DateCell";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { updateActivitiesStatus } from "../../api/EndUsers/endUserViewApi";
 import { Link, useNavigate } from "react-router-dom";
+import { DropDownList } from "@progress/kendo-react-dropdowns";
 
 function DashBoard() {
   const [data, setData] = useState({});
@@ -161,17 +162,22 @@ function DashBoard() {
           </div>
 
           <div className="col-12 col-md-auto">
-            <select
-              className="form-select w-100"
-              value={selectedFilter}
-              onChange={handleFilterChange}
-            >
-              {filterDropDown.map((data) => (
-                <option key={data.id} value={data.id}>
-                  {data.description}
-                </option>
-              ))}
-            </select>
+            <DropDownList
+              size="large"
+              data={filterDropDown}
+              textField="description"
+              dataItemKey="id"
+              value={
+                filterDropDown.find((item) => item.id === selectedFilter) ||
+                null
+              }
+              onChange={(e) =>
+                handleFilterChange({
+                  target: { value: e.value?.id ?? "" },
+                })
+              }
+              // className={`form-control `}
+            />
           </div>
         </div>
 

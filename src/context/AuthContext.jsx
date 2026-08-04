@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../api/userApi";
+import { clearStorage, setStorage } from "../utils/storage";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [menu, setMenu] = useState([]);
   // const navigate=useNavigate()
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,7 +23,6 @@ export const AuthProvider = ({ children }) => {
 
         setUser(user.data);
         // console.log("Get Current",user);
-        
       } catch {
         localStorage.removeItem("token");
       } finally {
@@ -33,14 +34,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
   const login = (data) => {
     localStorage.setItem("token", data.token);
+    setStorage("menuList", data.userDetails.menuPermissions);
+
     setUser(data.userDetails);
+
     setLoading(false);
     // console.log("JANA@",data);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-
+    // localStorage.removeItem("token");
+    clearStorage();
     setUser(null);
     // navigate('/')
   };

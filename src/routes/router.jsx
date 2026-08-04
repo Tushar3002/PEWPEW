@@ -32,6 +32,8 @@ import AmmunitionMaster from "../pages/Master/AmmunitionMaster/AmmunitionMaster.
 import Manufacturer from "../pages/Master/ManufacturerMaster/Manufacturer.jsx";
 import CategoryMaster from "../pages/Master/CategoryMaster/CategoryMaster.jsx";
 import AccessoriesMaster from "../pages/Master/AccessoriesMaster/AccessoriesMaster.jsx";
+import Profile from "../pages/Profile/Profile.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -49,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <DashBoard />,
+      },
+      {
+        path:'/profile',
+        element:<Profile/>
       },
       {
         path: "manage-users",
@@ -215,7 +221,8 @@ const router = createBrowserRouter([
             element:<Manufacturer/>
           }
         ]
-      }
+      },
+      
     ],
   },
 ]);

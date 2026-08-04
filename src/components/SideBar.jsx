@@ -1,146 +1,108 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import SimpleBar from "simplebar-react";
+import { MENU_ITEMS } from "../constants/menuConfig";
+import { getStorage } from "../utils/storage";
+
 function SideBar() {
   const [open, setOpen] = useState(false);
+
+  const permissions = getStorage("menuList") || [];
+  console.log("Permission", permissions);
+  const sidebarMenus = useMemo(() => {
+    return MENU_ITEMS.map((menu) => {
+      // Masters
+      if (menu.children) {
+        const children = menu.children
+          .map((child) => {
+            const permission = permissions.find(
+              (p) => p.menuName === child.menuName && p.canRead,
+            );
+
+            if (!permission) return null;
+
+            return {
+              ...child,
+              displayName: permission.displayName,
+            };
+          })
+          .filter(Boolean);
+
+        if (children.length === 0) return null;
+
+        return {
+          ...menu,
+          children,
+        };
+      }
+
+      // Normal menu
+      const permission = permissions.find(
+        (p) => p.menuName === menu.menuName && p.canRead,
+      );
+
+      if (!permission) return null;
+
+      return {
+        ...menu,
+        displayName: permission.displayName,
+      };
+    }).filter(Boolean);
+  }, [permissions]);
+
   return (
     <aside id="sidebar">
       <SimpleBar style={{ maxHeight: "100%" }}>
         <div className="sidebar-menu-section">
           <ul>
-            <li>
-              <NavLink to={"/"} className="active">
-                <i className="demo-icon icon-dashboard"></i>
-                <span>Dashboard</span>
-              </NavLink>
-            </li>
+            {sidebarMenus.map((item) => {
+              if (item.children) {
+                return (
+                  <li
+                    key={item.menuName}
+                    className={`has-submenu ${open ? "open" : ""}`}
+                  >
+                    <a
+                      href="#"
+                      className="submenu-toggle d-flex w-100 justify-content-between"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setOpen(!open);
+                      }}
+                    >
+                      <span>
+                        <i className={`demo-icon ${item.icon}`}></i>
+                        <span>{item.displayName ?? "Masters"}</span>
+                      </span>
 
-            <li>
-              <NavLink to={"/activity"}>
-                <i className="demo-icon icon-activity"></i>
-                <span>Activity</span>
-              </NavLink>
-            </li>
+                      <i className="demo-icon icon-down-arrow"></i>
+                    </a>
 
-            <li>
-              <NavLink to={"/groups"}>
-                <i className="demo-icon icon-users"></i>
-                <span>Groups</span>
-              </NavLink>
-            </li>
+                    <ul
+                      className="submenu"
+                      style={{
+                        display: open ? "block" : "none",
+                      }}
+                    >
+                      {item.children.map((child) => (
+                        <li key={child.menuName}>
+                          <NavLink to={child.path}>{child.displayName}</NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              }
 
-            <li>
-              <NavLink to={"/events"}>
-                <i className="demo-icon icon-roles"></i>
-                <span>Events</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/venues"}>
-                <i className="demo-icon icon-location-2"></i>
-                <span>Venues</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/roles-permissions"}>
-                <i className="demo-icon icon-roles-permission"></i>
-                <span>Roles & Permission</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/manage-users"}>
-                <i className="demo-icon icon-manage-user"></i>
-                <span>Manage Users</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/manage-end-users"}>
-                <i className="demo-icon icon-manage-end-users"></i>
-                <span>Manage End Users</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/supportTicket"}>
-                <i className="demo-icon icon-support-ticket"></i>
-                <span>Support Ticket</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/messaging"}>
-                <i className="demo-icon icon-messaging-1"></i>
-                <span>Messaging</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/reported-users"}>
-                <i className="demo-icon icon-reported-uses"></i>
-                <span>Reported Users</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/leaderboard"}>
-                <i className="demo-icon icon-leaderboard"></i>
-                <span>Leaderboard</span>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to={"/manage-badges"}>
-                <i className="demo-icon icon-manage-badges"></i>
-                <span>Manage Badges</span>
-              </NavLink>
-            </li>
-
-            <li className={`has-submenu ${open ? "open" : ""}`}>
-              <a
-                href="#"
-                className="submenu-toggle d-flex w-100 justify-content-between"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setOpen(!open);
-                }}
-              >
-                <span>
-                  <i className="demo-icon icon-masters"></i>
-                  <span>Masters</span>
-                </span>
-
-                <i className="demo-icon icon-down-arrow"></i>
-              </a>
-
-              <ul
-                className="submenu"
-                style={{ display: open ? "block" : "none" }}
-              >
-                <li>
-                  <NavLink to="/master/prohibited-words">Prohibited Words</NavLink>
+              return (
+                <li key={item.menuName}>
+                  <NavLink to={item.path}>
+                    <i className={`demo-icon ${item.icon}`}></i>
+                    <span>{item.displayName}</span>
+                  </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/master/gun">Gun Master</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/master/ammunition">Ammunition Master</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/master/accessories">Accessories Master</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/master/category">Category Master</NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="/master/manufacturer">Manufacturer Master</NavLink>
-                </li>
-              </ul>
-            </li>
+              );
+            })}
           </ul>
         </div>
       </SimpleBar>

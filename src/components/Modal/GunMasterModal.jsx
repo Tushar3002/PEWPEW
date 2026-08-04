@@ -4,7 +4,7 @@ import { addGuns, editGunById, getGunById } from "../../api/Gun/gunApi";
 import { categoryDropDown } from "../../api/Gun/gunCategoryMaster";
 import { getManufacturerDropdownData } from "../../api/Manufacturer/manufacturer";
 import { getDropdownAmmunitions } from "../../api/Ammunition/ammunition";
-import "../../assets/css/dropdown.css";
+// import "../../assets/css/dropdown.css";
 import { DropDownList, MultiSelect } from "@progress/kendo-react-dropdowns";
 import { getGunApprovalStatus } from "../../api/Common/commonApi";
 

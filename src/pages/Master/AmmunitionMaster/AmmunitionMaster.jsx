@@ -220,7 +220,7 @@ function AmmunitionMaster() {
                   onSortChange={(e) => setSort(e.sort)}
                 >
                   <GridColumn
-                    width={"125px"}
+ 
                     title="Action"
                     cells={{ data: ActionCell }}
                   />

@@ -15,6 +15,7 @@ import "./assets/fonts/fontAwesome/fontawesome-all.css";
 import "simplebar-react/dist/simplebar.min.css";
 import "../node_modules/@progress/kendo-theme-default/dist/all.css";
 import "./assets/css/grid.css";
+import "./assets/css/dropdown.css"
 // import "@progress/kendo-theme-default/dist/all.css";
 // import "@progress/kendo-theme-default";
 

@@ -60,7 +60,6 @@ function Activity() {
   }, [searchInput]);
 
   useEffect(() => {
-
     getActivitiesData();
   }, [page, sort, search]);
 
@@ -229,107 +228,112 @@ function Activity() {
             style={{ overflow: "visible" }}
           >
             <Tooltip
-                            anchorElement="target"
-                            position="top"
-                            openDelay={100}
-                            className="grid-tooltip"
-                          >
-            <Grid
-              style={{ width: "100%", overflow: "visible" }}
-              data={data}
-              pageable={{
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-                previousNext: true,
-              }}
-              skip={page.skip}
-              take={page.take}
-              total={total}
-              onPageChange={(e) => setPage(e.page)}
-              sortable
-              sort={sort}
-              onSortChange={(e) => setSort(e.sort)}
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
             >
-              <GridColumn
-                title="Actions"
-                width={"95px"}
-                cells={{ data: ActionCell }}
-              />
-              <GridColumn
-                title="Created By"
-                width={"150px"}
-                field="userName"
-                cells={{ data: viewUserCell }}
-              />
-              <GridColumn
-                title="Created On"
-                width={"150px"}
-                field="createdOn"
-                cells={{ data: DateCell }}
-              />
-              <GridColumn
-                title="Post Type"
-                width={"150px"}
-                field="postTypeName"
-              />
-              <GridColumn
-                width={"225px"}
-                title="Image/Video"
-                field="attachmentList"
-                cells={{
-                  data: (props) => (
-                    <AttachmentCell {...props} onOpen={openViewer} />
-                  ),
+              <Grid
+                style={{ width: "100%", overflow: "visible" }}
+                data={data}
+                pageable={{
+                  buttonCount: 5,
+                  pageSizes: [5, 10, 20, 50, 100, 500],
+                  info: true,
+                  previousNext: true,
                 }}
-              />
-              <GridColumn width={"240px"} title="Description" field="post" cells={{data:DetailsCell}}/>
-              <GridColumn width={"120px"} title="Ratings" field="rate" />
-              <GridColumn width={"120px"} title="Guns" field="totalGun" />
-              <GridColumn
-                width={"120px"}
-                title="Likes"
-                field="totalLike"
-                cells={{ data: viewDetailCell }}
-              />
-              <GridColumn
-                width={"120px"}
-                title="Comments"
-                field="totalComment"
-                cells={{ data: viewDetailCell }}
-              />
-              <GridColumn
-                width={"120px"}
-                title="Shares"
-                field="totalShare"
-                cells={{ data: viewDetailCell }}
-              />
-              <GridColumn
-                width={"120px"}
-                title="Hide Count"
-                field="totalHide"
-                cells={{ data: viewDetailCell }}
-              />
-              <GridColumn
-                width={"120px"}
-                title="Reported"
-                field="totalReport"
-                cells={{ data: ReportedDataCell }}
-              />
-              <GridColumn
-                width={"120px"}
-                title="Status"
-                cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="postId"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
-              />
-            </Grid>
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
+              >
+                <GridColumn
+                  title="Actions"
+                  width={"95px"}
+                  cells={{ data: ActionCell }}
+                />
+                <GridColumn
+                  title="Created By"
+                  width={"150px"}
+                  field="userName"
+                  cells={{ data: viewUserCell }}
+                />
+                <GridColumn
+                  title="Created On"
+                  width={"150px"}
+                  field="createdOn"
+                  cells={{ data: DateCell }}
+                />
+                <GridColumn
+                  title="Post Type"
+                  width={"150px"}
+                  field="postTypeName"
+                />
+                <GridColumn
+                  width={"225px"}
+                  title="Image/Video"
+                  field="attachmentList"
+                  cells={{
+                    data: (props) => (
+                      <AttachmentCell {...props} onOpen={openViewer} />
+                    ),
+                  }}
+                />
+                <GridColumn
+                  width={"280px"}
+                  title="Description"
+                  field="post"
+                  cells={{ data: DetailsCell }}
+                />
+                <GridColumn width={"120px"} title="Ratings" field="rate" />
+                <GridColumn width={"120px"} title="Guns" field="totalGun" />
+                <GridColumn
+                  width={"120px"}
+                  title="Likes"
+                  field="totalLike"
+                  cells={{ data: viewDetailCell }}
+                />
+                <GridColumn
+                  width={"120px"}
+                  title="Comments"
+                  field="totalComment"
+                  cells={{ data: viewDetailCell }}
+                />
+                <GridColumn
+                  width={"120px"}
+                  title="Shares"
+                  field="totalShare"
+                  cells={{ data: viewDetailCell }}
+                />
+                <GridColumn
+                  width={"120px"}
+                  title="Hide Count"
+                  field="totalHide"
+                  cells={{ data: viewDetailCell }}
+                />
+                <GridColumn
+                  width={"120px"}
+                  title="Reported"
+                  field="totalReport"
+                  cells={{ data: ReportedDataCell }}
+                />
+                <GridColumn
+                  width={"120px"}
+                  title="Status"
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="postId"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
+              </Grid>
             </Tooltip>
           </div>
         </div>
