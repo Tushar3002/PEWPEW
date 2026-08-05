@@ -1,25 +1,20 @@
 import { getStorage } from "./storage";
 
 export const getPermissions = () => {
-    return getStorage("menuPermissions") || [];
+  return getStorage("menuList") || [];
 };
 
 export const getMenuPermission = (menuName) => {
-    const permissions = getPermissions();
+  const permissions = getPermissions();
 
-    return permissions.find(
-        x => x.menuName === menuName
-    );
+  return (
+    permissions.find(
+      (x) => x.menuName.toLowerCase() === menuName.toLowerCase()
+    ) || {
+      canCreate: false,
+      canRead: false,
+      canUpdate: false,
+      canDelete: false,
+    }
+  );
 };
-
-export const canRead = (menuName) =>
-    getMenuPermission(menuName)?.canRead ?? false;
-
-export const canCreate = (menuName) =>
-    getMenuPermission(menuName)?.canCreate ?? false;
-
-export const canUpdate = (menuName) =>
-    getMenuPermission(menuName)?.canUpdate ?? false;
-
-export const canDelete = (menuName) =>
-    getMenuPermission(menuName)?.canDelete ?? false;

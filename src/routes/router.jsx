@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import Login from "../auth/Login.jsx";
 import DashBoard from "../pages/DashBoard/DashBoard.jsx";
 import PrivateLayout from "../layouts/PrivateLayout.jsx";
@@ -33,7 +33,7 @@ import Manufacturer from "../pages/Master/ManufacturerMaster/Manufacturer.jsx";
 import CategoryMaster from "../pages/Master/CategoryMaster/CategoryMaster.jsx";
 import AccessoriesMaster from "../pages/Master/AccessoriesMaster/AccessoriesMaster.jsx";
 import Profile from "../pages/Profile/Profile.jsx";
-
+import PermissionRoute from "./PermissionRoute.jsx";
 
 const router = createBrowserRouter([
   {
@@ -53,11 +53,16 @@ const router = createBrowserRouter([
         element: <DashBoard />,
       },
       {
-        path:'/profile',
-        element:<Profile/>
+        path: "/profile",
+        element: <Profile />,
       },
       {
         path: "manage-users",
+        element: (
+          <PermissionRoute menuName="User">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -75,6 +80,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/roles-permissions",
+        element: (
+          <PermissionRoute menuName="Role">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -92,6 +102,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/manage-end-users",
+        element: (
+          <PermissionRoute menuName="EndUser">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -106,6 +121,11 @@ const router = createBrowserRouter([
 
       {
         path: "/activity",
+        element: (
+          <PermissionRoute menuName="Activity">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -119,6 +139,12 @@ const router = createBrowserRouter([
       },
       {
         path: "/venues",
+
+        element: (
+          <PermissionRoute menuName="Venue">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -136,6 +162,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/events",
+        element: (
+          <PermissionRoute menuName="Event">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -149,6 +180,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/groups",
+        element: (
+          <PermissionRoute menuName="Group">
+            <Outlet />
+          </PermissionRoute>
+        ),
         children: [
           {
             index: true,
@@ -175,54 +211,97 @@ const router = createBrowserRouter([
       },
       {
         path: "/manage-badges",
-        element: <ManageBadges />,
+        element: (
+          <PermissionRoute menuName="Venue">
+            <ManageBadges />
+          </PermissionRoute>
+        ),
       },
       {
         path: "/reported-users",
-        element: <ReportedUsers />,
+        element: (
+          <PermissionRoute menuName="Venue">
+            <ReportedUsers />
+          </PermissionRoute>
+        ),
       },
       {
         path: "/leaderboard",
-        element: <LeaderBoard />,
+        element: (
+          <PermissionRoute menuName="Venue">
+            <LeaderBoard />
+          </PermissionRoute>
+        ),
       },
       {
         path: "/messaging",
-        element: <Messaging />,
+        element: (
+          <PermissionRoute menuName="Venue">
+            <Messaging />
+          </PermissionRoute>
+        ),
       },
       {
         path: "/supportTicket",
-        element: <SupportTicket />,
+        element: (
+          <PermissionRoute menuName="Venue">
+            <SupportTicket />
+          </PermissionRoute>
+        ),
       },
       {
-        path:"/master",
-        children:[
+        path: "/master",
+        children: [
           {
-            path:'prohibited-words',
-            element:<ProhibitedWords/>
+            path: "prohibited-words",
+            element: (
+              <PermissionRoute menuName="Venue">
+                <ProhibitedWords />
+              </PermissionRoute>
+            ),
           },
           {
-            path:'gun',
-            element:<GunMaster/>
+            path: "gun",
+            element: (
+              <PermissionRoute menuName="Venue">
+                <GunMaster />
+              </PermissionRoute>
+            ),
           },
           {
-            path:'ammunition',
-            element:<AmmunitionMaster/>
+            path: "ammunition",
+            element: (
+              <PermissionRoute menuName="Venue">
+                <AmmunitionMaster />
+              </PermissionRoute>
+            ),
           },
           {
-            path :'accessories',
-            element:<AccessoriesMaster/>
+            path: "accessories",
+            element: (
+              <PermissionRoute menuName="Venue">
+                <AccessoriesMaster />
+              </PermissionRoute>
+            ),
           },
           {
-            path:'category',
-            element:<CategoryMaster/>
+            path: "category",
+            element: (
+              <PermissionRoute menuName="Venue">
+                <CategoryMaster />
+              </PermissionRoute>
+            ),
           },
           {
-            path:'manufacturer',
-            element:<Manufacturer/>
-          }
-        ]
+            path: "manufacturer",
+            element: (
+              <PermissionRoute menuName="Venue">
+                <Manufacturer />
+              </PermissionRoute>
+            ),
+          },
+        ],
       },
-      
     ],
   },
 ]);
