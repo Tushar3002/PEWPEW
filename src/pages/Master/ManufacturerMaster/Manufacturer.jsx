@@ -1,3 +1,5 @@
+//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
 import React, { useEffect, useState } from "react";
 
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
@@ -207,7 +209,7 @@ function Manufacturer() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  width={"125px"}
+                  width={"12%"}
                   title="Action"
                   cells={{
                     data: (props) => (
@@ -222,20 +224,23 @@ function Manufacturer() {
                     ),
                   }}
                 />
-                <GridColumn title="Manufacturer Name" field="name" />
+                <GridColumn title="Manufacturer Name" field="name" width={"18%"}/>
                 <GridColumn
+                  // width={"15%"}
                   title="Description"
                   field="description"
                   cells={{ data: TextCell }}
                 />
-                <GridColumn title="Created By" field="createdByUserName" />
+                <GridColumn title="Created By" field="createdByUserName" width={"12%"}/>
                 <GridColumn
+                 width={"12%"}
                   title="Created On"
                   field="createdOn"
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" />
+                <GridColumn title="Modified By" field="updatedByUserName" width={"12%"}/>
                 <GridColumn
+                  width={"10%"}
                   title="Status"
                   field="status"
                   cells={{
