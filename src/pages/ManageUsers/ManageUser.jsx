@@ -7,6 +7,10 @@ import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { TextCell } from "../../components/GridCells/TextCell";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import { getMenuPermission } from "../../utils/permission";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import { ActionCell } from "../../components/GridCells/ActionCell";
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -26,6 +30,17 @@ function ManageUser() {
   // });
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
+
+  const userPermission = getMenuPermission("User");
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -90,11 +105,16 @@ function ManageUser() {
     if (!userIds.length) return;
 
     try {
+      setIsDeleting(true)
       await deleteUser(userIds);
+      closeDeleteModal()
       fetchUsers();
+
       setSelectedUserIds([]);
     } catch (error) {
       console.log(error.response);
+    }finally{
+      setIsDeleting(false)
     }
   };
 
@@ -139,29 +159,7 @@ function ManageUser() {
       </td>
     );
   };
-  const ActionCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="d-flex justify-content-center gap-2">
-        <button
-          type="button"
-          className="edit-btn"
-          title="Edit"
-          onClick={() => navigate(`/manage-users/edit/${props.dataItem.id}`)}
-        >
-          <i className="demo-icon icon-edit-1"></i>
-        </button>
 
-        <button
-          type="button"
-          className="delete-btn"
-          title="Delete"
-          onClick={() => handleDelete(props.dataItem.id)}
-        >
-          <i className="demo-icon icon-delete-1"></i>
-        </button>
-      </div>
-    </td>
-  );
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
 
@@ -218,7 +216,7 @@ function ManageUser() {
               <button
                 type="button"
                 className="btn main-btn border-btn danger-btn"
-                onClick={() => handleDelete(selectedUserIds)}
+                onClick={() => openDeleteModal(selectedUserIds)}
               >
                 Delete
               </button>
@@ -283,35 +281,54 @@ function ManageUser() {
                   width="150px"
                   headerClassName="text-center"
                   cells={{
-                    data: ActionCell,
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={userPermission}
+                        idField="id"
+                        onEdit={(id) => navigate(`/manage-users/edit/${id}`)}
+
+                        onDelete={openDeleteModal}
+                      />
+                    ),
                   }}
                 />
                 <GridColumn
                   width={"180px"}
                   field="firstName"
                   title="First Name"
-                  cells={{data:TextCell}}
+                  cells={{ data: TextCell }}
                 />
                 <GridColumn
                   width={"180px"}
                   field="lastName"
                   title="Last Name"
-                  cells={{data:TextCell}}
+                  cells={{ data: TextCell }}
                 />
                 <GridColumn
                   width={"180px"}
                   field="userName"
                   title="User Name"
-                  cells={{data:TextCell}}
+                  cells={{ data: TextCell }}
                 />
-                <GridColumn width={"150px"} field="roleName" title="Role" cells={{data:TextCell}}/>
+                <GridColumn
+                  width={"150px"}
+                  field="roleName"
+                  title="Role"
+                  cells={{ data: TextCell }}
+                />
                 <GridColumn
                   width={"170px"}
                   field="contactNumber"
                   title="Phone"
-                  cells={{data:TextCell}}
+                  cells={{ data: TextCell }}
                 />
-                <GridColumn width={"300px"} field="email" title="Email" cells={{data:TextCell}}/>
+                <GridColumn
+                  width={"300px"}
+                  field="email"
+                  title="Email"
+                  cells={{ data: TextCell }}
+                />
 
                 <GridColumn
                   width={"220px"}
@@ -331,6 +348,12 @@ function ManageUser() {
           </div>
         </div>
       </div>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

@@ -10,6 +10,8 @@ import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { TextCell } from "../../components/GridCells/TextCell";
+import { getMenuPermission } from "../../utils/permission";
+import { ActionCell } from "../../components/GridCells/ActionCell";
 
 const eventTabs = [
   {
@@ -60,24 +62,26 @@ function Events() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
+  const eventsPermission = getMenuPermission("Event");
+
   useEffect(() => {
-      const timeout = setTimeout(() => {
-        if (search !== searchInput) {
-          setSearch(searchInput);
-        }
-  
-        setPage((prev) => {
-          if (prev.skip === 0) return prev;
-  
-          return {
-            ...prev,
-            skip: 0,
-          };
-        });
-      }, 500);
-  
-      return () => clearTimeout(timeout);
-    }, [searchInput]);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
+
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   useEffect(() => {
     getEvents();
@@ -131,32 +135,6 @@ function Events() {
     );
   };
 
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/events/view/${props.dataItem.eventId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.eventId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
-
   const handleDelete = async () => {
     if (!deleteId) return;
 
@@ -178,13 +156,13 @@ function Events() {
     <div className="row">
       <div className="row align-items-center gap-3">
         <Breadcrumbs
-            items={[
-              {
-                id: "events",
-                text: "Events",
-              }
-            ]}
-          />
+          items={[
+            {
+              id: "events",
+              text: "Events",
+            },
+          ]}
+        />
         <div className="col-12 col-lg-auto">
           <form
             className="d-md-flex searchbar align-items-center"
@@ -247,10 +225,30 @@ function Events() {
                   <GridColumn
                     width={"100px"}
                     title="Action"
-                    cells={{ data: ActionCell }}
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={eventsPermission}
+                          idField="eventId"
+                          onView={(id) => navigate(`/events/view/${id}`)}
+                          onDelete={openDeleteModal}
+                        />
+                      ),
+                    }}
                   />
-                  <GridColumn width={"220px"} title="Host Name/Venue Name" field="venueName" cells={{data:TextCell}}/>
-                  <GridColumn width={"220px"} title="Event Name" field="eventName" cells={{data:TextCell}} />
+                  <GridColumn
+                    width={"220px"}
+                    title="Host Name/Venue Name"
+                    field="venueName"
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    width={"220px"}
+                    title="Event Name"
+                    field="eventName"
+                    cells={{ data: TextCell }}
+                  />
                   <GridColumn
                     title="Date & Time"
                     width="250px"
@@ -269,9 +267,14 @@ function Events() {
                     field="address"
                     cells={{ data: DetailsCell }}
                   />
-                  <GridColumn width={"220px"} title="Created By" field="userName" cells={{data:TextCell}}/>
                   <GridColumn
-                  width={"220px"}
+                    width={"220px"}
+                    title="Created By"
+                    field="userName"
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    width={"220px"}
                     title="Status"
                     field="approvalStatusName"
                     cells={{ data: StatusDropdownCell }}

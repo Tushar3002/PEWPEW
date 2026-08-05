@@ -19,6 +19,8 @@ import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerModal";
 import { ApprovalStatusDropdownCell } from "../../../components/GridCells/ApprovalStatusDropdownCell";
 import { getGunApprovalStatus } from "../../../api/Common/commonApi";
+import { getMenuPermission } from "../../../utils/permission";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function GunMaster() {
   const [data, setData] = useState([]);
@@ -35,6 +37,8 @@ function GunMaster() {
   const [selectedId, setSelectedId] = useState(null);
 
   const [approvalStatusDropdown, setApprovalStatusDropdown] = useState([]);
+
+  const gunMasterPermission = getMenuPermission("GunMaster");
 
   const {
     showDeleteModal,
@@ -116,19 +120,19 @@ function GunMaster() {
   };
 
   const handleApprovalStatusChange = async (gunId, statusId) => {
-  try {
-    const body = {
-      gunId,
-      reason: "",
-      statusId,
-    };
+    try {
+      const body = {
+        gunId,
+        reason: "",
+        statusId,
+      };
 
-    await updateGunApprovalStatus(body);
-    await fetchGuns();
-  } catch (error) {
-    console.log(error.response);
-  }
-};
+      await updateGunApprovalStatus(body);
+      await fetchGuns();
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
 
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
@@ -159,31 +163,6 @@ function GunMaster() {
     setSearch(searchInput);
   };
 
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => handleEdit(props.dataItem.gunId)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.gunId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
 
   const StatusDropdownCell = (props) => {
     const currentStatus = props.dataItem?.[props.field] ?? "";
@@ -295,14 +274,32 @@ function GunMaster() {
               >
                 <GridColumn
                   title="Action"
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={gunMasterPermission}
+                        idField="gunId"
+                        onEdit={handleEdit}
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
                 />
-                <GridColumn title="Gun Name" field="gunName" cells={{data:TextCell}} />
-                <GridColumn title="Category Name" field="categoryNames" cells={{data:TextCell}} />
+                <GridColumn
+                  title="Gun Name"
+                  field="gunName"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Category Name"
+                  field="categoryNames"
+                  cells={{ data: TextCell }}
+                />
                 <GridColumn
                   title="Manyfacturer Name"
                   field="manufacturerNames"
-                  cells={{data:TextCell}}
+                  cells={{ data: TextCell }}
                 />
                 <GridColumn
                   title="Details"
@@ -318,13 +315,21 @@ function GunMaster() {
                     ),
                   }}
                 />
-                <GridColumn title="Ammunition" field="ammunitions" cells={{data:TextCell}}/>
+                <GridColumn
+                  title="Ammunition"
+                  field="ammunitions"
+                  cells={{ data: TextCell }}
+                />
                 <GridColumn
                   title="Created On"
                   field="createdDate"
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" cells={{data:TextCell}} />
+                <GridColumn
+                  title="Modified By"
+                  field="updatedByUserName"
+                  cells={{ data: TextCell }}
+                />
 
                 <GridColumn
                   title="Approval Status"

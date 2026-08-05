@@ -20,7 +20,7 @@ function DeleteConfirmationModal({
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Delete Confirmation</h5>
+            <h5 className="modal-title ">Delete Confirmation</h5>
 
             <button
               type="button"
@@ -31,7 +31,7 @@ function DeleteConfirmationModal({
           </div>
 
           <div className="modal-body">
-            <p className="mb-0">
+            <p className="my-3 fw-bold">
               Are you sure you want to delete this data? This action cannot be
               undone.
             </p>

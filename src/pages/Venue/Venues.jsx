@@ -18,6 +18,9 @@ import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { PhoneCell } from "../../components/GridCells/PhoneCell";
 
+import { getMenuPermission } from "../../utils/permission";
+import { ActionCell } from "../../components/GridCells/ActionCell";
+
 function Venues() {
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
@@ -59,7 +62,8 @@ function Venues() {
 
     return () => clearTimeout(timeout);
   }, [searchInput]);
-
+  const venuePermission = getMenuPermission("Venue");
+  // console.log(venuePermission);
   const venueData = async () => {
     // console.log("venueData CALLED");
     try {
@@ -91,41 +95,6 @@ function Venues() {
     } catch (error) {
       console.log(error.response);
     }
-  };
-
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/venues/view/${props.dataItem.venueId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-          <button
-            type="button"
-            className="edit-btn"
-            title="Edit"
-            onClick={() => handleEditVenue(props.dataItem.venueId)}
-          >
-            <i className="icon-edit-1"></i>
-          </button>
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => handleDelete(props.dataItem.venueId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
   };
 
   const StatusDropdownCell = (props) => {
@@ -283,16 +252,18 @@ function Venues() {
               Export
             </a> */}
 
-            <button
-              type="button"
-              className="btn main-btn border-btn blue-btn"
-              onClick={() => {
-                setSelectedVenueId(null);
-                setShowVenueModal(true);
-              }}
-            >
-              Add Venue
-            </button>
+            {venuePermission.canCreate && (
+              <button
+                type="button"
+                className="btn main-btn border-btn blue-btn"
+                onClick={() => {
+                  setSelectedVenueId(null);
+                  setShowVenueModal(true);
+                }}
+              >
+                Add Venue
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -329,7 +300,18 @@ function Venues() {
                 <GridColumn
                   width={"125px"}
                   title="Action"
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={venuePermission}
+                        idField="venueId"
+                        onView={(id) => navigate(`/venues/view/${id}`)}
+                        onEdit={handleEditVenue}
+                        onDelete={handleDelete}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={"150px"}
@@ -355,7 +337,11 @@ function Venues() {
                   field="website"
                   cells={{ data: WebsiteCell }}
                 />
-                <GridColumn width={"140px"} title="Phone" cells={{ data: PhoneCell }}/>
+                <GridColumn
+                  width={"140px"}
+                  title="Phone"
+                  cells={{ data: PhoneCell }}
+                />
                 <GridColumn
                   width={"260px"}
                   title="Address"
@@ -395,7 +381,7 @@ function Venues() {
                   width={"160px"}
                   title="Created By"
                   field="userName"
-                  cells={{data:TextCell}}
+                  cells={{ data: TextCell }}
                 />
                 <GridColumn
                   width={"160px"}

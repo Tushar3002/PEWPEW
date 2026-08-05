@@ -13,6 +13,8 @@ import { ProhibitedWordsModal } from "../../../components/Modal/ProhibitedWordsM
 import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
 import { TextCell } from "../../../components/GridCells/TextCell";
+import { getMenuPermission } from "../../../utils/permission";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function ProhibitedWords() {
   const [data, setData] = useState([]);
@@ -37,6 +39,8 @@ function ProhibitedWords() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
+  const prohibitedwordsPermissions=getMenuPermission('ProhibitedWord')
+
   useEffect(() => {
     fetchProhibitedWords();
   }, [page, sort, search]);
@@ -55,7 +59,7 @@ function ProhibitedWords() {
       const res = await getProhibitedWords(body);
       console.log(res.data);
       setData(res.data.data);
-      setTotal(res.data.totalRecord)
+      setTotal(res.data.totalRecord);
     } catch (error) {
       console.log(error.response);
     }
@@ -72,21 +76,21 @@ function ProhibitedWords() {
   };
 
   const handleDelete = async () => {
-      if (!deleteId) return;
-  
-      try {
-        setIsDeleting(true);
-  
-        await deleteProhibitedWords(deleteId);
-  
-        closeDeleteModal();
-        await fetchProhibitedWords();
-      } catch (error) {
-        console.log(error.response);
-      } finally {
-        setIsDeleting(false);
-      }
-    };
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteProhibitedWords(deleteId);
+
+      closeDeleteModal();
+      await fetchProhibitedWords();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
@@ -117,31 +121,7 @@ function ProhibitedWords() {
     setSearch(searchInput);
   };
 
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => handleEdit(props.dataItem.id)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
 
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.id)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -225,19 +205,45 @@ function ProhibitedWords() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-
                   title="Action"
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={prohibitedwordsPermissions}
+                        idField="id"
+                        onEdit={handleEdit}
+
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
                 />
-                <GridColumn title="Prohibited Words" field="words" cells={{data:TextCell}}/>
-                <GridColumn title="Description" field="description" cells={{data:TextCell}}/>
-                <GridColumn title="Created By" field="createdByUserName" cells={{data:TextCell}}/>
+                <GridColumn
+                  title="Prohibited Words"
+                  field="words"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Description"
+                  field="description"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Created By"
+                  field="createdByUserName"
+                  cells={{ data: TextCell }}
+                />
                 <GridColumn
                   title="Created On"
                   field="createdOn"
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" cells={{data:TextCell}}/>
+                <GridColumn
+                  title="Modified By"
+                  field="updatedByUserName"
+                  cells={{ data: TextCell }}
+                />
                 <GridColumn
                   title="Status"
                   field="status"

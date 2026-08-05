@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import './login.css'
 import logo from "../assets/images/logo.svg";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,9 @@ import { loginUser } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+
+import Cookies from "js-cookie";
+import { decrypt, encrypt } from "../utils/crypto"; // adjust the path
 
 function Login() {
   const { login } = useAuth();
@@ -15,6 +18,7 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue
   } = useForm({
     defaultValues: {
       email: "",
@@ -22,15 +26,38 @@ function Login() {
     },
   });
 
-  const onSubmit = async (data) => {
-    try {
-      const res = await loginUser(data);
-      login(res.data);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    const remember = Cookies.get("remember");
+
+    if (remember === "true") {
+      setValue("remember", true);
+
+      setValue("email", decrypt(Cookies.get("email") || ""));
+      setValue("password", decrypt(Cookies.get("password") || ""));
     }
-  };
+  }, [setValue]);
+
+  const onSubmit = async (data) => {
+  try {
+    const res = await loginUser(data);
+
+    login(res.data);
+
+    if (data.remember) {
+      Cookies.set("remember", "true", { expires: 30 });
+      Cookies.set("email", encrypt(data.email), { expires: 30 });
+      Cookies.set("password", encrypt(data.password), { expires: 30 });
+    } else {
+      Cookies.set("remember", "false", { expires: 30 });
+      Cookies.remove("email");
+      Cookies.remove("password");
+    }
+
+    navigate("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <div id="wrapper" className="login-page">
@@ -110,7 +137,11 @@ function Login() {
                   <div className="col-12 round-checkbox">
                     <label className="custom-checkbox fw-medium mb-0">
                       Remember me
-                      <input type="checkbox" className="child-checkbox" />
+                      <input
+                        type="checkbox"
+                        className="child-checkbox"
+                        {...register("remember")}
+                      />
                       <span className="checkmark"></span>
                     </label>
                   </div>

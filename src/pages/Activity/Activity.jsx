@@ -13,6 +13,8 @@ import useAttachmentViewer from "../../hooks/useAttachmentViewer";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { DetailsCell } from "../../components/GridCells/DetailsCell";
 import { Tooltip } from "@progress/kendo-react-tooltip";
+import { getMenuPermission } from "../../utils/permission";
+import { ActionCell } from "../../components/GridCells/ActionCell";
 
 function Activity() {
   const [data, setData] = useState([]);
@@ -37,6 +39,8 @@ function Activity() {
     openViewer,
     closeViewer,
   } = useAttachmentViewer();
+
+  const activityPermission = getMenuPermission("Activity");
 
   const navigate = useNavigate();
 
@@ -82,25 +86,6 @@ function Activity() {
     } catch (error) {
       console.log(error.response);
     }
-  };
-
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/activity/view/${props.dataItem.postId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-        </div>
-      </td>
-    );
   };
 
   const handleStatusToggle = async (id, currentValue) => {
@@ -253,7 +238,17 @@ function Activity() {
                 <GridColumn
                   title="Actions"
                   width={"95px"}
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={activityPermission}
+                        idField="postId"
+                        onView={(id) => navigate(`/activity/view/${id}`)}
+                       
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   title="Created By"

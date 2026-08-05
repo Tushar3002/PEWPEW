@@ -11,6 +11,10 @@ import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { TextCell } from "../../components/GridCells/TextCell";
 import { GunCountCell } from "../../components/GridCells/GunCountCell";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import { getMenuPermission } from "../../utils/permission";
+import { ActionCell } from "../../components/GridCells/ActionCell";
 
 function RolesPermission() {
   const [data, setData] = useState([]);
@@ -21,16 +25,29 @@ function RolesPermission() {
   });
 
   const [sort, setSort] = useState([]);
-  const [filter, setFilter] = useState({
-    logic: "and",
-    filters: [],
-  });
+  // const [filter, setFilter] = useState({
+  //   logic: "and",
+  //   filters: [],
+  // });
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
+
   const navigate = useNavigate();
+
+  const rolePermission = getMenuPermission("Role");
+
   useEffect(() => {
     rolesandpermissionData();
-  }, [page, sort, filter, search]);
+  }, [page, sort, search]);
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== searchInput) {
@@ -61,12 +78,17 @@ function RolesPermission() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
-      const res = await deleteRole(id);
+      setIsDeleting(true)
+      
+      await deleteRole(deleteId);
+      closeDeleteModal()
       rolesandpermissionData();
     } catch (error) {
       console.log(error.response);
+    }finally{
+      setIsDeleting(false)
     }
   };
 
@@ -91,31 +113,7 @@ function RolesPermission() {
       console.log(error);
     }
   };
-  const ActionCell = (props) => (
-    <td className="text-center align-middle">
-      <div className="d-flex justify-content-center gap-2">
-        <button
-          type="button"
-          className="edit-btn"
-          title="Edit"
-          onClick={() =>
-            navigate(`/roles-permissions/edit/${props.dataItem.id}`)
-          }
-        >
-          <i className="demo-icon icon-edit-1"></i>
-        </button>
-
-        <button
-          type="button"
-          className="delete-btn"
-          title="Delete"
-          onClick={() => handleDelete(props.dataItem.id)}
-        >
-          <i className="demo-icon icon-delete-1"></i>
-        </button>
-      </div>
-    </td>
-  );
+ 
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
     if (!nextValue) {
@@ -218,68 +216,83 @@ function RolesPermission() {
               openDelay={100}
               className="grid-tooltip"
             >
-            <Grid
-              style={{ width: "100%", overflow: "visible" }}
-              data={data}
-              pageable={{
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-                previousNext: true,
-              }}
-              skip={page.skip}
-              take={page.take}
-              total={total}
-              onPageChange={(e) => setPage(e.page)}
-              sortable
-              sort={sort}
-              onSortChange={(e) => setSort(e.sort)}
-            >
-              <GridColumn
-                title="Action"
-                width="110px"
-                headerClassName="text-center"
-                cells={{
-                  data: ActionCell,
+              <Grid
+                style={{ width: "100%", overflow: "visible" }}
+                data={data}
+                pageable={{
+                  buttonCount: 5,
+                  pageSizes: [5, 10, 20, 50, 100, 500],
+                  info: true,
+                  previousNext: true,
                 }}
-              />
-              <GridColumn
-                width={"330px"}
-                field="role"
-                title="Role Name"
-                cells={{data:TextCell}}
-              />
-              <GridColumn
-                width={"580px"}
-                field="description"
-                title="Description"
-                cells={{data:TextCell}}
-              />
-              <GridColumn
-                width={"240px"}
-                field="noOfUser"
-                title="No. Of User"
-                cells={{data: GunCountCell}}
-              />
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
+              >
+                <GridColumn
+                  title="Action"
+                  width="110px"
+                  headerClassName="text-center"
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={rolePermission}
+                        idField="id"
+                        onEdit={(id) => navigate(`/roles-permissions/edit/${id}`)}
+             
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
+                />
+                <GridColumn
+                  width={"330px"}
+                  field="role"
+                  title="Role Name"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  width={"580px"}
+                  field="description"
+                  title="Description"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  width={"240px"}
+                  field="noOfUser"
+                  title="No. Of User"
+                  cells={{ data: GunCountCell }}
+                />
 
-              <GridColumn
-                width={"120px"}
-                title="Status"
-                cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="id"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
-              />
-            </Grid>
+                <GridColumn
+                  width={"120px"}
+                  title="Status"
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="id"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
+              </Grid>
             </Tooltip>
           </div>
         </div>
       </div>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { TextCell } from "../../../components/GridCells/TextCell";
 import { useNavigate } from "react-router-dom";
 import DateTimeCell from "../../../components/GridCells/DateTimeCell";
 
+
 const eventTabs = [
   {
     key: "upcoming",
@@ -44,6 +45,8 @@ function EventsTable({ userId, venueId }) {
 
     fetchEvent();
   }, [page, activeTab, userId, venueId]);
+
+
 
   const fetchEvent = async () => {
     console.log("UserID", userId);

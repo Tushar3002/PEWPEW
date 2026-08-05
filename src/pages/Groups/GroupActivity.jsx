@@ -9,6 +9,8 @@ import { updatePostStatus } from "../../api/Activity/activity";
 import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import { TextCell } from "../../components/GridCells/TextCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { getMenuPermission } from "../../utils/permission";
+import { ActionCell } from "../../components/GridCells/ActionCell";
 
 function GroupActivity() {
   const [data, setData] = useState([]);
@@ -22,6 +24,7 @@ function GroupActivity() {
   const { id } = useParams();
 
   const navigate = useNavigate();
+  const activityPermission = getMenuPermission("Activity");
 
   useEffect(() => {
     fetchGroupActivity();
@@ -60,38 +63,17 @@ function GroupActivity() {
     }
   };
 
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() =>
-              navigate(`/activity/view/${props.dataItem.postId}`)
-            }
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-          
-        </div>
-      </td>
-    );
-  };
+  
 
   const updateStatusToggle = async (postId, isActive) => {
-      try {
-        const res = await updatePostStatus(postId, isActive);
-        fetchGroupActivity();
-        return res;
-      } catch (error) {
-        console.log(error?.response);
-      }
-    };
+    try {
+      const res = await updatePostStatus(postId, isActive);
+      fetchGroupActivity();
+      return res;
+    } catch (error) {
+      console.log(error?.response);
+    }
+  };
 
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
@@ -111,7 +93,6 @@ function GroupActivity() {
     }
   };
 
-
   return (
     <div className="row">
       <div className="row align-items-center gap-3">
@@ -122,7 +103,7 @@ function GroupActivity() {
               text: "Groups",
               path: "/groups",
             },
-            
+
             {
               id: "group-activity",
               text: "Group Activity",
@@ -182,7 +163,15 @@ function GroupActivity() {
                   title="Action"
                   headerClassName="text-center"
                   cells={{
-                    data: ActionCell,
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={activityPermission}
+                        idField="postId"
+                        onView={(id) => navigate(`/activity/view/${id}`)}
+
+                      />
+                    ),
                   }}
                 />
                 <GridColumn
@@ -203,40 +192,28 @@ function GroupActivity() {
                   title="Description"
                   cells={{ data: TextCell }}
                 />
-                
-                <GridColumn
-                  field="totalLike"
-                  title="Likes"
-          
-                />
-                <GridColumn
-                  field="totalComment"
-                  title="Comments"
 
-                />
-                <GridColumn
-                  field="totalShare"
-                  title="Share"
+                <GridColumn field="totalLike" title="Likes" />
+                <GridColumn field="totalComment" title="Comments" />
+                <GridColumn field="totalShare" title="Share" />
 
-                />
-               
                 <GridColumn
                   field="totalReport"
                   title="Reported"
-                //   cells={{ data: ReportedDataCell }}
-                /> 
+                  //   cells={{ data: ReportedDataCell }}
+                />
 
                 <GridColumn
                   title="Status"
                   cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="postId"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="postId"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
                 />
               </Grid>
             </Tooltip>

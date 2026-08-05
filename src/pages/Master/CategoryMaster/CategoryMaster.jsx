@@ -10,6 +10,8 @@ import { DateCell } from "../../../components/GridCells/DateCell";
 import StatusCell from "../../../components/GridCells/StatusCell";
 import { deleteCategory, getGunCategoryMasterList, updateGunCategoryStatus } from "../../../api/Gun/gunCategoryMaster";
 import { CategoryMasterModel } from "../../../components/Modal/CategoryMasterModal";
+import { getMenuPermission } from "../../../utils/permission";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function CategoryMaster() {
   const [data, setData] = useState([]);
@@ -33,6 +35,8 @@ function CategoryMaster() {
       openDeleteModal,
       closeDeleteModal,
     } = useDeleteConfirmation();
+
+    const categoryMasterPermission=getMenuPermission('GunCategoryMaster')
   
     useEffect(() => {
       fetchCategories();
@@ -114,31 +118,7 @@ function CategoryMaster() {
       setSearch(searchInput);
     };
   
-    const ActionCell = (props) => {
-      return (
-        <td className="text-center align-middle">
-          <div className="d-flex justify-content-center align-items-center gap-2">
-            <button
-              type="button"
-              className="eye-btn"
-              title="View"
-              onClick={() => handleEdit(props.dataItem.categoryId)}
-            >
-              <i className="fa fa-eye"></i>
-            </button>
-  
-            <button
-              type="button"
-              className="delete-btn"
-              title="Delete"
-              onClick={() => openDeleteModal(props.dataItem.categoryId)}
-            >
-              <i className="icon-delete-1"></i>
-            </button>
-          </div>
-        </td>
-      );
-    };
+    
     return (
       <div className="tabbar-section">
         <div className="row align-items-center gap-3">
@@ -224,7 +204,18 @@ function CategoryMaster() {
                   <GridColumn
                     width={"125px"}
                     title="Action"
-                    cells={{ data: ActionCell }}
+                    cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={categoryMasterPermission}
+                        idField="categotyId"
+                        onEdit={handleEdit}
+
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
                   />
                   <GridColumn title="Applicable For" field="" />
                   <GridColumn title="Category Name" field="accessoryCategory" />

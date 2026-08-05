@@ -12,6 +12,7 @@ import AttachmentViewerModal from "../../../components/Modal/AttachmentViewerMod
 import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 import { useNavigate } from "react-router-dom";
 import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function ActivityTabs({ userId }) {
   const [page, setPage] = useState({
@@ -49,24 +50,6 @@ function ActivityTabs({ userId }) {
     } catch (error) {
       console.log(error.response);
     }
-  };
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/activity/view/${props.dataItem.postId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-        </div>
-      </td>
-    );
   };
 
   const updateStatusToggle = async (postId, isActive) => {
@@ -106,7 +89,20 @@ function ActivityTabs({ userId }) {
         className="grid-tooltip"
       >
         <Grid data={activities}>
-          <GridColumn title="Actions" cells={{ data: ActionCell }} />
+          <GridColumn
+            title="Actions"
+            cells={{
+              data: (props) => (
+                <ActionCell
+                  {...props}
+                  permission={activityPermission}
+                  idField="postId"
+                  onView={(id) => navigate(`/activity/view/${id}`)}
+
+                />
+              ),
+            }}
+          />
           <GridColumn
             title="Uploaded By"
             field="userName"

@@ -15,6 +15,10 @@ import { TextCell } from "../../../components/GridCells/TextCell";
 import StatusCell from "../../../components/GridCells/StatusCell";
 import { DateCell } from "../../../components/GridCells/DateCell";
 import { GunCountCell } from "../../../components/GridCells/GunCountCell";
+import { getMenuPermission } from "../../../utils/permission";
+import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function VenuesTable({ userId }) {
   const [data, setData] = useState([]);
@@ -31,6 +35,17 @@ function VenuesTable({ userId }) {
   // const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const {
+      showDeleteModal,
+      deleteId,
+      isDeleting,
+      setIsDeleting,
+      openDeleteModal,
+      closeDeleteModal,
+    } = useDeleteConfirmation();
+
+  const venuePermission = getMenuPermission("Venue");
 
   useEffect(() => {
     fetchVenue();
@@ -65,41 +80,6 @@ function VenuesTable({ userId }) {
     } catch (error) {
       console.error(error?.response);
     }
-  };
-
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/venue/view/${props.dataItem.venueId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-          <button
-            type="button"
-            className="edit-btn"
-            title="Edit"
-            onClick={() => handleEdit(props.dataItem.venueId)}
-          >
-            <i className="icon-edit-1"></i>
-          </button>
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => handleDelete(props.dataItem.venueId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
   };
 
   const updateStatusData = async (venueId, isActive) => {
@@ -181,7 +161,16 @@ function VenuesTable({ userId }) {
                   width={"150px"}
                   headerClassName="text-center"
                   cells={{
-                    data: ActionCell,
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={venuePermission}
+                        idField="venueId"
+                        onView={(id) => navigate(`/venue/view/${id}`)}
+                        onEdit={handleEdit}
+                        onDelete={openDeleteModal}
+                      />
+                    ),
                   }}
                 />
                 <GridColumn
@@ -276,6 +265,12 @@ function VenuesTable({ userId }) {
           setSelectedVenueId(null);
         }}
         venueId={selectedVenueId}
+      />
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

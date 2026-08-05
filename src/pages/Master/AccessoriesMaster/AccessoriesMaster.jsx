@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
-import { deleteAccessory, getAccessoriesList, updateAccessoriesStatus } from "../../../api/Accessory/accessories";
+import {
+  deleteAccessory,
+  getAccessoriesList,
+  updateAccessoriesStatus,
+} from "../../../api/Accessory/accessories";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
@@ -8,6 +12,8 @@ import { AccessoryModal } from "../../../components/Modal/AccessoryModal";
 import Breadcrumbs from "../../../components/BreadCrumbs/Breadcrumbs";
 import { DateCell } from "../../../components/GridCells/DateCell";
 import StatusCell from "../../../components/GridCells/StatusCell";
+import { getMenuPermission } from "../../../utils/permission";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function AccessoriesMaster() {
   const [data, setData] = useState([]);
@@ -31,6 +37,8 @@ function AccessoriesMaster() {
     openDeleteModal,
     closeDeleteModal,
   } = useDeleteConfirmation();
+
+  const accessoryPermission = getMenuPermission("Accessory");
 
   useEffect(() => {
     fetchAccessories();
@@ -112,31 +120,6 @@ function AccessoriesMaster() {
     setSearch(searchInput);
   };
 
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => handleEdit(props.dataItem.accessoryId)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.accessoryId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -222,7 +205,17 @@ function AccessoriesMaster() {
                 <GridColumn
                   width={"125px"}
                   title="Action"
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={accessoryPermission}
+                        idField="accessoryId"
+                        onEdit={handleEdit}
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn title="Name" field="accessoryName" />
                 <GridColumn title="Category Name" field="accessoryCategory" />

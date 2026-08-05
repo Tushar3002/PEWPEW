@@ -15,6 +15,8 @@ import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationMo
 import { getBadgeApplicablefor } from "../../api/Common/commonApi";
 import { ApplicableForCell } from "../../components/GridCells/ApplicableForCell";
 import { TextCell } from "../../components/GridCells/TextCell";
+import { ActionCell } from "../../components/GridCells/ActionCell";
+import { getMenuPermission } from "../../utils/permission";
 
 function ManageBadges() {
   const [data, setData] = useState([]);
@@ -50,6 +52,8 @@ function ManageBadges() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
+  const badgePermission = getMenuPermission("Badge");
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== searchInput) {
@@ -71,7 +75,7 @@ function ManageBadges() {
 
   useEffect(() => {
     fetchBadgesList();
-    getApplicableForOptions()
+    getApplicableForOptions();
   }, [page, sort, search]);
 
   const fetchBadgesList = async () => {
@@ -97,6 +101,7 @@ function ManageBadges() {
 
   const handleEditBadge = (id) => {
     setSelectedBadgeId(id);
+
     setShowBadgeModal(true);
   };
 
@@ -132,32 +137,6 @@ function ManageBadges() {
     }
   };
 
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="edit-btn"
-            title="Edit"
-            onClick={() => handleEditBadge(props.dataItem.id)}
-          >
-            <i className="icon-edit-1"></i>
-          </button>
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.id)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -233,7 +212,20 @@ function ManageBadges() {
                   sort={sort}
                   onSortChange={(e) => setSort(e.sort)}
                 >
-                  <GridColumn title="Actions" cells={{ data: ActionCell }} />
+                  <GridColumn
+                    title="Actions"
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={badgePermission}
+                          idField="id"
+                          onEdit={handleEditBadge}
+                          onDelete={openDeleteModal}
+                        />
+                      ),
+                    }}
+                  />
                   <GridColumn
                     title="Images"
                     field="imageFullPath"
@@ -243,7 +235,11 @@ function ManageBadges() {
                       ),
                     }}
                   />
-                  <GridColumn title="Name" field="name" cells={{data:TextCell}}/>
+                  <GridColumn
+                    title="Name"
+                    field="name"
+                    cells={{ data: TextCell }}
+                  />
                   <GridColumn
                     title="Badge Applicable For"
                     field="applicableFor"
@@ -256,7 +252,11 @@ function ManageBadges() {
                       ),
                     }}
                   />
-                  <GridColumn title="No. of Check-ins" field="noOfCheckIns" cells={{data:TextCell}}/>
+                  <GridColumn
+                    title="No. of Check-ins"
+                    field="noOfCheckIns"
+                    cells={{ data: TextCell }}
+                  />
                 </Grid>
               </Tooltip>
             </div>

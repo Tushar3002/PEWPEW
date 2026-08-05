@@ -7,6 +7,8 @@ import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import StatusCell from "../../components/GridCells/StatusCell";
 import { useNavigate } from "react-router-dom";
 import { TextCell } from "../../components/GridCells/TextCell";
+import { ActionCell } from "../../components/GridCells/ActionCell";
+import { getMenuPermission } from "../../utils/permission";
 
 const leaderboardOptions = [
   { value: 5, type: "gun", label: "Top 5 Gun Reviewers/Check-Ins" },
@@ -28,6 +30,8 @@ function LeaderBoard() {
   const [topData, setTopData] = useState(5);
 
   const navigate = useNavigate();
+
+  const leaderBoardPermissions=getMenuPermission("Leaderboard")
 
   useEffect(() => {
     fetchDashboardFilters();
@@ -75,25 +79,6 @@ function LeaderBoard() {
 
     setLeaderboardType(selected.type);
     setTopData(selected.value);
-  };
-
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle p-1">
-        <div className="d-flex align-items-center justify-content-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() =>
-              navigate(`/manage-end-users/view/${props.dataItem.userId}`)
-            }
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-        </div>
-      </td>
-    );
   };
 
   return (
@@ -149,10 +134,31 @@ function LeaderBoard() {
                   style={{ width: "100%", overflow: "visible" }}
                   data={data}
                 >
-                  <GridColumn title="Actions" cells={{ data: ActionCell }} />
+                  <GridColumn
+                    title="Actions"
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={leaderBoardPermissions}
+                          idField="userId"
+                          onView={(id) => navigate(`/manage-end-users/view/${id}`)}
+                          
+                        />
+                      ),
+                    }}
+                  />
                   <GridColumn title="Rank" field="rank" />
-                  <GridColumn title="Username" field="userName" cells={{data:TextCell}}/>
-                  <GridColumn title="Followers" field="totalMember" cells={{data:TextCell}}/>
+                  <GridColumn
+                    title="Username"
+                    field="userName"
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    title="Followers"
+                    field="totalMember"
+                    cells={{ data: TextCell }}
+                  />
                   <GridColumn title="Gun Check-Ins" field="totalCheckins" />
                 </Grid>
               </Tooltip>

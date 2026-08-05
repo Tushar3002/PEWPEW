@@ -37,5 +37,7 @@ export const updateRoles = async(id,body)=>{
 
 export const deleteRole=async(id)=>{
     const res=await api.delete(`/Role/Delete/${id}`,{showSuccessToast:true})
+    
+    
     return res.data
 }

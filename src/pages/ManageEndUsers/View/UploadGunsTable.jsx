@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  deleteGunUser,
   gunListByUser,
   updateGunStatus,
 } from "../../../api/EndUsers/endUserViewApi";
@@ -12,6 +13,10 @@ import { DetailsCell } from "../../../components/GridCells/DetailsCell";
 import { DateCell } from "../../../components/GridCells/DateCell";
 import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
+import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
+import { getMenuPermission } from "../../../utils/permission";
+import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function UploadGunsTable({ userId }) {
   const [data, setData] = useState([]);
@@ -21,21 +26,32 @@ function UploadGunsTable({ userId }) {
     take: 10,
   });
   const [search, setSearch] = useState("");
-const {
-  showViewer,
-  attachments,
-  currentIndex,
-  setCurrentIndex,
-  openViewer,
-  closeViewer,
-} = useAttachmentViewer();
+  const {
+    showViewer,
+    attachments,
+    currentIndex,
+    setCurrentIndex,
+    openViewer,
+    closeViewer,
+  } = useAttachmentViewer();
+
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
+
+  const gunPermission = getMenuPermission("GunMaster");
 
   useEffect(() => {
     fetchUploadGun();
   }, [page, userId]);
 
   const fetchUploadGun = async () => {
-    console.log("UserID", userId);
+    // console.log("UserID", userId);
 
     const body = {
       pageNumber: page.skip / page.take + 1,
@@ -51,25 +67,6 @@ const {
     } catch (error) {
       console.log(error?.response);
     }
-  };
-
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex  align-items-center gap-2">
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => handleDelete(props.dataItem.gunId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
   };
 
   const updateStatusData = async (id, isActive) => {
@@ -110,12 +107,20 @@ const {
     return <td>{text}</td>;
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
     try {
-      await deleteGunUser(id);
-      fetchUploadGun();
+      setIsDeleting(true);
+
+      await deleteGunUser(deleteId);
+
+      closeDeleteModal();
+      await fetchUploadGun();
     } catch (error) {
       console.log(error.response);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -146,9 +151,17 @@ const {
                 <GridColumn
                   width={"120px"}
                   title="Action"
-                  headerClassName="text-center"
+                  // headerClassName="text-center"
                   cells={{
-                    data: ActionCell,
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={gunPermission}
+                        idField="gunId"
+      
+                        onDelete={openDeleteModal}
+                      />
+                    ),
                   }}
                 />
                 <GridColumn
@@ -170,11 +183,13 @@ const {
                 />
                 <GridColumn title="Details" cells={{ data: DetailsCell }} />
                 <GridColumn
-                width={"200px"}
+                  width={"200px"}
                   title="Images"
                   field="attachmentFullPath"
                   cells={{
-                    data: (props) => <AttachmentCell {...props} onOpen={openViewer}/>,
+                    data: (props) => (
+                      <AttachmentCell {...props} onOpen={openViewer} />
+                    ),
                   }}
                 />
                 <GridColumn
@@ -211,6 +226,12 @@ const {
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
+      />
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

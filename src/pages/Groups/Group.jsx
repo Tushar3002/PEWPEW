@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getGroupsData, updateGroupStatus } from "../../api/Group/group";
+import { deleteGroup, getGroupsData, updateGroupStatus } from "../../api/Group/group";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import AttachmentCell from "../../components/GridCells/AttachmentCell";
 import StatusCell from "../../components/GridCells/StatusCell";
@@ -8,6 +8,10 @@ import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { TextCell } from "../../components/GridCells/TextCell";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { DateCell } from "../../components/GridCells/DateCell";
+import { getMenuPermission } from "../../utils/permission";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import { ActionCell } from "../../components/GridCells/ActionCell";
 
 function Group() {
   const [data, setData] = useState([]);
@@ -20,7 +24,18 @@ function Group() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
+  const {
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
+
   const navigate = useNavigate();
+
+  const groupPermission = getMenuPermission("Group");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -81,32 +96,6 @@ function Group() {
     );
   };
 
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/groups/view/${props.dataItem.id}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => handleDelete(props.dataItem.venueId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
-
   const GroupTypeCell = (props) => {
     const value = props.dataItem[props.field] ?? "";
     const groupType = value ? "Public" : "Private";
@@ -132,6 +121,23 @@ function Group() {
     await fetchGroupData();
     if (!isSuccess) {
       alert("Failed to update status.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteGroup(deleteId);
+
+      closeDeleteModal();
+      await fetchGroupData();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -219,7 +225,17 @@ function Group() {
                 <GridColumn
                   width={"100px"}
                   title="Action"
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={groupPermission}
+                        idField="id"
+                        onView={(id) => navigate(`/groups/view/${id}`)}
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={"180px"}
@@ -236,19 +252,19 @@ function Group() {
                   }}
                 />
                 <GridColumn
-                width={"240px"}
+                  width={"240px"}
                   title="About Group"
                   field="about"
                   cells={{ data: TextCell }}
                 />
                 <GridColumn
-                width={"160px"}
+                  width={"160px"}
                   title="Group Type"
                   field="isPublic"
                   cells={{ data: GroupTypeCell }}
                 />
                 <GridColumn
-                width={"140px"}
+                  width={"140px"}
                   title="Members"
                   field="totalMember"
                   cells={{
@@ -261,7 +277,7 @@ function Group() {
                   }}
                 />
                 <GridColumn
-                width={"140px"}
+                  width={"140px"}
                   title="activities"
                   field="totalActivity"
                   cells={{
@@ -273,7 +289,11 @@ function Group() {
                     ),
                   }}
                 />
-                <GridColumn title="Reported" field="totalReport" width={"140px"}/>
+                <GridColumn
+                  title="Reported"
+                  field="totalReport"
+                  width={"140px"}
+                />
                 <GridColumn
                   title="Created By"
                   field="userName"
@@ -304,6 +324,12 @@ function Group() {
           </div>
         </div>
       </div>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

@@ -23,3 +23,8 @@ export const getGroupMembers=async(body)=>{
     const res=await api.post('Group/GetGroupMembersList',body)
     return res.data
 }
+
+export const deleteGroup=async(id)=>{
+    const res=await api.delete(`Group/Delete/${id}`)
+    return res.data
+}

@@ -15,6 +15,8 @@ import {
 } from "../../../api/Manufacturer/manufacturer";
 import { ManufacturerModal } from "../../../components/Modal/ManufacturerModal";
 import { TextCell } from "../../../components/GridCells/TextCell";
+import { getMenuPermission } from "../../../utils/permission";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function Manufacturer() {
   const [data, setData] = useState([]);
@@ -38,6 +40,8 @@ function Manufacturer() {
     openDeleteModal,
     closeDeleteModal,
   } = useDeleteConfirmation();
+
+  const manufacturerPermission=getMenuPermission('Manufacturer')
 
   useEffect(() => {
     fetchManufacturer();
@@ -120,31 +124,6 @@ function Manufacturer() {
     setSearch(searchInput);
   };
 
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => handleEdit(props.dataItem.id)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => openDeleteModal(props.dataItem.id)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
-  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -230,7 +209,18 @@ function Manufacturer() {
                 <GridColumn
                   width={"125px"}
                   title="Action"
-                  cells={{ data: ActionCell }}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={manufacturerPermission}
+                        idField="id"
+                        onEdit={handleEdit}
+
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn title="Manufacturer Name" field="name" />
                 <GridColumn

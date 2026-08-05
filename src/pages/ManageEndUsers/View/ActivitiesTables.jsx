@@ -13,6 +13,8 @@ import StatusCell from "../../../components/GridCells/StatusCell";
 import { DateCell } from "../../../components/GridCells/DateCell";
 import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 import AttachmentCell from "../../../components/GridCells/AttachmentCell";
+import { getMenuPermission } from "../../../utils/permission";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
 
 function ActivitiesTables({ userId }) {
   const [data, setData] = useState([]);
@@ -36,6 +38,8 @@ function ActivitiesTables({ userId }) {
     openViewer,
     closeViewer,
   } = useAttachmentViewer();
+
+  const activityPermission=getMenuPermission('Activity')
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -105,25 +109,6 @@ function ActivitiesTables({ userId }) {
         ) : (
           value
         )}
-      </td>
-    );
-  };
-
-  const ActionCell = (props) => {
-    const isVerified = Boolean(props.dataItem.isVerify);
-
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/activity/view/${props.dataItem.postId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-        </div>
       </td>
     );
   };
@@ -202,7 +187,15 @@ function ActivitiesTables({ userId }) {
                   title="Action"
                   headerClassName="text-center"
                   cells={{
-                    data: ActionCell,
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={activityPermission}
+                        idField="postId"
+                        onView={(id) => navigate(`/activity/view/${id}`)}
+                       
+                      />
+                    ),
                   }}
                 />
                 <GridColumn title="Created On" cells={{ data: DateCell }} />
