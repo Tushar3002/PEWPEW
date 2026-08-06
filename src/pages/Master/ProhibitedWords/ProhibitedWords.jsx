@@ -15,6 +15,17 @@ import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmatio
 import { TextCell } from "../../../components/GridCells/TextCell";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+
+const columns = [
+  { field: "action", minWidth: 90 },
+  { field: "words", minWidth: 200 },
+  { field: "description", minWidth: 230 },
+  { field: "createdByUserName", minWidth: 140 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "updatedByUserName", minWidth: 140 },
+  { field: "status", minWidth: 90 },
+];
 
 function ProhibitedWords() {
   const [data, setData] = useState([]);
@@ -39,7 +50,9 @@ function ProhibitedWords() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
-  const prohibitedwordsPermissions=getMenuPermission('ProhibitedWord')
+  const prohibitedwordsPermissions = getMenuPermission("ProhibitedWord");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(columns);
 
   useEffect(() => {
     fetchProhibitedWords();
@@ -121,7 +134,6 @@ function ProhibitedWords() {
     setSearch(searchInput);
   };
 
-
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -137,132 +149,139 @@ function ProhibitedWords() {
             },
           ]}
         />
-        <div className="col-12 col-lg-auto">
-          <form
-            className="d-md-flex searchbar align-items-center"
-            role="search"
-            onSubmit={handleSearch}
-          >
-            <input
-              className="form-control search-input"
-              type="search"
-              placeholder="Search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-
-            <button
-              className="btn btn-outline-primary search-toggle"
-              type="submit"
-            >
-              <i className="demo-icon icon-search"></i>
-            </button>
-          </form>
-        </div>
       </div>
-      <div className="col-12 col-lg">
-        <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-          <button
-            type="button"
-            className="btn main-btn w-auto"
-            onClick={() => {
-              setSelectedId(null);
-              setShowProhibitedModal(true);
-            }}
-          >
-            Add
-          </button>
-        </div>
-      </div>
-
-      <div className="row w-100">
-        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
-          <div
-            className="table-responsive w-100"
-            style={{ overflow: "visible" }}
-          >
-            <Tooltip
-              anchorElement="target"
-              position="top"
-              openDelay={100}
-              className="grid-tooltip"
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
+            {/* Search */}
+            <form
+              className="d-flex searchbar align-items-center"
+              role="search"
+              onSubmit={handleSearch}
             >
-              <Grid
-                // style={{ width: "100%", overflow: "visible" }}
-                data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
-                skip={page.skip}
-                take={page.take}
-                total={total}
-                onPageChange={(e) => setPage(e.page)}
-                sortable
-                sort={sort}
-                onSortChange={(e) => setSort(e.sort)}
+              <input
+                className="form-control search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+
+              <button
+                className="btn btn-outline-primary search-toggle"
+                type="submit"
               >
-                <GridColumn
-                  title="Action"
-                  cells={{
-                    data: (props) => (
-                      <ActionCell
-                        {...props}
-                        permission={prohibitedwordsPermissions}
-                        idField="id"
-                        onEdit={handleEdit}
+                <i className="demo-icon icon-search"></i>
+              </button>
+            </form>
 
-                        onDelete={openDeleteModal}
-                      />
-                    ),
+            {/* Add */}
+            <button
+              type="button"
+              className="btn main-btn"
+              onClick={() => {
+                setSelectedId(null);
+                setShowProhibitedModal(true);
+              }}
+            >
+              Add
+            </button>
+          </div>
+       
+            <div
+              className="table-responsive"
+              style={{ overflow: "visible" }}
+              ref={gridRef}
+            >
+              <Tooltip
+                anchorElement="target"
+                position="top"
+                openDelay={100}
+                className="grid-tooltip"
+              >
+                <Grid
+                  style={{ width: "100%", overflow: "visible" }}
+                  data={data}
+                  pageable={{
+                    buttonCount: 5,
+                    pageSizes: [5, 10, 20, 50, 100, 500],
+                    info: true,
+                    previousNext: true,
                   }}
-                />
-                <GridColumn
-                  title="Prohibited Words"
-                  field="words"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  title="Description"
-                  field="description"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  title="Created By"
-                  field="createdByUserName"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  title="Created On"
-                  field="createdOn"
-                  cells={{ data: DateCell }}
-                />
-                <GridColumn
-                  title="Modified By"
-                  field="updatedByUserName"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  title="Status"
-                  field="status"
-                  cells={{
-                    data: (props) => (
-                      <StatusCell
-                        {...props}
-                        idField="id"
-                        statusField="status"
-                        onToggle={handleStatusToggle}
-                      />
-                    ),
-                  }}
-                />
-              </Grid>
-            </Tooltip>
+                  skip={page.skip}
+                  take={page.take}
+                  total={total}
+                  onPageChange={(e) => setPage(e.page)}
+                  sortable
+                  sort={sort}
+                  onSortChange={(e) => setSort(e.sort)}
+                >
+                  <GridColumn
+                    title="Action"
+                    width={getWidth("action")}
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={prohibitedwordsPermissions}
+                          idField="id"
+                          onEdit={handleEdit}
+                          onDelete={openDeleteModal}
+                        />
+                      ),
+                    }}
+                  />
+                  <GridColumn
+                    title="Prohibited Words"
+                    field="words"
+                    width={getWidth("words")}
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    title="Description"
+                    field="description"
+                    width={getWidth("description")}
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    title="Created By"
+                    field="createdByUserName"
+                    width={getWidth("createdByUserName")}
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    title="Created On"
+                    field="createdOn"
+                    width={getWidth("createdOn")}
+                    cells={{ data: DateCell }}
+                  />
+                  <GridColumn
+                    title="Modified By"
+                    field="updatedByUserName"
+                    width={getWidth("updatedByUserName")}
+                    cells={{ data: TextCell }}
+                  />
+                  <GridColumn
+                    title="Status"
+                    field="status"
+                    width={getWidth("status")}
+                    cells={{
+                      data: (props) => (
+                        <StatusCell
+                          {...props}
+                          idField="id"
+                          statusField="status"
+                          onToggle={handleStatusToggle}
+                        />
+                      ),
+                    }}
+                  />
+                </Grid>
+              </Tooltip>
+            </div>
           </div>
         </div>
-      </div>
+     
       <ProhibitedWordsModal
         show={showProhibitedModal}
         onClose={handleCloseModal}

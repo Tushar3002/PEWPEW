@@ -186,7 +186,7 @@ function Events() {
         </div>
       </div>
       <div className="col-12">
-        <ul className="nav nav-tabs">
+        <ul className="nav nav-tabs mt-3">
           {eventTabs.map((tab) => (
             <li className="nav-item" key={tab.key}>
               <button

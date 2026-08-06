@@ -30,6 +30,13 @@ body {
     overflow-x: hidden;
 }
 
+body .k-animation-container,
+body .k-list-container,
+body .k-popup,
+body .k-popup-container {
+    overflow: visible !important;
+}
+
 body {
     position: relative;
     margin: 0;

@@ -1,4 +1,4 @@
-/* Main Grid */
+Main Grid
 .k-grid {
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -29,9 +29,9 @@
 .k-grid .k-grid-pager .k-animation-container,
 .k-grid .k-grid-pager .k-list-container,
 .k-grid .k-grid-pager .k-popup {
-  position: fixed !important;
+  position: absolute !important;
   top: auto !important;
-  left: auto !important;
+  left: 0 !important;
   right: auto !important;
   inset: auto !important;
   transform: none !important;
@@ -249,4 +249,9 @@
     max-width: 250px;
     white-space: normal;
     word-break: break-word;
+}
+
+.search-input {
+    width: 180px;
+    max-width: 100%;
 }

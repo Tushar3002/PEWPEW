@@ -447,7 +447,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                           //   id: "",
                           //   description: "Select Venue Type",
                           // }}
-                          className={errors.venueType ? "k-invalid" : ""}
+                          className={`form-control ${errors.venueType ? "is-invalid" : ""}`}
                         />
                       )}
                     />

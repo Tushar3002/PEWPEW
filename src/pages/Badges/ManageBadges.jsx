@@ -148,32 +148,30 @@ function ManageBadges() {
             },
           ]}
         />
-        <div className="col-12 col-lg-auto">
-          <form
-            className="d-md-flex searchbar align-items-center"
-            role="search"
-          >
-            <input
-              className="form-control search-input"
-              type="search"
-              placeholder="Search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
+            <form className="d-flex searchbar align-items-center" role="search">
+              <input
+                className="form-control search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+
+              <button
+                className="btn btn-outline-primary search-toggle"
+                type="button"
+              >
+                <i className="demo-icon icon-search"></i>
+              </button>
+            </form>
 
             <button
-              className="btn btn-outline-primary search-toggle"
               type="button"
-            >
-              <i className="demo-icon icon-search"></i>
-            </button>
-          </form>
-        </div>
-        <div className="col-12 col-lg">
-          <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-            <button
-              type="button"
-              className="btn main-btn w-auto"
+              className="btn main-btn "
               onClick={() => {
                 setSelectedBadgeId(null);
                 setShowBadgeModal(true);
@@ -182,87 +180,85 @@ function ManageBadges() {
               Add
             </button>
           </div>
-        </div>
-        <div className="row w-100">
-          <div className="col-12 mt-3 mt-xxl-4 w-100 ">
-            <div
-              className="table-responsive w-100"
-              style={{ overflow: "visible" }}
+
+          <div
+            className="table-responsive w-100"
+            style={{ overflow: "visible" }}
+          >
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
             >
-              <Tooltip
-                anchorElement="target"
-                position="top"
-                openDelay={100}
-                className="grid-tooltip"
+              <Grid
+                style={{ width: "100%", overflow: "visible" }}
+                data={data}
+                pageable={{
+                  buttonCount: 5,
+                  pageSizes: [5, 10, 20, 50, 100, 500],
+                  info: true,
+                  previousNext: true,
+                }}
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
               >
-                <Grid
-                  style={{ width: "100%", overflow: "visible" }}
-                  data={data}
-                  pageable={{
-                    buttonCount: 5,
-                    pageSizes: [5, 10, 20, 50, 100, 500],
-                    info: true,
-                    previousNext: true,
+                <GridColumn
+                  title="Actions"
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={badgePermission}
+                        idField="id"
+                        onEdit={handleEditBadge}
+                        onDelete={openDeleteModal}
+                      />
+                    ),
                   }}
-                  skip={page.skip}
-                  take={page.take}
-                  total={total}
-                  onPageChange={(e) => setPage(e.page)}
-                  sortable
-                  sort={sort}
-                  onSortChange={(e) => setSort(e.sort)}
-                >
-                  <GridColumn
-                    title="Actions"
-                    cells={{
-                      data: (props) => (
-                        <ActionCell
-                          {...props}
-                          permission={badgePermission}
-                          idField="id"
-                          onEdit={handleEditBadge}
-                          onDelete={openDeleteModal}
-                        />
-                      ),
-                    }}
-                  />
-                  <GridColumn
-                    title="Images"
-                    field="imageFullPath"
-                    cells={{
-                      data: (props) => (
-                        <AttachmentCell {...props} onOpen={openViewer} />
-                      ),
-                    }}
-                  />
-                  <GridColumn
-                    title="Name"
-                    field="name"
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn
-                    title="Badge Applicable For"
-                    field="applicableFor"
-                    cells={{
-                      data: (props) => (
-                        <ApplicableForCell
-                          {...props}
-                          applicableForOptions={applicableForOptions}
-                        />
-                      ),
-                    }}
-                  />
-                  <GridColumn
-                    title="No. of Check-ins"
-                    field="noOfCheckIns"
-                    cells={{ data: TextCell }}
-                  />
-                </Grid>
-              </Tooltip>
-            </div>
+                />
+                <GridColumn
+                  title="Images"
+                  field="imageFullPath"
+                  cells={{
+                    data: (props) => (
+                      <AttachmentCell {...props} onOpen={openViewer} />
+                    ),
+                  }}
+                />
+                <GridColumn
+                  title="Name"
+                  field="name"
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Badge Applicable For"
+                  field="applicableFor"
+                  cells={{
+                    data: (props) => (
+                      <ApplicableForCell
+                        {...props}
+                        applicableForOptions={applicableForOptions}
+                      />
+                    ),
+                  }}
+                />
+                <GridColumn
+                  title="No. of Check-ins"
+                  field="noOfCheckIns"
+                  cells={{ data: TextCell }}
+                />
+              </Grid>
+            </Tooltip>
           </div>
         </div>
       </div>
+
       <AttachmentViewerModal
         show={showViewer}
         onClose={closeViewer}

@@ -15,6 +15,19 @@ import {
 import { AmmunitionModal } from "../../../components/Modal/AmmunitionModal";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../../utils/permission";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "name", minWidth: 200 },
+  { field: "categories", minWidth: 200 },
+  { field: "manufacturer", minWidth: 200 },
+  { field: "description", minWidth: 230 },
+  { field: "createdByUserName", minWidth: 140 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "updatedByUserName", minWidth: 140 },
+  { field: "status", minWidth: 90 },
+];
 
 function AmmunitionMaster() {
   const [data, setData] = useState([]);
@@ -39,7 +52,9 @@ function AmmunitionMaster() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
-  const ammunitionPermission=getMenuPermission('Ammunition')
+  const ammunitionPermission = getMenuPermission("Ammunition");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   useEffect(() => {
     fetchAmmunitions();
@@ -136,50 +151,44 @@ function AmmunitionMaster() {
             },
           ]}
         />
-        <div className="col-12 col-lg-auto">
-          <form
-            className="d-md-flex searchbar align-items-center"
-            role="search"
-            onSubmit={handleSearch}
-          >
-            <input
-              className="form-control search-input"
-              type="search"
-              placeholder="Search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
+            <form
+              className="d-flex searchbar align-items-center"
+              role="search"
+              onSubmit={handleSearch}
+            >
+              <input
+                className="form-control search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+
+              <button
+                className="btn btn-outline-primary search-toggle"
+                type="submit"
+              >
+                <i className="demo-icon icon-search"></i>
+              </button>
+            </form>
 
             <button
-              className="btn btn-outline-primary search-toggle"
-              type="submit"
+              type="button"
+              className="btn main-btn "
+              onClick={() => {
+                setSelectedId(null);
+                setShowAmmunitionModal(true);
+              }}
             >
-              <i className="demo-icon icon-search"></i>
+              Add
             </button>
-          </form>
-        </div>
-      </div>
-      <div className="col-12 col-lg">
-        <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-          <button
-            type="button"
-            className="btn main-btn w-auto"
-            onClick={() => {
-              setSelectedId(null);
-              setShowAmmunitionModal(true);
-            }}
-          >
-            Add
-          </button>
-        </div>
-      </div>
+          </div>
 
-      <div className="row w-100">
-        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
-          <div
-            className="table-responsive w-100"
-            style={{ overflow: "visible" }}
-          >
+          <div className="table-responsive " style={{ overflow: "visible" }} ref={gridRef}>
             <Tooltip
               anchorElement="target"
               position="top"
@@ -205,6 +214,7 @@ function AmmunitionMaster() {
               >
                 <GridColumn
                   title="Action"
+                  width={getWidth("action")}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -217,20 +227,54 @@ function AmmunitionMaster() {
                     ),
                   }}
                 />
-                <GridColumn title="Ammunition Name" field="name" />
-                <GridColumn title="Category Name" field="categories" />
-                <GridColumn title="Manufacturer Name" field="manufacturer" />
-                <GridColumn title="Description" field="description" />
-                <GridColumn title="Created By" field="createdByUserName" />
+
+                <GridColumn
+                  title="Ammunition Name"
+                  field="name"
+                  width={getWidth("name")}
+                />
+
+                <GridColumn
+                  title="Category Name"
+                  field="categories"
+                  width={getWidth("categories")}
+                />
+
+                <GridColumn
+                  title="Manufacturer Name"
+                  field="manufacturer"
+                  width={getWidth("manufacturer")}
+                />
+
+                <GridColumn
+                  title="Description"
+                  field="description"
+                  width={getWidth("description")}
+                />
+
+                <GridColumn
+                  title="Created By"
+                  field="createdByUserName"
+                  width={getWidth("createdByUserName")}
+                />
+
                 <GridColumn
                   title="Created On"
                   field="createdOn"
+                  width={getWidth("createdOn")}
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" />
+
+                <GridColumn
+                  title="Modified By"
+                  field="updatedByUserName"
+                  width={getWidth("updatedByUserName")}
+                />
+
                 <GridColumn
                   title="Status"
                   field="status"
+                  width={getWidth("status")}
                   cells={{
                     data: (props) => (
                       <StatusCell

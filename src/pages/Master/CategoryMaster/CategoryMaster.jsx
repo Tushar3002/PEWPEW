@@ -12,6 +12,19 @@ import { deleteCategory, getGunCategoryMasterList, updateGunCategoryStatus } fro
 import { CategoryMasterModel } from "../../../components/Modal/CategoryMasterModal";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "applicablefor", minWidth: 160 },
+  { field: "accessoryCategory", minWidth: 200 },
+  { field: "description", minWidth: 230 },
+  { field: "parentCategoryName", minWidth: 220 },
+  { field: "createdByUserName", minWidth: 140 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "updatedByUserName", minWidth: 140 },
+  { field: "status", minWidth: 90 },
+];
 
 function CategoryMaster() {
   const [data, setData] = useState([]);
@@ -26,6 +39,8 @@ function CategoryMaster() {
   
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+
+    const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   
     const {
       showDeleteModal,
@@ -134,9 +149,12 @@ function CategoryMaster() {
               },
             ]}
           />
-          <div className="col-12 col-lg-auto">
+          </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
             <form
-              className="d-md-flex searchbar align-items-center"
+              className="d-flex searchbar align-items-center"
               role="search"
               onSubmit={handleSearch}
             >
@@ -147,7 +165,7 @@ function CategoryMaster() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
-  
+
               <button
                 className="btn btn-outline-primary search-toggle"
                 type="submit"
@@ -155,13 +173,10 @@ function CategoryMaster() {
                 <i className="demo-icon icon-search"></i>
               </button>
             </form>
-          </div>
-        </div>
-        <div className="col-12 col-lg">
-          <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
+
             <button
               type="button"
-              className="btn main-btn w-auto"
+              className="btn main-btn "
               onClick={() => {
                 setSelectedId(null);
                 setShowCategoryModal(true);
@@ -170,13 +185,11 @@ function CategoryMaster() {
               Add
             </button>
           </div>
-        </div>
-  
-        <div className="row w-100">
-          <div className="col-12 mt-3 mt-xxl-4 w-100 ">
+
             <div
               className="table-responsive w-100"
               style={{ overflow: "visible" }}
+              ref={gridRef}
             >
               <Tooltip
                 anchorElement="target"
@@ -202,7 +215,7 @@ function CategoryMaster() {
                   onSortChange={(e) => setSort(e.sort)}
                 >
                   <GridColumn
-                    width={"125px"}
+                    width={getWidth("action")}
                     title="Action"
                     cells={{
                     data: (props) => (
@@ -217,18 +230,20 @@ function CategoryMaster() {
                     ),
                   }}
                   />
-                  <GridColumn title="Applicable For" field="" />
-                  <GridColumn title="Category Name" field="accessoryCategory" />
-                  <GridColumn title="Description" field="description" />
-                  <GridColumn title="Parent Category Name" field="parentCategoryName" />
-                  <GridColumn title="Created By" field="createdByUserName" />
+                  <GridColumn title="Applicable For" field="applicableFor" width={getWidth("applicableFor")}/>
+                  <GridColumn title="Category Name" field="accessoryCategory" width={getWidth("accessoryCategory")} />
+                  <GridColumn title="Description" field="description" width={getWidth("description")}/>
+                  <GridColumn title="Parent Category Name" field="parentCategoryName" width={getWidth("parentCategoryName")}/>
+                  <GridColumn title="Created By" field="createdByUserName" width={getWidth("createdByUserName")}/>
                   <GridColumn
+                  width={getWidth("createdOn")}
                     title="Created On"
                     field="createdOn"
                     cells={{ data: DateCell }}
                   />
-                  <GridColumn title="Modified By" field="updatedByUserName" />
+                  <GridColumn title="Modified By" field="updatedByUserName" width={getWidth("updatedByUserName")}/>
                   <GridColumn
+                  width={getWidth("status")}
                     title="Status"
                     field="status"
                     cells={{

@@ -19,6 +19,18 @@ import { ManufacturerModal } from "../../../components/Modal/ManufacturerModal";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+
+const columns = [
+  { field: "action", minWidth: 90 },
+  { field: "name", minWidth: 200 },
+  { field: "description", minWidth: 230 },
+  { field: "createdByUserName", minWidth: 140 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "updatedByUserName", minWidth: 140 },
+  { field: "status", minWidth: 90 },
+];
 
 function Manufacturer() {
   const [data, setData] = useState([]);
@@ -33,7 +45,7 @@ function Manufacturer() {
 
   const [showManufacturerModal, setShowManufacturerModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-
+  const { gridRef, getWidth } = useResponsiveGridWidths(columns);
   const {
     showDeleteModal,
     deleteId,
@@ -43,7 +55,7 @@ function Manufacturer() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
-  const manufacturerPermission=getMenuPermission('Manufacturer')
+  const manufacturerPermission = getMenuPermission("Manufacturer");
 
   useEffect(() => {
     fetchManufacturer();
@@ -80,23 +92,22 @@ function Manufacturer() {
   };
 
   const handleDelete = async () => {
-  if (!deleteId) return;
+    if (!deleteId) return;
 
-  try {
-    setIsDeleting(true);
+    try {
+      setIsDeleting(true);
 
- 
-    await deleteManufacturer(deleteId);
+      await deleteManufacturer(deleteId);
 
-    closeDeleteModal();
+      closeDeleteModal();
 
-    await fetchManufacturer();
-  } catch (error) {
-    console.log(error.response);
-  } finally {
-    setIsDeleting(false);
-  }
-};
+      await fetchManufacturer();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
 
@@ -141,48 +152,49 @@ function Manufacturer() {
             },
           ]}
         />
-        <div className="col-12 col-lg-auto">
-          <form
-            className="d-md-flex searchbar align-items-center"
-            role="search"
-            onSubmit={handleSearch}
-          >
-            <input
-              className="form-control search-input"
-              type="search"
-              placeholder="Search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-
-            <button
-              className="btn btn-outline-primary search-toggle"
-              type="submit"
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
+            {/* Search */}
+            <form
+              className="d-flex searchbar align-items-center"
+              role="search"
+              onSubmit={handleSearch}
             >
-              <i className="demo-icon icon-search"></i>
-            </button>
-          </form>
-        </div>
-      </div>
-      <div className="col-12 col-lg">
-        <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-          <button
-            type="button"
-            className="btn main-btn w-auto"
-            onClick={() => {
-              setSelectedId(null);
-              setShowManufacturerModal(true);
-            }}
-          >
-            Add
-          </button>
-        </div>
-      </div>
+              <input
+                className="form-control search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
 
-      <div className="row w-100">
-        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
+              <button
+                className="btn btn-outline-primary search-toggle"
+                type="submit"
+              >
+                <i className="demo-icon icon-search"></i>
+              </button>
+            </form>
+
+            {/* Add */}
+            <button
+              type="button"
+              className="btn main-btn"
+              onClick={() => {
+                setSelectedId(null);
+                setShowManufacturerModal(true);
+              }}
+            >
+              Add
+            </button>
+          </div>
+
+          {/* Grid */}
           <div
-            className="table-responsive w-100"
+            ref={gridRef}
+            className="table-responsive"
             style={{ overflow: "visible" }}
           >
             <Tooltip
@@ -194,12 +206,7 @@ function Manufacturer() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
@@ -209,7 +216,7 @@ function Manufacturer() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  width={"12%"}
+                  width={getWidth("action")}
                   title="Action"
                   cells={{
                     data: (props) => (
@@ -218,29 +225,40 @@ function Manufacturer() {
                         permission={manufacturerPermission}
                         idField="id"
                         onEdit={handleEdit}
-
                         onDelete={openDeleteModal}
                       />
                     ),
                   }}
                 />
-                <GridColumn title="Manufacturer Name" field="name" width={"18%"}/>
                 <GridColumn
-                  // width={"15%"}
+                  title="Manufacturer Name"
+                  field="name"
+                  width={getWidth("name")}
+                />
+                <GridColumn
+                  width={getWidth("description")}
                   title="Description"
                   field="description"
                   cells={{ data: TextCell }}
                 />
-                <GridColumn title="Created By" field="createdByUserName" width={"12%"}/>
                 <GridColumn
-                 width={"12%"}
+                  title="Created By"
+                  field="createdByUserName"
+                  width={getWidth("createdByUserName")}
+                />
+                <GridColumn
+                  width={getWidth("createdOn")}
                   title="Created On"
                   field="createdOn"
                   cells={{ data: DateCell }}
                 />
-                <GridColumn title="Modified By" field="updatedByUserName" width={"12%"}/>
                 <GridColumn
-                  width={"10%"}
+                  title="Modified By"
+                  field="updatedByUserName"
+                  width={getWidth("updatedByUserName")}
+                />
+                <GridColumn
+                  width={getWidth("status")}
                   title="Status"
                   field="status"
                   cells={{
@@ -254,6 +272,13 @@ function Manufacturer() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20,50,100,500]}
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

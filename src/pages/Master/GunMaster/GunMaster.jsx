@@ -21,6 +21,21 @@ import { ApprovalStatusDropdownCell } from "../../../components/GridCells/Approv
 import { getGunApprovalStatus } from "../../../api/Common/commonApi";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "gunName", minWidth: 180 },
+  { field: "categoryNames", minWidth: 200 },
+  { field: "manufacturerNames", minWidth: 220 },
+  { field: "details", minWidth: 250 },
+  { field: "attachmentFullPath", minWidth: 110 },
+  { field: "ammunitions", minWidth: 180 },
+  { field: "createdDate", minWidth: 140 },
+  { field: "updatedByUserName", minWidth: 140 },
+  { field: "approvalStatus", minWidth: 170 },
+  { field: "status", minWidth: 90 },
+];
 
 function GunMaster() {
   const [data, setData] = useState([]);
@@ -39,6 +54,8 @@ function GunMaster() {
   const [approvalStatusDropdown, setApprovalStatusDropdown] = useState([]);
 
   const gunMasterPermission = getMenuPermission("GunMaster");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const {
     showDeleteModal,
@@ -163,7 +180,6 @@ function GunMaster() {
     setSearch(searchInput);
   };
 
-
   const StatusDropdownCell = (props) => {
     const currentStatus = props.dataItem?.[props.field] ?? "";
 
@@ -205,49 +221,47 @@ function GunMaster() {
             },
           ]}
         />
-        <div className="col-12 col-lg-auto">
-          <form
-            className="d-md-flex searchbar align-items-center"
-            role="search"
-            onSubmit={handleSearch}
-          >
-            <input
-              className="form-control search-input"
-              type="search"
-              placeholder="Search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
+            <form
+              className="d-flex searchbar align-items-center"
+              role="search"
+              onSubmit={handleSearch}
+            >
+              <input
+                className="form-control search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+
+              <button
+                className="btn btn-outline-primary search-toggle"
+                type="submit"
+              >
+                <i className="demo-icon icon-search"></i>
+              </button>
+            </form>
 
             <button
-              className="btn btn-outline-primary search-toggle"
-              type="submit"
+              type="button"
+              className="btn main-btn "
+              onClick={() => {
+                setSelectedId(null);
+                setShowGunModal(true);
+              }}
             >
-              <i className="demo-icon icon-search"></i>
+              Add
             </button>
-          </form>
-        </div>
-      </div>
-      <div className="col-12 col-lg">
-        <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-          <button
-            type="button"
-            className="btn main-btn w-auto"
-            onClick={() => {
-              setSelectedId(null);
-              setShowGunModal(true);
-            }}
-          >
-            Add
-          </button>
-        </div>
-      </div>
+          </div>
 
-      <div className="row w-100">
-        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
           <div
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
+            ref={gridRef}
           >
             <Tooltip
               anchorElement="target"
@@ -274,6 +288,7 @@ function GunMaster() {
               >
                 <GridColumn
                   title="Action"
+                  width={getWidth("action")}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -289,51 +304,67 @@ function GunMaster() {
                 <GridColumn
                   title="Gun Name"
                   field="gunName"
+                  width={getWidth("gunName")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Category Name"
                   field="categoryNames"
+                  width={getWidth("categoryNames")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Manyfacturer Name"
                   field="manufacturerNames"
+                  width={getWidth("manufacturerNames")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Details"
                   field="details"
+                  width={getWidth("details")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Images"
                   field="attachmentFullPath"
+                  width={getWidth("attachmentFullPath")}
                   cells={{
                     data: (props) => (
                       <AttachmentCell {...props} onOpen={openViewer} />
                     ),
                   }}
                 />
+
                 <GridColumn
                   title="Ammunition"
                   field="ammunitions"
+                  width={getWidth("ammunitions")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Created On"
                   field="createdDate"
+                  width={getWidth("createdDate")}
                   cells={{ data: DateCell }}
                 />
+
                 <GridColumn
                   title="Modified By"
                   field="updatedByUserName"
+                  width={getWidth("updatedByUserName")}
                   cells={{ data: TextCell }}
                 />
 
                 <GridColumn
                   title="Approval Status"
                   field="approvalStatus"
+                  width={getWidth("approvalStatus")}
                   cells={{
                     data: (props) => (
                       <ApprovalStatusDropdownCell
@@ -344,9 +375,11 @@ function GunMaster() {
                     ),
                   }}
                 />
+
                 <GridColumn
                   title="Status"
                   field="status"
+                  width={getWidth("status")}
                   cells={{
                     data: (props) => (
                       <StatusCell

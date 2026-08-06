@@ -26,6 +26,7 @@ export const ApprovalStatusDropdownCell = ({
         popupSettings={{
           appendTo: typeof window !== "undefined" ? document.body : undefined,
           positionMode: "fixed",
+          popupClass: "k-dropdown-popup",
         }}
         style={{ width: "100%" }}
         onChange={(e) => {

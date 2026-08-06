@@ -15,6 +15,7 @@ import { DetailsCell } from "../../components/GridCells/DetailsCell";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
 
 function Activity() {
   const [data, setData] = useState([]);
@@ -221,12 +222,7 @@ function Activity() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
@@ -245,7 +241,6 @@ function Activity() {
                         permission={activityPermission}
                         idField="postId"
                         onView={(id) => navigate(`/activity/view/${id}`)}
-                       
                       />
                     ),
                   }}
@@ -329,6 +324,17 @@ function Activity() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+    take={page.take}
+    total={total}
+    pageSizes={[5,10,20,50,100,500]}
+    buttonCount={4}
+    previousNext
+    firstLast
+    info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

@@ -225,10 +225,10 @@ function ManageUser() {
             {/* <a href="#" className="btn main-btn border-btn blue-btn">
               Import
             </a> */}
-
+{/* 
             <a href="#" className="btn main-btn border-btn sky-btn">
               Export
-            </a>
+            </a> */}
 
             <Link
               to={"/manage-users/add"}

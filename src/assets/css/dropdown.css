@@ -44,22 +44,40 @@
   color: #fff !important;
 }
 
-/* Dropdown hover */
-.k-animation-container .k-list-item:hover,
-.k-animation-container .k-list-item.k-hover {
+/* Keep Kendo popup content interactive */
+.k-animation-container,
+.k-list-container,
+.k-popup,
+.k-popup-container,
+.k-dropdown-popup {
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 99999 !important;
+}
+
+.k-dropdownlist,
+.k-combobox,
+.k-multiselect,
+.k-datepicker,
+.k-timepicker,
+.k-datetimepicker {
+  position: relative;
+}
+
+.k-list-item:hover,
+.k-list-item.k-hover {
   background-color: #dc3545 !important;
   color: #fff !important;
 }
 
-/* Selected dropdown item */
-.k-animation-container .k-list-item.k-selected {
+.k-list-item.k-selected {
   background-color: #dc3545 !important;
   color: #fff !important;
 }
 
-/* Selected + hovered */
-.k-animation-container .k-list-item.k-selected:hover,
-.k-animation-container .k-list-item.k-selected.k-hover {
+.k-list-item.k-selected:hover,
+.k-list-item.k-selected.k-hover {
   background-color: #c82333 !important;
   color: #fff !important;
 }

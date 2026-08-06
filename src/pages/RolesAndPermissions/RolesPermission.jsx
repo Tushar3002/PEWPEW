@@ -80,15 +80,15 @@ function RolesPermission() {
 
   const handleDelete = async () => {
     try {
-      setIsDeleting(true)
-      
+      setIsDeleting(true);
+
       await deleteRole(deleteId);
-      closeDeleteModal()
+      closeDeleteModal();
       rolesandpermissionData();
     } catch (error) {
       console.log(error.response);
-    }finally{
-      setIsDeleting(false)
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -113,7 +113,7 @@ function RolesPermission() {
       console.log(error);
     }
   };
- 
+
   const handleStatusToggle = async (id, currentValue) => {
     const nextValue = !currentValue;
     if (!nextValue) {
@@ -158,54 +158,54 @@ function RolesPermission() {
             },
           ]}
         />
-        <div className="col-12 col-lg-auto">
-          <form
-            className="d-md-flex searchbar align-items-center"
-            role="search"
-          >
-            <input
-              className="form-control search-input"
-              type="search"
-              placeholder="Search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-
-            <button
-              className="btn btn-outline-primary search-toggle"
-              type="button"
-            >
-              <i className="demo-icon icon-search"></i>
-            </button>
-          </form>
-        </div>
-
-        <div className="col-12 col-lg">
-          <div className="btn-list d-flex justify-content-lg-end flex-wrap gap-2 gap-md-3 text-end">
-            {/* <a href="#" className="btn main-btn border-btn danger-btn">
-          Delete
-        </a>
-
-        <a href="#" className="btn main-btn border-btn blue-btn">
-          Import
-        </a> */}
-
-            {/* <a href="#" className="btn main-btn border-btn sky-btn">
-              Export
-            </a> */}
-
-            <Link
-              to={"/roles-permissions/add"}
-              className="btn main-btn border-btn blue-btn"
-            >
-              Add Users
-            </Link>
-          </div>
-        </div>
       </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mt-3 mt-xxl-4 mb-3">
+            <form className="d-flex searchbar align-items-center" role="search">
+              <input
+                className="form-control search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
 
-      <div className="row w-100">
-        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
+              <button
+                className="btn btn-outline-primary search-toggle"
+                type="button"
+              >
+                <i className="demo-icon icon-search"></i>
+              </button>
+            </form>
+      
+
+
+              {/* <a href="#" className="btn main-btn border-btn danger-btn">
+                  Delete
+                </a>
+
+                <a href="#" className="btn main-btn border-btn blue-btn">
+                  Import
+                </a> */}
+
+              {/* <a href="#" className="btn main-btn border-btn sky-btn">
+                      Export
+                    </a> */}
+            <button
+              type="button"
+              className="btn main-btn"
+              onClick={() => {
+                navigate('/roles-permissions/add')
+              }}
+              // <Link to={"/roles-permissions/add"} className="btn main-btn">
+              //   Add
+              // </Link>
+              >
+                Add
+              </button>
+              </div>
+
           <div
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
@@ -243,8 +243,9 @@ function RolesPermission() {
                         {...props}
                         permission={rolePermission}
                         idField="id"
-                        onEdit={(id) => navigate(`/roles-permissions/edit/${id}`)}
-             
+                        onEdit={(id) =>
+                          navigate(`/roles-permissions/edit/${id}`)
+                        }
                         onDelete={openDeleteModal}
                       />
                     ),

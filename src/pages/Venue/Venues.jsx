@@ -268,10 +268,10 @@ function Venues() {
         </div>
       </div>
 
-      <div className="row w-100">
-        <div className="col-12 mt-3 mt-xxl-4 w-100 ">
+      <div className="row">
+        <div className="col-12 mt-3 mt-xxl-4">
           <div
-            className="table-responsive w-100"
+            className="table-responsive"
             style={{ overflow: "visible" }}
           >
             <Tooltip
