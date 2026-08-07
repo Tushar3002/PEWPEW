@@ -210,7 +210,6 @@ function Manufacturer() {
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
                 sortable
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}

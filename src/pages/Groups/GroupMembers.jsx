@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getGroupMembers } from "../../api/Group/group";
 import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import CustomPager from "../../components/Pagnation/CustomPager";
 
 function GroupMembers() {
   const [data, setData] = useState([]);
@@ -141,17 +142,23 @@ function GroupMembers() {
             <Grid
               data={data}
               total={total}
-              pageable={{
-                previousNext: true,
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-              }}
+              pageable={false}
               skip={page.skip}
               take={page.take}
               onPageChange={(e) => setPage(e.page)}
             >
               <GridColumn title="Profile" cells={{ data: ProfileCell }} />
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Grid>
           </div>
         </div>

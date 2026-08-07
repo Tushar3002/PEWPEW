@@ -17,6 +17,16 @@ import { ApplicableForCell } from "../../components/GridCells/ApplicableForCell"
 import { TextCell } from "../../components/GridCells/TextCell";
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../utils/permission";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "imageFullPath", minWidth: 120 },
+  { field: "name", minWidth: 180 },
+  { field: "applicableFor", minWidth: 200 },
+  { field: "noOfCheckIns", minWidth: 140 },
+];
 
 function ManageBadges() {
   const [data, setData] = useState([]);
@@ -33,6 +43,8 @@ function ManageBadges() {
   const [selectedBadgeId, setSelectedBadgeId] = useState(null);
 
   const [applicableForOptions, setApplicableForOptions] = useState([]);
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const {
     showViewer,
@@ -184,6 +196,7 @@ function ManageBadges() {
           <div
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
+            ref={gridRef}
           >
             <Tooltip
               anchorElement="target"
@@ -194,22 +207,17 @@ function ManageBadges() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
                 sortable
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
                   title="Actions"
+                  width={getWidth("action")}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -222,23 +230,29 @@ function ManageBadges() {
                     ),
                   }}
                 />
+
                 <GridColumn
                   title="Images"
                   field="imageFullPath"
+                  width={getWidth("imageFullPath")}
                   cells={{
                     data: (props) => (
                       <AttachmentCell {...props} onOpen={openViewer} />
                     ),
                   }}
                 />
+
                 <GridColumn
                   title="Name"
                   field="name"
+                  width={getWidth("name")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Badge Applicable For"
                   field="applicableFor"
+                  width={getWidth("applicableFor")}
                   cells={{
                     data: (props) => (
                       <ApplicableForCell
@@ -248,12 +262,25 @@ function ManageBadges() {
                     ),
                   }}
                 />
+
                 <GridColumn
                   title="No. of Check-ins"
                   field="noOfCheckIns"
+                  width={getWidth("noOfCheckIns")}
                   cells={{ data: TextCell }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

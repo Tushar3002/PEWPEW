@@ -36,11 +36,11 @@ const attachments = Array.isArray(value)
               >
                 <video
                   style={{
-                    width: "100%",
-                    height: "70px",
-                    objectFit: "cover",
-                    pointerEvents: "none",
-                  }}
+    width: "100%",
+    height: "50px",
+    objectFit: "contain",
+    pointerEvents: "none",
+}}
                 >
                   <source src={file} />
                 </video>
@@ -68,12 +68,12 @@ const attachments = Array.isArray(value)
                 alt={`#`}
                 onClick={onOpen ? () => onOpen(attachments, index): undefined}
                 style={{
-                  width: "80px",
-                  height: "70px",
-                  objectFit: "contain",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
+    width: "60px",
+    height: "50px",
+    objectFit: "contain",
+    borderRadius: "6px",
+    cursor: "pointer",
+}}
               />
             )
           )}

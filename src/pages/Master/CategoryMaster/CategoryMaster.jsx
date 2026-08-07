@@ -13,6 +13,8 @@ import { CategoryMasterModel } from "../../../components/Modal/CategoryMasterMod
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+import { TextCell } from "../../../components/GridCells/TextCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -200,12 +202,7 @@ function CategoryMaster() {
                 <Grid
                   style={{ width: "100%", overflow: "visible" }}
                   data={data}
-                  pageable={{
-                    buttonCount: 5,
-                    pageSizes: [5, 10, 20, 50, 100, 500],
-                    info: true,
-                    previousNext: true,
-                  }}
+                  pageable={false}
                   skip={page.skip}
                   take={page.take}
                   total={total}
@@ -232,7 +229,7 @@ function CategoryMaster() {
                   />
                   <GridColumn title="Applicable For" field="applicableFor" width={getWidth("applicableFor")}/>
                   <GridColumn title="Category Name" field="accessoryCategory" width={getWidth("accessoryCategory")} />
-                  <GridColumn title="Description" field="description" width={getWidth("description")}/>
+                  <GridColumn title="Description" field="description" width={getWidth("description")} cells={{data:TextCell}}/>
                   <GridColumn title="Parent Category Name" field="parentCategoryName" width={getWidth("parentCategoryName")}/>
                   <GridColumn title="Created By" field="createdByUserName" width={getWidth("createdByUserName")}/>
                   <GridColumn
@@ -257,6 +254,17 @@ function CategoryMaster() {
                     }}
                   />
                 </Grid>
+                <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
               </Tooltip>
             </div>
           </div>

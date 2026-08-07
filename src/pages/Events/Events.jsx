@@ -12,6 +12,8 @@ import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { TextCell } from "../../components/GridCells/TextCell";
 import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 const eventTabs = [
   {
@@ -34,6 +36,16 @@ const eventTabs = [
   },
 ];
 
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "venueName", minWidth: 220 },
+  { field: "eventName", minWidth: 220 },
+  { field: "dateTime", minWidth: 220 },
+  { field: "address", minWidth: 260 },
+  { field: "userName", minWidth: 140 },
+  { field: "approvalStatusName", minWidth: 180 },
+];
+
 function Events() {
   const [eventData, setEventData] = useState({});
 
@@ -52,6 +64,8 @@ function Events() {
   const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
 
   const navigate = useNavigate();
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const {
     showDeleteModal,
@@ -202,7 +216,7 @@ function Events() {
 
         <div className="mt-4">
           <div className="col-12 mt-3 mt-xxl-4">
-            <div className="table-responsive" style={{ overflow: "visible" }}>
+            <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
               <Tooltip
                 anchorElement="target"
                 position="top"
@@ -211,19 +225,16 @@ function Events() {
               >
                 <Grid
                   data={eventData}
-                  pageable={{
-                    buttonCount: 5,
-                    pageSizes: [5, 10, 20, 50, 100, 500],
-                    info: true,
-                    previousNext: true,
-                  }}
+                  pageable={false}
                   skip={page.skip}
                   take={page.take}
                   total={total}
-                  onPageChange={(e) => setPage(e.page)}
+                  sortable
+                  sort={sort}
+                  onSortChange={(e) => setSort(e.sort)}
                 >
                   <GridColumn
-                    width={"100px"}
+                    width={getWidth('action')}
                     title="Action"
                     cells={{
                       data: (props) => (
@@ -238,20 +249,22 @@ function Events() {
                     }}
                   />
                   <GridColumn
-                    width={"220px"}
                     title="Host Name/Venue Name"
                     field="venueName"
+                    width={getWidth("venueName")}
                     cells={{ data: TextCell }}
                   />
+
                   <GridColumn
-                    width={"220px"}
                     title="Event Name"
                     field="eventName"
+                    width={getWidth("eventName")}
                     cells={{ data: TextCell }}
                   />
+
                   <GridColumn
                     title="Date & Time"
-                    width="250px"
+                    width={getWidth("dateTime")}
                     cells={{
                       data: (props) => (
                         <DateTimeCell
@@ -261,25 +274,39 @@ function Events() {
                       ),
                     }}
                   />
+
                   <GridColumn
-                    width={"300px"}
                     title="Address"
                     field="address"
+                    width={getWidth("address")}
                     cells={{ data: DetailsCell }}
                   />
+
                   <GridColumn
-                    width={"220px"}
                     title="Created By"
                     field="userName"
+                    width={getWidth("userName")}
                     cells={{ data: TextCell }}
                   />
+
                   <GridColumn
-                    width={"220px"}
                     title="Status"
                     field="approvalStatusName"
+                    width={getWidth("approvalStatusName")}
                     cells={{ data: StatusDropdownCell }}
                   />
                 </Grid>
+                <CustomPager
+                  skip={page.skip}
+                  take={page.take}
+                  total={total}
+                  pageSizes={[5, 10, 20, 50, 100, 500]}
+                  buttonCount={4}
+                  previousNext
+                  firstLast
+                  info
+                  onPageChange={(e) => setPage(e.page)}
+                />
               </Tooltip>
             </div>
           </div>

@@ -98,7 +98,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
   const getCountryCodeData = async () => {
     try {
       const res = await getCountryCode();
-      //   console.log(res.data);
+      console.log("CODE", res.data);
       setCountryCodeData(res.data);
     } catch (error) {
       console.log(error);
@@ -323,47 +323,61 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                         <Controller
                           name="countryCode"
                           control={control}
-                          rules={{
-                            required: "Country Code is required",
-                          }}
                           render={({ field }) => (
-                            <select
-                              className={`form-select ${
-                                errors.countryCode ? "is-invalid" : ""
-                              }`}
-                              style={{
-                                width: "110px",
-                                minWidth: "110px",
-                              }}
-                              value={field.value ?? ""}
-                              onChange={(e) => {
-                                const selectedCode = e.target.value;
-
-                                const selectedCountry = countryCodeData.find(
+                            <DropDownList
+                              data={countryCodeData}
+                              textField="phoneInternationalCode"
+                              dataItemKey="countryId"
+                              value={
+                                countryCodeData.find(
                                   (country) =>
                                     country.phoneInternationalCode ===
-                                    selectedCode,
-                                );
+                                    field.value,
+                                ) || null
+                              }
+                              onChange={(e) => {
+                                const selectedCountry = e.value;
 
-                                field.onChange(selectedCode);
+                                field.onChange(
+                                  selectedCountry?.phoneInternationalCode ?? "",
+                                );
 
                                 setValue(
                                   "countryCodeName",
                                   selectedCountry?.countryCode || "",
                                 );
                               }}
-                            >
-                              <option value="">Code</option>
+                              valueRender={(element, value) => {
+                                if (!value) {
+                                  return <span>Code</span>;
+                                }
 
-                              {countryCodeData.map((country) => (
-                                <option
-                                  key={country.countryId}
-                                  value={country.phoneInternationalCode}
-                                >
-                                  {country.phoneInternationalCode}
-                                </option>
-                              ))}
-                            </select>
+                                return (
+                                  <span>{value.phoneInternationalCode}</span>
+                                );
+                              }}
+                              itemRender={(li, itemProps) =>
+                                React.cloneElement(
+                                  li,
+                                  li.props,
+                                  <>
+                                    <strong>
+                                      {
+                                        itemProps.dataItem
+                                          .phoneInternationalCode
+                                      }
+                                    </strong>
+                                    <span style={{ marginLeft: "10px" }}>
+                                      {itemProps.dataItem.countryName}
+                                    </span>
+                                  </>,
+                                )
+                              }
+                              style={{ width: 80 }}
+                              popupSettings={{
+                                className: "country-code-popup",
+                              }}
+                            />
                           )}
                         />
 
@@ -465,22 +479,50 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
 
                       <Controller
                         name="guns"
+                        className={"form-control"}
                         control={control}
-                        render={({ field }) => (
-                          <MultiSelect
-                            className="venue-gun-multiselect form-control"
-                            data={gunDropdown}
-                            textField="gunName"
-                            dataItemKey="gunId"
-                            value={gunDropdown.filter((gun) =>
-                              field.value?.includes(gun.gunId),
-                            )}
-                            onChange={(e) => {
-                              field.onChange(e.value.map((gun) => gun.gunId));
-                            }}
-                            placeholder="Select Guns"
-                          />
-                        )}
+                        render={({ field }) => {
+                          const selectedGuns = gunDropdown.filter((gun) =>
+                            field.value?.includes(gun.gunId),
+                          );
+
+                          return (
+                            <MultiSelect
+                              className="venue-gun-multiselect form-control"
+                              data={gunDropdown}
+                              textField="gunName"
+                              dataItemKey="gunId"
+                              value={selectedGuns}
+                              onChange={(e) => {
+                                field.onChange(e.value.map((gun) => gun.gunId));
+                              }}
+                              placeholder="Select Guns"
+                              tags={
+                                selectedGuns.length === 0
+                                  ? []
+                                  : selectedGuns.length === 1
+                                    ? [
+                                        {
+                                          text: selectedGuns[0].gunName,
+                                          data: [selectedGuns[0]],
+                                        },
+                                      ]
+                                    : [
+                                        {
+                                          text: selectedGuns[0].gunName,
+                                          data: [selectedGuns[0]],
+                                        },
+                                        {
+                                          text: `${selectedGuns.length - 1} item${
+                                            selectedGuns.length > 2 ? "s" : ""
+                                          } selected`,
+                                          data: selectedGuns.slice(1),
+                                        },
+                                      ]
+                              }
+                            />
+                          );
+                        }}
                       />
                     </div>
                   </div>

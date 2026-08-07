@@ -16,6 +16,7 @@ import { TextCell } from "../../../components/GridCells/TextCell";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import CustomPager from "../../../components/Pagnation/CustomPager";
 
 const columns = [
   { field: "action", minWidth: 90 },
@@ -187,101 +188,107 @@ function ProhibitedWords() {
               Add
             </button>
           </div>
-       
-            <div
-              className="table-responsive"
-              style={{ overflow: "visible" }}
-              ref={gridRef}
+
+          <div
+            className="table-responsive"
+            style={{ overflow: "visible" }}
+            ref={gridRef}
+          >
+            <Tooltip
+              anchorElement="target"
+              position="top"
+              openDelay={100}
+              className="grid-tooltip"
             >
-              <Tooltip
-                anchorElement="target"
-                position="top"
-                openDelay={100}
-                className="grid-tooltip"
+              <Grid
+                style={{ width: "100%", overflow: "visible" }}
+                data={data}
+                pageable={false}
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                onPageChange={(e) => setPage(e.page)}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
               >
-                <Grid
-                  style={{ width: "100%", overflow: "visible" }}
-                  data={data}
-                  pageable={{
-                    buttonCount: 5,
-                    pageSizes: [5, 10, 20, 50, 100, 500],
-                    info: true,
-                    previousNext: true,
+                <GridColumn
+                  title="Action"
+                  width={getWidth("action")}
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={prohibitedwordsPermissions}
+                        idField="id"
+                        onEdit={handleEdit}
+                        onDelete={openDeleteModal}
+                      />
+                    ),
                   }}
-                  skip={page.skip}
-                  take={page.take}
-                  total={total}
-                  onPageChange={(e) => setPage(e.page)}
-                  sortable
-                  sort={sort}
-                  onSortChange={(e) => setSort(e.sort)}
-                >
-                  <GridColumn
-                    title="Action"
-                    width={getWidth("action")}
-                    cells={{
-                      data: (props) => (
-                        <ActionCell
-                          {...props}
-                          permission={prohibitedwordsPermissions}
-                          idField="id"
-                          onEdit={handleEdit}
-                          onDelete={openDeleteModal}
-                        />
-                      ),
-                    }}
-                  />
-                  <GridColumn
-                    title="Prohibited Words"
-                    field="words"
-                    width={getWidth("words")}
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn
-                    title="Description"
-                    field="description"
-                    width={getWidth("description")}
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn
-                    title="Created By"
-                    field="createdByUserName"
-                    width={getWidth("createdByUserName")}
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn
-                    title="Created On"
-                    field="createdOn"
-                    width={getWidth("createdOn")}
-                    cells={{ data: DateCell }}
-                  />
-                  <GridColumn
-                    title="Modified By"
-                    field="updatedByUserName"
-                    width={getWidth("updatedByUserName")}
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn
-                    title="Status"
-                    field="status"
-                    width={getWidth("status")}
-                    cells={{
-                      data: (props) => (
-                        <StatusCell
-                          {...props}
-                          idField="id"
-                          statusField="status"
-                          onToggle={handleStatusToggle}
-                        />
-                      ),
-                    }}
-                  />
-                </Grid>
-              </Tooltip>
-            </div>
+                />
+                <GridColumn
+                  title="Prohibited Words"
+                  field="words"
+                  width={getWidth("words")}
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Description"
+                  field="description"
+                  width={getWidth("description")}
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Created By"
+                  field="createdByUserName"
+                  width={getWidth("createdByUserName")}
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Created On"
+                  field="createdOn"
+                  width={getWidth("createdOn")}
+                  cells={{ data: DateCell }}
+                />
+                <GridColumn
+                  title="Modified By"
+                  field="updatedByUserName"
+                  width={getWidth("updatedByUserName")}
+                  cells={{ data: TextCell }}
+                />
+                <GridColumn
+                  title="Status"
+                  field="status"
+                  width={getWidth("status")}
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="id"
+                        statusField="status"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
+              </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
+            </Tooltip>
           </div>
         </div>
-     
+      </div>
+
       <ProhibitedWordsModal
         show={showProhibitedModal}
         onClose={handleCloseModal}

@@ -13,16 +13,18 @@ import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 import { useNavigate } from "react-router-dom";
 import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import { getMenuPermission } from "../../../utils/permission";
+import CustomPager from "../../../components/Pagnation/CustomPager";
 
 function ActivityTabs({ userId }) {
   const [page, setPage] = useState({
     skip: 0,
     take: 10,
   });
-
+  const [total,setTotal]=useState(0)
   const [activities, setActivities] = useState([]);
   const navigate = useNavigate();
-
+  const activityPermission = getMenuPermission("Activity");
   const {
     showViewer,
     attachments,
@@ -34,7 +36,7 @@ function ActivityTabs({ userId }) {
 
   useEffect(() => {
     getActivitiesData();
-  }, []);
+  }, [page]); 
   const getActivitiesData = async () => {
     const body = {
       pageNumber: page.skip / page.take + 1,
@@ -47,6 +49,7 @@ function ActivityTabs({ userId }) {
       const res = await getActivitiesinVenue(body);
       console.log(res);
       setActivities(res.data);
+      setTotal(res.data.totalRecord)
     } catch (error) {
       console.log(error.response);
     }
@@ -88,7 +91,14 @@ function ActivityTabs({ userId }) {
         openDelay={100}
         className="grid-tooltip"
       >
-        <Grid data={activities}>
+        <Grid
+          data={activities}
+          pageable={false}
+          skip={page.skip}
+          take={page.take}
+          total={total}
+
+        >
           <GridColumn
             title="Actions"
             cells={{
@@ -98,7 +108,6 @@ function ActivityTabs({ userId }) {
                   permission={activityPermission}
                   idField="postId"
                   onView={(id) => navigate(`/activity/view/${id}`)}
-
                 />
               ),
             }}
@@ -143,6 +152,17 @@ function ActivityTabs({ userId }) {
             }}
           />
         </Grid>
+        <CustomPager
+          skip={page.skip}
+          take={page.take}
+          total={total}
+          pageSizes={[5, 10, 20, 50, 100, 500]}
+          buttonCount={4}
+          previousNext
+          firstLast
+          info
+          onPageChange={(e) => setPage(e.page)}
+        />
       </Tooltip>
 
       <AttachmentViewerModal

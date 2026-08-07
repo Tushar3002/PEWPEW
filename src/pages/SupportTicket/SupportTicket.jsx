@@ -13,6 +13,18 @@ import SupportStatusModal from "../../components/Modal/SupportStatusModal";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth:110 },
+  { field: "userName", minWidth: 180 },
+  { field: "emailePhone", minWidth: 220 },
+  { field: "issueType", minWidth: 180 },
+  { field: "description", minWidth: 250 },
+  { field: "adminDescription", minWidth: 250 },
+  { field: "status", minWidth: 180 },
+];
 
 function SupportTicket() {
   const [page, setPage] = useState({
@@ -34,6 +46,8 @@ function SupportTicket() {
   const [statusChange, setStatusChange] = useState(null);
 
   const [adminDescription, setAdminDescription] = useState("");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const {
     showDeleteModal,
@@ -210,7 +224,7 @@ function SupportTicket() {
     return (
       <td {...props.tdProps}>
         <select
-         title={status.find((s) => s.id === currentStatusId)?.description}
+          title={status.find((s) => s.id === currentStatusId)?.description}
           className="form-select"
           value={currentStatusId}
           onChange={handleStatusChange}
@@ -268,6 +282,7 @@ function SupportTicket() {
           <div
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
+            ref={gridRef}
           >
             <Tooltip
               anchorElement="target"
@@ -278,12 +293,7 @@ function SupportTicket() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
@@ -293,42 +303,64 @@ function SupportTicket() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  width={"125px"}
                   title="Action"
+                  width={getWidth("action")}
                   cells={{ data: ActionCell }}
                 />
+
                 <GridColumn
                   title="Username"
                   field="userName"
+                  width={getWidth("userName")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Email/Phone"
                   field="emailePhone"
+                  width={getWidth("emailePhone")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Issue Type"
                   field="issueType"
+                  width={getWidth("issueType")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Description"
                   field="description"
+                  width={getWidth("description")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   title="Admin Comments"
                   field="adminDescription"
+                  width={getWidth("adminDescription")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
-                  width={"250px"}
                   title="Ticket Status"
                   field="status"
+                  width={getWidth("status")}
                   cells={{ data: StatusDropdownCell }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

@@ -15,6 +15,16 @@ import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "role", minWidth: 220 },
+  { field: "description", minWidth: 320 },
+  { field: "noOfUser", minWidth: 140 },
+  { field: "status", minWidth: 90 },
+];
 
 function RolesPermission() {
   const [data, setData] = useState([]);
@@ -44,6 +54,8 @@ function RolesPermission() {
   const navigate = useNavigate();
 
   const rolePermission = getMenuPermission("Role");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   useEffect(() => {
     rolesandpermissionData();
@@ -178,10 +190,8 @@ function RolesPermission() {
                 <i className="demo-icon icon-search"></i>
               </button>
             </form>
-      
 
-
-              {/* <a href="#" className="btn main-btn border-btn danger-btn">
+            {/* <a href="#" className="btn main-btn border-btn danger-btn">
                   Delete
                 </a>
 
@@ -189,25 +199,26 @@ function RolesPermission() {
                   Import
                 </a> */}
 
-              {/* <a href="#" className="btn main-btn border-btn sky-btn">
+            {/* <a href="#" className="btn main-btn border-btn sky-btn">
                       Export
                     </a> */}
             <button
               type="button"
               className="btn main-btn"
               onClick={() => {
-                navigate('/roles-permissions/add')
+                navigate("/roles-permissions/add");
               }}
               // <Link to={"/roles-permissions/add"} className="btn main-btn">
               //   Add
               // </Link>
-              >
-                Add
-              </button>
-              </div>
+            >
+              Add
+            </button>
+          </div>
 
           <div
             className="table-responsive w-100"
+            ref={gridRef}
             style={{ overflow: "visible" }}
           >
             <Tooltip
@@ -217,14 +228,8 @@ function RolesPermission() {
               className="grid-tooltip"
             >
               <Grid
-                style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
@@ -234,56 +239,68 @@ function RolesPermission() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  title="Action"
-                  width="110px"
-                  headerClassName="text-center"
-                  cells={{
-                    data: (props) => (
-                      <ActionCell
-                        {...props}
-                        permission={rolePermission}
-                        idField="id"
-                        onEdit={(id) =>
-                          navigate(`/roles-permissions/edit/${id}`)
-                        }
-                        onDelete={openDeleteModal}
-                      />
-                    ),
-                  }}
-                />
-                <GridColumn
-                  width={"330px"}
-                  field="role"
-                  title="Role Name"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"580px"}
-                  field="description"
-                  title="Description"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"240px"}
-                  field="noOfUser"
-                  title="No. Of User"
-                  cells={{ data: GunCountCell }}
-                />
+  title="Action"
+  width={getWidth("action")}
+  headerClassName="text-center"
+  cells={{
+    data: (props) => (
+      <ActionCell
+        {...props}
+        permission={rolePermission}
+        idField="id"
+        onEdit={(id) => navigate(`/roles-permissions/edit/${id}`)}
+        onDelete={openDeleteModal}
+      />
+    ),
+  }}
+/>
 
-                <GridColumn
-                  width={"120px"}
-                  title="Status"
-                  cells={{
-                    data: (props) => (
-                      <StatusCell
-                        {...props}
-                        idField="id"
-                        onToggle={handleStatusToggle}
-                      />
-                    ),
-                  }}
-                />
+<GridColumn
+  field="role"
+  title="Role Name"
+  width={getWidth("role")}
+  cells={{ data: TextCell }}
+/>
+
+<GridColumn
+  field="description"
+  title="Description"
+  width={getWidth("description")}
+  cells={{ data: TextCell }}
+/>
+
+<GridColumn
+  field="noOfUser"
+  title="No. Of User"
+  width={getWidth("noOfUser")}
+  cells={{ data: GunCountCell }}
+/>
+
+<GridColumn
+  title="Status"
+  width={getWidth("status")}
+  cells={{
+    data: (props) => (
+      <StatusCell
+        {...props}
+        idField="id"
+        onToggle={handleStatusToggle}
+      />
+    ),
+  }}
+/>
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

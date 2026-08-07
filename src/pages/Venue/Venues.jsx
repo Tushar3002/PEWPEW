@@ -20,6 +20,26 @@ import { PhoneCell } from "../../components/GridCells/PhoneCell";
 
 import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 140 },
+  { field: "venueOwnerUserName", minWidth: 180 },
+  { field: "venueName", minWidth: 180 },
+  { field: "description", minWidth: 230 },
+  { field: "website", minWidth: 180 },
+  { field: "phone", minWidth: 140 },
+  { field: "address", minWidth: 260 },
+  { field: "totalGun", minWidth: 120 },
+  { field: "avgRate", minWidth: 140 },
+  { field: "noOfChackin", minWidth: 140 },
+  { field: "noOfEvent", minWidth: 150 },
+  { field: "userName", minWidth: 140 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "approvalStatusName", minWidth: 240 },
+  { field: "status", minWidth: 90 },
+];
 
 function Venues() {
   const [data, setData] = useState([]);
@@ -37,6 +57,8 @@ function Venues() {
   const [searchInput, setSearchInput] = useState("");
   const [showGunModal, setShowGunModal] = useState(false);
   const [gunData, setGunData] = useState([]);
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const navigate = useNavigate();
 
@@ -273,6 +295,7 @@ function Venues() {
           <div
             className="table-responsive"
             style={{ overflow: "visible" }}
+            ref={gridRef}
           >
             <Tooltip
               anchorElement="target"
@@ -283,22 +306,16 @@ function Venues() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
                 sortable
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-                  width={"125px"}
+                  width={getWidth("action")}
                   title="Action"
                   cells={{
                     data: (props) => (
@@ -314,42 +331,42 @@ function Venues() {
                   }}
                 />
                 <GridColumn
-                  width={"150px"}
                   title="Owner Name"
                   // field="venueOwnerUserName"
                   cells={{ data: editUserCell }}
+                  width={getWidth("venueOwnerUserName")}
                 />
                 <GridColumn
-                  width={"180px"}
+                  width={getWidth("venueName")}
                   title="Venue Name"
                   field="venueName"
                   cells={{ data: TextCell }}
                 />
                 <GridColumn
-                  width={"220px"}
+                  width={getWidth("description")}
                   title="Description"
                   field="description"
                   cells={{ data: TextCell }}
                 />
                 <GridColumn
-                  width={"190px"}
+                  width={getWidth("website")}
                   title="Website"
                   field="website"
                   cells={{ data: WebsiteCell }}
                 />
                 <GridColumn
-                  width={"140px"}
+                  width={getWidth("phone")}
                   title="Phone"
                   cells={{ data: PhoneCell }}
                 />
                 <GridColumn
-                  width={"260px"}
+                  width={getWidth("address")}
                   title="Address"
                   field="address"
                   cells={{ data: TextCell }}
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("totalGun")}
                   title="No. of Gun"
                   field="totalGun"
                   cells={{
@@ -363,40 +380,40 @@ function Venues() {
                   }}
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("avgRate")}
                   title="Avg Venue Ratings"
                   field="avgRate"
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("noOfChackin")}
                   title="No. of Check-Ins"
                   field="noOfChackin"
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("noOfEvent")}
                   title="No. of Event Created "
                   field="noOfEvent"
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("userName")}
                   title="Created By"
                   field="userName"
                   cells={{ data: TextCell }}
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("createdOn")}
                   title="Created On"
                   field="createdOn"
                   cells={{ data: DateCell }}
                 />
                 <GridColumn
-                  width={"220px"}
+                  width={getWidth("approvalStatusName")}
                   title="Approval Status"
                   field="approvalStatusName"
                   cells={{ data: StatusDropdownCell }}
                 />
                 <GridColumn
-                  width={"160px"}
+                  width={getWidth("status")}
                   title="Status"
                   cells={{
                     data: (props) => (
@@ -409,6 +426,17 @@ function Venues() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

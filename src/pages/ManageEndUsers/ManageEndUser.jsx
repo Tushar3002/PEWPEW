@@ -13,6 +13,19 @@ import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { TextCell } from "../../components/GridCells/TextCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "checkbox", minWidth: 60 },
+  { field: "action", minWidth: 210 },
+  { field: "firstName", minWidth: 180 },
+  { field: "lastName", minWidth: 180 },
+  { field: "userName", minWidth: 180 },
+  { field: "contactNumber", minWidth: 160 },
+  { field: "email", minWidth: 260 },
+  { field: "status", minWidth: 90 },
+];
 
 function ManageEndUser() {
   const [users, setUsers] = useState([]);
@@ -33,28 +46,30 @@ function ManageEndUser() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
   const navigate = useNavigate();
   useEffect(() => {
     fetchUsers();
   }, [page, sort, search]);
   useEffect(() => {
-      const timeout = setTimeout(() => {
-        if (search !== searchInput) {
-          setSearch(searchInput);
-        }
-  
-        setPage((prev) => {
-          if (prev.skip === 0) return prev;
-  
-          return {
-            ...prev,
-            skip: 0,
-          };
-        });
-      }, 500);
-  
-      return () => clearTimeout(timeout);
-    }, [searchInput]);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
+
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   const fetchUsers = async () => {
     try {
@@ -279,74 +294,101 @@ function ManageEndUser() {
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }}>
+          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
             <Tooltip
               anchorElement="target"
               position="top"
               openDelay={100}
               className="grid-tooltip"
             >
-            <Grid
-              //   style={{ width: "100%", overflow: "visible" }}
-              // style={{ height: "600px" }}
-              data={users}
-              pageable={{
-                buttonCount: 5,
-                pageSizes: [5, 10, 20, 50, 100, 500],
-                info: true,
-                previousNext: true,
-              }}
-              skip={page.skip}
-              take={page.take}
-              total={total}
-              onPageChange={(e) => setPage(e.page)}
-              sortable
-              sort={sort}
-              onSortChange={(e) => setSort(e.sort)}
-            >
-              {/* Checkbox */}
-              <GridColumn
-                width="60px"
-                headerClassName="text-center"
-                cells={{
-                  data: CheckboxCell,
-                }}
-              />
+              <Grid
+                style={{ width: "100%", overflow: "visible" }}
+                data={users}
+                pageable={false}
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
+              >
+                <GridColumn
+                  width={getWidth("checkbox")}
+                  headerClassName="text-center"
+                  cells={{
+                    data: CheckboxCell,
+                  }}
+                />
 
-              <GridColumn
-                title="Action"
-                width="270px"
-                headerClassName="text-center"
-                cells={{
-                  data: ActionCell,
-                }}
-              />
-              <GridColumn
-                width={"210px"}
-                field="firstName"
-                title="First Name"
-                cells={{data:TextCell}}
-              />
-              <GridColumn width={"210px"} field="lastName" title="Last Name" cells={{data:TextCell}} />
-              <GridColumn width={"210px"} field="userName" title="User Name" cells={{data:TextCell}}/>
+                <GridColumn
+                  title="Action"
+                  width={getWidth("action")}
+                  headerClassName="text-center"
+                  cells={{
+                    data: ActionCell,
+                  }}
+                />
 
-              <GridColumn width={"210px"} field="contactNumber" title="Phone" cells={{data:TextCell}}/>
-              <GridColumn width={"350px"} field="email" title="Email" cells={{data:TextCell}}/>
+                <GridColumn
+                  field="firstName"
+                  title="First Name"
+                  width={getWidth("firstName")}
+                  cells={{ data: TextCell }}
+                />
 
-              <GridColumn
-                width={"240px"}
-                title="Status"
-                cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="id"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}
+                <GridColumn
+                  field="lastName"
+                  title="Last Name"
+                  width={getWidth("lastName")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="userName"
+                  title="User Name"
+                  width={getWidth("userName")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="contactNumber"
+                  title="Phone"
+                  width={getWidth("contactNumber")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="email"
+                  title="Email"
+                  width={getWidth("email")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  title="Status"
+                  width={getWidth("status")}
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="id"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
+              </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
               />
-            </Grid>
             </Tooltip>
           </div>
         </div>

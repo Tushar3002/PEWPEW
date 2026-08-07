@@ -7,7 +7,8 @@ import { DetailsCell } from "../../../components/GridCells/DetailsCell";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import { useNavigate } from "react-router-dom";
 import DateTimeCell from "../../../components/GridCells/DateTimeCell";
-
+import CustomPager from "../../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 
 const eventTabs = [
   {
@@ -30,6 +31,16 @@ const eventTabs = [
   },
 ];
 
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "venueName", minWidth: 220 },
+  { field: "eventName", minWidth: 220 },
+  { field: "dateTime", minWidth: 220 },
+  { field: "address", minWidth: 260 },
+  { field: "created", minWidth: 140 },
+  { field: "approvalStatusName", minWidth: 180 },
+];
+
 function EventsTable({ userId, venueId }) {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [data, setData] = useState([]);
@@ -40,13 +51,13 @@ function EventsTable({ userId, venueId }) {
   });
   const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
   const navigate = useNavigate();
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   useEffect(() => {
     if (!userId && !venueId) return;
 
     fetchEvent();
   }, [page, activeTab, userId, venueId]);
-
-
 
   const fetchEvent = async () => {
     console.log("UserID", userId);
@@ -83,7 +94,6 @@ function EventsTable({ userId, venueId }) {
   };
 
   const ActionCell = (props) => {
-
     return (
       <td className="text-center align-middle">
         <div className="d-flex justify-content-center align-items-center gap-2">
@@ -108,8 +118,6 @@ function EventsTable({ userId, venueId }) {
       </td>
     );
   };
-
- 
 
   const StatusDropdownCell = (props) => {
     const value = props.dataItem?.[props.field] ?? "-";
@@ -142,7 +150,7 @@ function EventsTable({ userId, venueId }) {
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }}>
+          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
             <Tooltip
               anchorElement="target"
               position="top"
@@ -151,27 +159,33 @@ function EventsTable({ userId, venueId }) {
             >
               <Grid
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
                 onPageChange={(e) => setPage(e.page)}
               >
                 <GridColumn
-                  width={"100px"}
                   title="Action"
+                  width={getWidth("action")}
                   cells={{ data: ActionCell }}
                 />
-                <GridColumn title="Host Name/Venue Name" field="venueName" />
-                <GridColumn title="Event Name" field="eventName" />
+
+                <GridColumn
+                  title="Host Name/Venue Name"
+                  field="venueName"
+                  width={getWidth("venueName")}
+                />
+
+                <GridColumn
+                  title="Event Name"
+                  field="eventName"
+                  width={getWidth("eventName")}
+                />
+
                 <GridColumn
                   title="Date & Time"
-                  width="250px"
+                  width={getWidth("dateTime")}
                   cells={{
                     data: (props) => (
                       <DateTimeCell
@@ -181,19 +195,38 @@ function EventsTable({ userId, venueId }) {
                     ),
                   }}
                 />
+
                 <GridColumn
-                  width={"300px"}
                   title="Address"
                   field="address"
+                  width={getWidth("address")}
                   cells={{ data: DetailsCell }}
                 />
-                <GridColumn title="Created By" field="created" />
+
+                <GridColumn
+                  title="Created By"
+                  field="created"
+                  width={getWidth("created")}
+                />
+
                 <GridColumn
                   title="Status"
                   field="approvalStatusName"
+                  width={getWidth("approvalStatusName")}
                   cells={{ data: StatusDropdownCell }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

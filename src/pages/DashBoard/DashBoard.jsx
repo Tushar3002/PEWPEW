@@ -18,6 +18,29 @@ import StatusCell from "../../components/GridCells/StatusCell";
 import { updateActivitiesStatus } from "../../api/EndUsers/endUserViewApi";
 import { Link, useNavigate } from "react-router-dom";
 import { DropDownList } from "@progress/kendo-react-dropdowns";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+const topLikedPostsColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "userName", minWidth: 180 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "totalLike", minWidth: 100 },
+];
+
+const topReportingUsersColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "userName", minWidth: 180 },
+  { field: "totalCount", minWidth: 120 },
+];
+
+const topReportedPostsColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "userName", minWidth: 180 },
+  { field: "totalCount", minWidth: 120 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "totalLike", minWidth: 100 },
+  { field: "totalComment", minWidth: 110 },
+  { field: "totalShare", minWidth: 100 },
+];
 
 function DashBoard() {
   const [data, setData] = useState({});
@@ -30,6 +53,10 @@ function DashBoard() {
   const total = data?.totals || {};
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const topLikedGrid = useResponsiveGridWidths(topLikedPostsColumns);
+  const topReportedUserGrid = useResponsiveGridWidths(topReportingUsersColumns);
+  const topReportedPostGrid = useResponsiveGridWidths(topReportedPostsColumns);
 
   const formatDateForApi = (date) => {
     if (!date) return "";
@@ -176,7 +203,8 @@ function DashBoard() {
                   target: { value: e.value?.id ?? "" },
                 })
               }
-              // className={`form-control `}
+        
+              style={{width:"250px"}}
             />
           </div>
         </div>
@@ -265,20 +293,31 @@ function DashBoard() {
                   View All
                 </Link>
               </div>
-              <Grid data={data?.topLikedPosts}>
-                <GridColumn
-                  title="Action"
-                  cells={{ data: ActionCell }}
-                  width={"180px"}
-                />
-                <GridColumn title="Username" field="userName" width={"280px"} />
-                <GridColumn
-                  title="Uploaded Date"
-                  field="createdOn"
-                  cells={{ data: DateCell }}
-                />
-                <GridColumn title="Likes" field="totalLike" />
-              </Grid>
+              <div ref={topLikedGrid.gridRef} className="mt-3">
+                <Grid data={data?.topLikedPosts}>
+                  <GridColumn
+                    title="Action"
+                    cells={{ data: ActionCell }}
+                    width={topLikedGrid.getWidth("action")}
+                  />
+                  <GridColumn
+                    title="Username"
+                    field="userName"
+                    width={topLikedGrid.getWidth("userName")}
+                  />
+                  <GridColumn
+                    title="Uploaded Date"
+                    field="createdOn"
+                    cells={{ data: DateCell }}
+                    width={topLikedGrid.getWidth("createdOn")}
+                  />
+                  <GridColumn
+                    title="Likes"
+                    field="totalLike"
+                    width={topLikedGrid.getWidth("totalLike")}
+                  />
+                </Grid>
+              </div>
             </div>
           </div>
 
@@ -304,11 +343,25 @@ function DashBoard() {
                   View All
                 </Link>
               </div>
-              <Grid data={data?.topReportingUsers}>
-                <GridColumn title="Action" cells={{ data: ActionCell }} />
-                <GridColumn title="Username" field="userName" />
-                <GridColumn title="Reports" field="totalCount" />
-              </Grid>
+              <div ref={topReportedUserGrid.gridRef} className="mt-3">
+                <Grid data={data?.topReportingUsers}>
+                  <GridColumn
+                    title="Action"
+                    cells={{ data: ActionCell }}
+                    width={topReportedUserGrid.getWidth("action")}
+                  />
+                  <GridColumn
+                    title="Username"
+                    field="userName"
+                    width={topReportedUserGrid.getWidth("userName")}
+                  />
+                  <GridColumn
+                    title="Reports"
+                    field="totalCount"
+                    width={topReportedUserGrid.getWidth("totalCount")}
+                  />
+                </Grid>
+              </div>
             </div>
           </div>
           <div className="col-xl-12 mt-3 mt-xxl-4">
@@ -333,24 +386,49 @@ function DashBoard() {
                   View All
                 </Link>
               </div>
-              <Grid data={data?.topReportedPosts}>
-                <GridColumn title="Action" cells={{ data: ActionCell }} />
-                <GridColumn title="Posted By" field="userName" />
-                <GridColumn title="Total Reports" field="totalCount" />
-                <GridColumn
-                  title="Uploaded Date"
-                  field="createdOn"
-                  cells={{ data: DateCell }}
-                />
-                <GridColumn title="Likes" field="totalLike" />
-                <GridColumn title="Comments" field="totalComment" />
-                <GridColumn title="Shares" field="totalShare" />
-              </Grid>
+              <div ref={topReportedPostGrid.gridRef} className="mt-3">
+                <Grid data={data?.topReportedPosts}>
+                  <GridColumn
+                    title="Action"
+                    cells={{ data: ActionCell }}
+                    width={topReportedPostGrid.getWidth("action")}
+                  />
+                  <GridColumn
+                    title="Posted By"
+                    field="userName"
+                    width={topReportedPostGrid.getWidth("userName")}
+                  />
+                  <GridColumn
+                    title="Total Reports"
+                    field="totalCount"
+                    width={topReportedPostGrid.getWidth("totalCount")}
+                  />
+                  <GridColumn
+                    title="Uploaded Date"
+                    field="createdOn"
+                    cells={{ data: DateCell }}
+                    width={topReportedPostGrid.getWidth("createdOn")}
+                  />
+                  <GridColumn
+                    title="Likes"
+                    field="totalLike"
+                    width={topReportedPostGrid.getWidth("totalLike")}
+                  />
+                  <GridColumn
+                    title="Comments"
+                    field="totalComment"
+                    width={topReportedPostGrid.getWidth("totalComment")}
+                  />
+                  <GridColumn
+                    title="Shares"
+                    field="totalShare"
+                    width={topReportedPostGrid.getWidth("totalShare")}
+                  />
+                </Grid>
+              </div>
             </div>
 
-            {/* <div className="row mt-3">
-              <div className="col-12"></div>
-            </div> */}
+        
           </div>
         </div>
       </div>

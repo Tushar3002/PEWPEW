@@ -11,6 +11,21 @@ import { TextCell } from "../../components/GridCells/TextCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "userName", minWidth: 180 },
+  { field: "uploadedDate", minWidth: 140 },
+  { field: "attachmentList", minWidth: 120 },
+  { field: "post", minWidth: 250 },
+  { field: "totalLike", minWidth: 100 },
+  { field: "totalComment", minWidth: 110 },
+  { field: "totalShare", minWidth: 100 },
+  { field: "totalReport", minWidth: 120 },
+  { field: "status", minWidth: 90 },
+];
 
 function GroupActivity() {
   const [data, setData] = useState([]);
@@ -25,6 +40,8 @@ function GroupActivity() {
 
   const navigate = useNavigate();
   const activityPermission = getMenuPermission("Activity");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   useEffect(() => {
     fetchGroupActivity();
@@ -62,8 +79,6 @@ function GroupActivity() {
       console.log(error.response);
     }
   };
-
-  
 
   const updateStatusToggle = async (postId, isActive) => {
     try {
@@ -139,6 +154,7 @@ function GroupActivity() {
           <div
             className="table-responsive w-100"
             style={{ overflow: "visible" }}
+            ref={gridRef}
           >
             <Tooltip
               anchorElement="target"
@@ -148,19 +164,14 @@ function GroupActivity() {
             >
               <Grid
                 data={data}
-                pageable={{
-                  buttonCount: 4,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
               >
                 <GridColumn
                   title="Action"
+                  width={getWidth("action")}
                   headerClassName="text-center"
                   cells={{
                     data: (props) => (
@@ -169,42 +180,65 @@ function GroupActivity() {
                         permission={activityPermission}
                         idField="postId"
                         onView={(id) => navigate(`/activity/view/${id}`)}
-
                       />
                     ),
                   }}
                 />
+
                 <GridColumn
-                  // width={"180px"}
                   field="userName"
                   title="Uploaded By"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn title="Uploaded Date" cells={{ data: DateCell }} />
-                <GridColumn
-                  width={"250px"}
-                  field="attachmentList"
-                  title="Image/Video"
-                  cells={{ data: AttachmentCell }}
-                />
-                <GridColumn
-                  field="post"
-                  title="Description"
+                  width={getWidth("userName")}
                   cells={{ data: TextCell }}
                 />
 
-                <GridColumn field="totalLike" title="Likes" />
-                <GridColumn field="totalComment" title="Comments" />
-                <GridColumn field="totalShare" title="Share" />
+                <GridColumn
+                  title="Uploaded Date"
+                  width={getWidth("uploadedDate")}
+                  cells={{ data: DateCell }}
+                />
+
+                <GridColumn
+                  field="attachmentList"
+                  title="Image/Video"
+                  width={getWidth("attachmentList")}
+                  cells={{ data: AttachmentCell }}
+                />
+
+                <GridColumn
+                  field="post"
+                  title="Description"
+                  width={getWidth("post")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="totalLike"
+                  title="Likes"
+                  width={getWidth("totalLike")}
+                />
+
+                <GridColumn
+                  field="totalComment"
+                  title="Comments"
+                  width={getWidth("totalComment")}
+                />
+
+                <GridColumn
+                  field="totalShare"
+                  title="Share"
+                  width={getWidth("totalShare")}
+                />
 
                 <GridColumn
                   field="totalReport"
                   title="Reported"
-                  //   cells={{ data: ReportedDataCell }}
+                  width={getWidth("totalReport")}
                 />
 
                 <GridColumn
                   title="Status"
+                  width={getWidth("status")}
                   cells={{
                     data: (props) => (
                       <StatusCell
@@ -216,6 +250,17 @@ function GroupActivity() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

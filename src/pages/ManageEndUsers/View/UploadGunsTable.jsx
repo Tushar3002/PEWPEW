@@ -17,6 +17,21 @@ import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
 import { getMenuPermission } from "../../../utils/permission";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "gunName", minWidth: 180 },
+  { field: "categoryNames", minWidth: 200 },
+  { field: "manufacturerNames", minWidth: 220 },
+  { field: "details", minWidth:250 },
+  { field: "attachmentFullPath", minWidth: 120 },
+  { field: "ammunitions", minWidth: 180 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "approvalStatus", minWidth: 180 },
+  { field: "status", minWidth: 90 },
+];
 
 function UploadGunsTable({ userId }) {
   const [data, setData] = useState([]);
@@ -45,6 +60,8 @@ function UploadGunsTable({ userId }) {
   } = useDeleteConfirmation();
 
   const gunPermission = getMenuPermission("GunMaster");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   useEffect(() => {
     fetchUploadGun();
@@ -128,7 +145,7 @@ function UploadGunsTable({ userId }) {
     <div className="tabbar-section">
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }}>
+          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
             <Tooltip
               anchorElement="target"
               position="top"
@@ -137,74 +154,87 @@ function UploadGunsTable({ userId }) {
             >
               <Grid
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
                 onPageChange={(e) => setPage(e.page)}
               >
                 <GridColumn
-                  width={"120px"}
                   title="Action"
-                  // headerClassName="text-center"
+                  width={getWidth("action")}
                   cells={{
                     data: (props) => (
                       <ActionCell
                         {...props}
                         permission={gunPermission}
                         idField="gunId"
-      
                         onDelete={openDeleteModal}
                       />
                     ),
                   }}
                 />
+
                 <GridColumn
-                  // width={"180px"}
                   field="gunName"
                   title="Gun Name"
-                  // columnMenu={ColumnMenu}
+                  width={getWidth("gunName")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="categoryNames"
                   title="Category Name"
+                  width={getWidth("categoryNames")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="manufacturerNames"
                   title="Manufacturer Name"
+                  width={getWidth("manufacturerNames")}
                   cells={{ data: TextCell }}
                 />
-                <GridColumn title="Details" cells={{ data: DetailsCell }} />
+
                 <GridColumn
-                  width={"200px"}
+                  title="Details"
+                  width={getWidth("details")}
+                  cells={{ data: DetailsCell }}
+                />
+
+                <GridColumn
                   title="Images"
                   field="attachmentFullPath"
+                  width={getWidth("attachmentFullPath")}
                   cells={{
                     data: (props) => (
                       <AttachmentCell {...props} onOpen={openViewer} />
                     ),
                   }}
                 />
+
                 <GridColumn
                   field="ammunitions"
                   title="Ammunition"
+                  width={getWidth("ammunitions")}
                   cells={{ data: TextCell }}
                 />
-                <GridColumn title="Created On" cells={{ data: DateCell }} />
+
+                <GridColumn
+                  title="Created On"
+                  width={getWidth("createdOn")}
+                  cells={{ data: DateCell }}
+                />
+
                 <GridColumn
                   title="Approval Status"
+                  width={getWidth("approvalStatus")}
                   cells={{ data: ApprovalStatusCell }}
                 />
 
                 <GridColumn
                   title="Status"
+                  width={getWidth("status")}
                   cells={{
                     data: (props) => (
                       <StatusCell
@@ -216,6 +246,17 @@ function UploadGunsTable({ userId }) {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

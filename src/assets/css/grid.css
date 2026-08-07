@@ -252,6 +252,10 @@ Main Grid
 }
 
 .search-input {
-    width: 180px;
+    width: 260px;
     max-width: 100%;
+}
+
+.country-popup .k-list-container {
+    min-width: 260px !important;
 }

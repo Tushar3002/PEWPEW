@@ -16,13 +16,15 @@ import { AmmunitionModal } from "../../../components/Modal/AmmunitionModal";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../../utils/permission";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+import { TextCell } from "../../../components/GridCells/TextCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
   { field: "name", minWidth: 200 },
-  { field: "categories", minWidth: 200 },
+  { field: "categories", minWidth: 170 },
   { field: "manufacturer", minWidth: 200 },
-  { field: "description", minWidth: 230 },
+  { field: "description", minWidth: 190 },
   { field: "createdByUserName", minWidth: 140 },
   { field: "createdOn", minWidth: 140 },
   { field: "updatedByUserName", minWidth: 140 },
@@ -198,16 +200,10 @@ function AmmunitionMaster() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
                 sortable
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
@@ -250,6 +246,7 @@ function AmmunitionMaster() {
                   title="Description"
                   field="description"
                   width={getWidth("description")}
+                  cells={{data:TextCell}}
                 />
 
                 <GridColumn
@@ -286,6 +283,17 @@ function AmmunitionMaster() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

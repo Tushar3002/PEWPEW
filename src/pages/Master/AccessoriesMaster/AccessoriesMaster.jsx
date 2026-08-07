@@ -15,16 +15,18 @@ import StatusCell from "../../../components/GridCells/StatusCell";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+import { TextCell } from "../../../components/GridCells/TextCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
-  { field: "accessoryName", minWidth: 200 },
-  { field: "accessoryCategory", minWidth: 200 },
-  { field: "gunNames", minWidth: 200 },
-  { field: "description", minWidth: 230 },
-  { field: "createdByUserName", minWidth: 140 },
-  { field: "createdAt", minWidth: 140 },
-  { field: "updatedByUserName", minWidth: 140 },
+  { field: "accessoryName", minWidth: 170 },
+  { field: "accessoryCategory", minWidth: 170 },
+  { field: "gunNames", minWidth: 160 },
+  { field: "description", minWidth: 180},
+  { field: "createdByUserName", minWidth: 150 },
+  { field: "createdAt", minWidth: 150 },
+  { field: "updatedByUserName", minWidth: 150 },
   { field: "status", minWidth: 90 },
 ];
 
@@ -197,16 +199,10 @@ function AccessoriesMaster() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
                 sortable
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
@@ -229,7 +225,7 @@ function AccessoriesMaster() {
                 <GridColumn title="Name" field="accessoryName" width={getWidth("accessoryName")}/>
                 <GridColumn title="Category Name" field="accessoryCategory" width={getWidth("accessoryCategory")}/>
                 <GridColumn title="Gun" field="gunNames" width={getWidth("gunNames")}/>
-                <GridColumn title="Description" field="description" width={getWidth("description")}/>
+                <GridColumn title="Description" field="description" width={getWidth("description")} cells={{data:TextCell}}/>
                 <GridColumn title="Created By" field="createdByUserName" width={getWidth("createdByUserName")}/>
                 <GridColumn
                   title="Created On"
@@ -253,6 +249,17 @@ function AccessoriesMaster() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

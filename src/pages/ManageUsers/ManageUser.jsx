@@ -11,6 +11,20 @@ import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import { getMenuPermission } from "../../utils/permission";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import { ActionCell } from "../../components/GridCells/ActionCell";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  {field:'check',minWidth:60},
+  { field: "action", minWidth: 90 },
+  { field: "firstName", minWidth: 180 },
+  { field: "lastName", minWidth: 180 },
+  { field: "userName", minWidth: 180 },
+  { field: "roleName", minWidth: 150 },
+  { field: "contactNumber", minWidth: 160 },
+  { field: "email", minWidth: 260 },
+  { field: "status", minWidth: 90 },
+];
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -41,6 +55,8 @@ function ManageUser() {
   } = useDeleteConfirmation();
 
   const userPermission = getMenuPermission("User");
+
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -105,16 +121,16 @@ function ManageUser() {
     if (!userIds.length) return;
 
     try {
-      setIsDeleting(true)
+      setIsDeleting(true);
       await deleteUser(userIds);
-      closeDeleteModal()
+      closeDeleteModal();
       fetchUsers();
 
       setSelectedUserIds([]);
     } catch (error) {
       console.log(error.response);
-    }finally{
-      setIsDeleting(false)
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -225,7 +241,7 @@ function ManageUser() {
             {/* <a href="#" className="btn main-btn border-btn blue-btn">
               Import
             </a> */}
-{/* 
+            {/* 
             <a href="#" className="btn main-btn border-btn sky-btn">
               Export
             </a> */}
@@ -242,7 +258,7 @@ function ManageUser() {
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }}>
+          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
             <Tooltip
               anchorElement="target"
               position="top"
@@ -250,26 +266,19 @@ function ManageUser() {
               className="grid-tooltip"
             >
               <Grid
-                // style={{ width: "100%", overflow: "visible" }}
-                // style={{ height: "600px" }}
+                style={{ width: "100%", overflow: "visible" }}
                 data={users}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
                 sortable
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
                 {/* Checkbox */}
                 <GridColumn
-                  width="60px"
+                  width={getWidth("check")}
                   headerClassName="text-center"
                   cells={{
                     data: CheckboxCell,
@@ -278,7 +287,7 @@ function ManageUser() {
 
                 <GridColumn
                   title="Action"
-                  width="150px"
+                  width={getWidth("action")}
                   headerClassName="text-center"
                   cells={{
                     data: (props) => (
@@ -287,52 +296,57 @@ function ManageUser() {
                         permission={userPermission}
                         idField="id"
                         onEdit={(id) => navigate(`/manage-users/edit/${id}`)}
-
                         onDelete={openDeleteModal}
                       />
                     ),
                   }}
                 />
+
                 <GridColumn
-                  width={"180px"}
                   field="firstName"
                   title="First Name"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"180px"}
-                  field="lastName"
-                  title="Last Name"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"180px"}
-                  field="userName"
-                  title="User Name"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"150px"}
-                  field="roleName"
-                  title="Role"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"170px"}
-                  field="contactNumber"
-                  title="Phone"
-                  cells={{ data: TextCell }}
-                />
-                <GridColumn
-                  width={"300px"}
-                  field="email"
-                  title="Email"
+                  width={getWidth("firstName")}
                   cells={{ data: TextCell }}
                 />
 
                 <GridColumn
-                  width={"220px"}
+                  field="lastName"
+                  title="Last Name"
+                  width={getWidth("lastName")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="userName"
+                  title="User Name"
+                  width={getWidth("userName")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="roleName"
+                  title="Role"
+                  width={getWidth("roleName")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="contactNumber"
+                  title="Phone"
+                  width={getWidth("contactNumber")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
+                  field="email"
+                  title="Email"
+                  width={getWidth("email")}
+                  cells={{ data: TextCell }}
+                />
+
+                <GridColumn
                   title="Status"
+                  width={getWidth("status")}
                   cells={{
                     data: (props) => (
                       <StatusCell
@@ -344,6 +358,17 @@ function ManageUser() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

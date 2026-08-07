@@ -15,6 +15,24 @@ import useAttachmentViewer from "../../../hooks/useAttachmentViewer";
 import AttachmentCell from "../../../components/GridCells/AttachmentCell";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "createdOn", minWidth: 140 },
+  { field: "postTypeName", minWidth: 160 },
+  { field: "attachmentList", minWidth: 120 },
+  { field: "post", minWidth: 250 },
+  { field: "rate", minWidth: 100 },
+  { field: "totalGun", minWidth: 100 },
+  { field: "totalLike", minWidth: 100 },
+  { field: "totalComment", minWidth: 110 },
+  { field: "totalShare", minWidth: 100 },
+  { field: "totalHide", minWidth: 110 },
+  { field: "reported", minWidth: 120 },
+  { field: "status", minWidth: 90 },
+];
 
 function ActivitiesTables({ userId }) {
   const [data, setData] = useState([]);
@@ -30,6 +48,7 @@ function ActivitiesTables({ userId }) {
   const [showReport, setShowReport] = useState(false);
   const [reportedIdData, setReportedIdData] = useState("");
 
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   const {
     showViewer,
     attachments,
@@ -39,7 +58,7 @@ function ActivitiesTables({ userId }) {
     closeViewer,
   } = useAttachmentViewer();
 
-  const activityPermission=getMenuPermission('Activity')
+  const activityPermission = getMenuPermission("Activity");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -163,7 +182,11 @@ function ActivitiesTables({ userId }) {
       </div>
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }}>
+          <div
+            className="table-responsive"
+            style={{ overflow: "visible" }}
+            ref={gridRef}
+          >
             <Tooltip
               anchorElement="target"
               position="top"
@@ -172,19 +195,14 @@ function ActivitiesTables({ userId }) {
             >
               <Grid
                 data={data}
-                pageable={{
-                  buttonCount: 4,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                onPageChange={(e) => setPage(e.page)}
               >
                 <GridColumn
                   title="Action"
+                  width={getWidth("action")}
                   headerClassName="text-center"
                   cells={{
                     data: (props) => (
@@ -193,72 +211,93 @@ function ActivitiesTables({ userId }) {
                         permission={activityPermission}
                         idField="postId"
                         onView={(id) => navigate(`/activity/view/${id}`)}
-                       
                       />
                     ),
                   }}
                 />
-                <GridColumn title="Created On" cells={{ data: DateCell }} />
+
                 <GridColumn
-                  // width={"180px"}
+                  title="Created On"
+                  width={getWidth("createdOn")}
+                  cells={{ data: DateCell }}
+                />
+
+                <GridColumn
                   field="postTypeName"
                   title="Post Type"
-                  // columnMenu={ColumnMenu}
+                  width={getWidth("postTypeName")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
-                  width={"250px"}
                   field="attachmentList"
                   title="Image/Video"
+                  width={getWidth("attachmentList")}
                   cells={{
                     data: (props) => (
                       <AttachmentCell {...props} onOpen={openViewer} />
                     ),
                   }}
                 />
+
                 <GridColumn
                   field="post"
                   title="Description"
+                  width={getWidth("post")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="rate"
                   title="Ratings"
+                  width={getWidth("rate")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="totalGun"
                   title="Guns"
+                  width={getWidth("totalGun")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="totalLike"
                   title="Likes"
+                  width={getWidth("totalLike")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="totalComment"
                   title="Comments"
+                  width={getWidth("totalComment")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="totalShare"
                   title="Share"
+                  width={getWidth("totalShare")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
                   field="totalHide"
                   title="Hide Count"
+                  width={getWidth("totalHide")}
                   cells={{ data: TextCell }}
                 />
+
                 <GridColumn
-                  // field="totalReport"
                   title="Reported"
+                  width={getWidth("reported")}
                   cells={{ data: ReportedDataCell }}
                 />
 
                 <GridColumn
                   title="Status"
+                  width={getWidth("status")}
                   cells={{
                     data: (props) => (
                       <StatusCell
@@ -270,6 +309,17 @@ function ActivitiesTables({ userId }) {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

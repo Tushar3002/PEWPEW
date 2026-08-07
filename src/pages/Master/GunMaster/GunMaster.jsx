@@ -22,6 +22,8 @@ import { getGunApprovalStatus } from "../../../api/Common/commonApi";
 import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import CustomPager from "../../../components/Pagnation/CustomPager";
+
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -272,12 +274,7 @@ function GunMaster() {
               <Grid
                 style={{ width: "100%", overflow: "visible" }}
                 data={data}
-                pageable={{
-                  buttonCount: 5,
-                  pageSizes: [5, 10, 20, 50, 100, 500],
-                  info: true,
-                  previousNext: true,
-                }}
+                pageable={false}
                 skip={page.skip}
                 take={page.take}
                 total={total}
@@ -391,6 +388,17 @@ function GunMaster() {
                   }}
                 />
               </Grid>
+              <CustomPager
+                skip={page.skip}
+                take={page.take}
+                total={total}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
+                buttonCount={4}
+                previousNext
+                firstLast
+                info
+                onPageChange={(e) => setPage(e.page)}
+              />
             </Tooltip>
           </div>
         </div>

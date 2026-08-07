@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { TextCell } from "../../components/GridCells/TextCell";
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../utils/permission";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 const leaderboardOptions = [
   { value: 5, type: "gun", label: "Top 5 Gun Reviewers/Check-Ins" },
@@ -21,7 +22,13 @@ const leaderboardOptions = [
   { value: 50, type: "venue", label: "Top 50 Venue Reviewers/Check-Ins" },
   { value: 100, type: "venue", label: "Top 100 Venue Reviewers/Check-Ins" },
 ];
-
+const responsiveColumns = [
+  { field: "action", minWidth: 90 },
+  { field: "rank", minWidth: 90 },
+  { field: "userName", minWidth: 180 },
+  { field: "totalMember", minWidth: 140 },
+  { field: "totalCheckins", minWidth: 150 },
+];
 function LeaderBoard() {
   const [data, setData] = useState({});
   const [filterDropDown, setFilterDropDown] = useState([]);
@@ -32,7 +39,7 @@ function LeaderBoard() {
   const navigate = useNavigate();
 
   const leaderBoardPermissions=getMenuPermission("Leaderboard")
-
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   useEffect(() => {
     fetchDashboardFilters();
   }, []);
@@ -123,6 +130,7 @@ function LeaderBoard() {
             <div
               className="table-responsive w-100"
               style={{ overflow: "visible" }}
+              ref={gridRef}
             >
               <Tooltip
                 anchorElement="target"
@@ -135,31 +143,45 @@ function LeaderBoard() {
                   data={data}
                 >
                   <GridColumn
-                    title="Actions"
-                    cells={{
-                      data: (props) => (
-                        <ActionCell
-                          {...props}
-                          permission={leaderBoardPermissions}
-                          idField="userId"
-                          onView={(id) => navigate(`/manage-end-users/view/${id}`)}
-                          
-                        />
-                      ),
-                    }}
-                  />
-                  <GridColumn title="Rank" field="rank" />
-                  <GridColumn
-                    title="Username"
-                    field="userName"
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn
-                    title="Followers"
-                    field="totalMember"
-                    cells={{ data: TextCell }}
-                  />
-                  <GridColumn title="Gun Check-Ins" field="totalCheckins" />
+  title="Actions"
+  width={getWidth("action")}
+  cells={{
+    data: (props) => (
+      <ActionCell
+        {...props}
+        permission={leaderBoardPermissions}
+        idField="userId"
+        onView={(id) => navigate(`/manage-end-users/view/${id}`)}
+      />
+    ),
+  }}
+/>
+
+<GridColumn
+  title="Rank"
+  field="rank"
+  width={getWidth("rank")}
+/>
+
+<GridColumn
+  title="Username"
+  field="userName"
+  width={getWidth("userName")}
+  cells={{ data: TextCell }}
+/>
+
+<GridColumn
+  title="Followers"
+  field="totalMember"
+  width={getWidth("totalMember")}
+  cells={{ data: TextCell }}
+/>
+
+<GridColumn
+  title="Gun Check-Ins"
+  field="totalCheckins"
+  width={getWidth("totalCheckins")}
+/>
                 </Grid>
               </Tooltip>
             </div>

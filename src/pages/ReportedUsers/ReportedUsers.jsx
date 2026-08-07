@@ -5,6 +5,15 @@ import StatusCell from "../../components/GridCells/StatusCell";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { useLocation } from "react-router-dom";
+import CustomPager from "../../components/Pagnation/CustomPager";
+import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+
+const responsiveColumns = [
+  { field: "username", minWidth: 180 },
+  { field: "emailPhone", minWidth: 240 },
+  { field: "reportedBy", minWidth: 180 },
+  { field: "status", minWidth: 90 },
+];
 
 function ReportedUsers() {
   const [data, setData] = useState([]);
@@ -16,27 +25,27 @@ function ReportedUsers() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
-  const location=useLocation()
+  const location = useLocation();
   const [sort, setSort] = useState(location.state?.sort || []);
-
+  const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   useEffect(() => {
-      const timeout = setTimeout(() => {
-        if (search !== searchInput) {
-          setSearch(searchInput);
-        }
-  
-        setPage((prev) => {
-          if (prev.skip === 0) return prev;
-  
-          return {
-            ...prev,
-            skip: 0,
-          };
-        });
-      }, 500);
-  
-      return () => clearTimeout(timeout);
-    }, [searchInput]);
+    const timeout = setTimeout(() => {
+      if (search !== searchInput) {
+        setSearch(searchInput);
+      }
+
+      setPage((prev) => {
+        if (prev.skip === 0) return prev;
+
+        return {
+          ...prev,
+          skip: 0,
+        };
+      });
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   useEffect(() => {
     fetchReportList();
@@ -74,10 +83,10 @@ function ReportedUsers() {
 
     if (!confirmed) return;
 
-    const body={
+    const body = {
       userId,
-      isActive: nextValue
-    }
+      isActive: nextValue,
+    };
 
     const isSuccess = await updateReportStatus(body);
 
@@ -123,6 +132,7 @@ function ReportedUsers() {
             <div
               className="table-responsive w-100"
               style={{ overflow: "visible" }}
+              ref={gridRef}
             >
               <Tooltip
                 anchorElement="target"
@@ -133,33 +143,58 @@ function ReportedUsers() {
                 <Grid
                   style={{ width: "100%", overflow: "visible" }}
                   data={data}
-                  pageable={{
-                    buttonCount: 5,
-                    pageSizes: [5, 10, 20, 50, 100, 500],
-                    info: true,
-                    previousNext: true,
-                  }}
+                  pageable={false}
                   skip={page.skip}
                   take={page.take}
                   total={total}
-                  onPageChange={(e) => setPage(e.page)}
                   sortable
                   sort={sort}
                   onSortChange={(e) => setSort(e.sort)}
                 >
-                  <GridColumn title="Username" />
-                  <GridColumn title="Email/Phone Number" />
-                  <GridColumn title="Reported By" />
-                  <GridColumn title="Status" cells={{
-                  data: (props) => (
-                    <StatusCell
-                      {...props}
-                      idField="userId"
-                      onToggle={handleStatusToggle}
-                    />
-                  ),
-                }}/>
+                  <GridColumn
+                    title="Username"
+                    field="username"
+                    width={getWidth("username")}
+                  />
+
+                  <GridColumn
+                    title="Email/Phone Number"
+                    field="emailPhone"
+                    width={getWidth("emailPhone")}
+                  />
+
+                  <GridColumn
+                    title="Reported By"
+                    field="reportedBy"
+                    width={getWidth("reportedBy")}
+                  />
+
+                  <GridColumn
+                    title="Status"
+                    field="status"
+                    width={getWidth("status")}
+                    cells={{
+                      data: (props) => (
+                        <StatusCell
+                          {...props}
+                          idField="userId"
+                          onToggle={handleStatusToggle}
+                        />
+                      ),
+                    }}
+                  />
                 </Grid>
+                <CustomPager
+                  skip={page.skip}
+                  take={page.take}
+                  total={total}
+                  pageSizes={[5, 10, 20, 50, 100, 500]}
+                  buttonCount={4}
+                  previousNext
+                  firstLast
+                  info
+                  onPageChange={(e) => setPage(e.page)}
+                />
               </Tooltip>
             </div>
           </div>
