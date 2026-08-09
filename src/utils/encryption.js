@@ -2,7 +2,6 @@ import CryptoJS from "crypto-js";
 
 const SECRET_KEY = import.meta.env.VITE_STORAGE_SECRET;
 
-// Encrypt any object, array, string, number, etc.
 export const encryptData = (data) => {
   return CryptoJS.AES.encrypt(
     JSON.stringify(data),
@@ -10,7 +9,6 @@ export const encryptData = (data) => {
   ).toString();
 };
 
-// Decrypt back to original value
 export const decryptData = (encryptedData) => {
   if (!encryptedData) return null;
 

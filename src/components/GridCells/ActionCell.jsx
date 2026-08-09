@@ -8,13 +8,14 @@ export const ActionCell = ({
   onDelete,
 }) => {
   const id = dataItem[idField];
-    
+
   return (
     <td {...tdProps} className="text-center align-middle">
       <div className="d-flex justify-content-center align-items-center gap-2">
 
-        {permission.canUpdate && onView && (
+        {permission?.canRead && onView && (
           <button
+            type="button"
             className="eye-btn"
             title="View"
             onClick={() => onView(id)}
@@ -23,8 +24,9 @@ export const ActionCell = ({
           </button>
         )}
 
-        {permission.canCreate && onEdit && (
+        {permission?.canUpdate && onEdit && (
           <button
+            type="button"
             className="edit-btn"
             title="Edit"
             onClick={() => onEdit(id)}
@@ -33,8 +35,9 @@ export const ActionCell = ({
           </button>
         )}
 
-        {permission.canDelete && onDelete && (
+        {permission?.canDelete && onDelete && (
           <button
+            type="button"
             className="delete-btn"
             title="Delete"
             onClick={() => onDelete(id)}
