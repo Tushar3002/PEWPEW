@@ -171,7 +171,7 @@ function ReportedUsers() {
 
                   <GridColumn
                     title="Status"
-                    field="status"
+                    field="isActive"
                     width={getWidth("status")}
                     cells={{
                       data: (props) => (

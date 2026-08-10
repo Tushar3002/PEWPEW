@@ -16,7 +16,7 @@ const StatusCell = ({ dataItem, tdProps, onToggle, idField = "id" ,statusField =
             )
           }
         />
-      </div>
+      </div>  
     </td>
   );
 };

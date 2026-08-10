@@ -19,7 +19,7 @@ import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 const responsiveColumns = [
-  { field: "action", minWidth: 90 },
+  { field: "action", minWidth: 30 },
   { field: "role", minWidth: 220 },
   { field: "description", minWidth: 320 },
   { field: "noOfUser", minWidth: 140 },
@@ -202,18 +202,20 @@ function RolesPermission() {
             {/* <a href="#" className="btn main-btn border-btn sky-btn">
                       Export
                     </a> */}
-            <button
-              type="button"
-              className="btn main-btn"
-              onClick={() => {
-                navigate("/roles-permissions/add");
-              }}
-              // <Link to={"/roles-permissions/add"} className="btn main-btn">
-              //   Add
-              // </Link>
-            >
-              Add
-            </button>
+            {rolePermission.canCreate && (
+              <button
+                type="button"
+                className="btn main-btn"
+                onClick={() => {
+                  navigate("/roles-permissions/add");
+                }}
+                // <Link to={"/roles-permissions/add"} className="btn main-btn">
+                //   Add
+                // </Link>
+              >
+                Add
+              </button>
+            )}
           </div>
 
           <div
@@ -239,56 +241,60 @@ function RolesPermission() {
                 onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
-  title="Action"
-  width={getWidth("action")}
-  headerClassName="text-center"
-  cells={{
-    data: (props) => (
-      <ActionCell
-        {...props}
-        permission={rolePermission}
-        idField="id"
-        onEdit={(id) => navigate(`/roles-permissions/edit/${id}`)}
-        onDelete={openDeleteModal}
-      />
-    ),
-  }}
-/>
+                  title="Action"
+                  width={getWidth("action")}
+                  sortable={false}
+                  headerClassName="text-center"
+                  cells={{
+                    data: (props) => (
+                      <ActionCell
+                        {...props}
+                        permission={rolePermission}
+                        idField="id"
+                        onEdit={(id) =>
+                          navigate(`/roles-permissions/edit/${id}`)
+                        }
+                        onDelete={openDeleteModal}
+                      />
+                    ),
+                  }}
+                />
 
-<GridColumn
-  field="role"
-  title="Role Name"
-  width={getWidth("role")}
-  cells={{ data: TextCell }}
-/>
+                <GridColumn
+                  field="role"
+                  title="Role Name"
+                  width={getWidth("role")}
+                  cells={{ data: TextCell }}
+                />
 
-<GridColumn
-  field="description"
-  title="Description"
-  width={getWidth("description")}
-  cells={{ data: TextCell }}
-/>
+                <GridColumn
+                  field="description"
+                  title="Description"
+                  width={getWidth("description")}
+                  cells={{ data: TextCell }}
+                />
 
-<GridColumn
-  field="noOfUser"
-  title="No. Of User"
-  width={getWidth("noOfUser")}
-  cells={{ data: GunCountCell }}
-/>
+                <GridColumn
+                  field="noOfUser"
+                  title="No. Of User"
+                  width={getWidth("noOfUser")}
+                  cells={{ data: GunCountCell }}
+                />
 
-<GridColumn
-  title="Status"
-  width={getWidth("status")}
-  cells={{
-    data: (props) => (
-      <StatusCell
-        {...props}
-        idField="id"
-        onToggle={handleStatusToggle}
-      />
-    ),
-  }}
-/>
+                <GridColumn
+                  title="Status"
+                  width={getWidth("status")}
+                  field="isActive"
+                  cells={{
+                    data: (props) => (
+                      <StatusCell
+                        {...props}
+                        idField="id"
+                        onToggle={handleStatusToggle}
+                      />
+                    ),
+                  }}
+                />
               </Grid>
               <CustomPager
                 skip={page.skip}

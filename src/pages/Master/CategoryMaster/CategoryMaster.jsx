@@ -176,7 +176,7 @@ function CategoryMaster() {
               </button>
             </form>
 
-            <button
+            {categoryMasterPermission.canCreate && (<button
               type="button"
               className="btn main-btn "
               onClick={() => {
@@ -185,7 +185,7 @@ function CategoryMaster() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
             <div
@@ -214,6 +214,7 @@ function CategoryMaster() {
                   <GridColumn
                     width={getWidth("action")}
                     title="Action"
+                    sortable={false}
                     cells={{
                     data: (props) => (
                       <ActionCell
@@ -242,7 +243,7 @@ function CategoryMaster() {
                   <GridColumn
                   width={getWidth("status")}
                     title="Status"
-                    field="status"
+                    field="isActive"
                     cells={{
                       data: (props) => (
                         <StatusCell

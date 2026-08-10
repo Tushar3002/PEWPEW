@@ -236,6 +236,7 @@ function Events() {
                   <GridColumn
                     width={getWidth('action')}
                     title="Action"
+                    sortable={false}
                     cells={{
                       data: (props) => (
                         <ActionCell

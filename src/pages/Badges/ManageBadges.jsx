@@ -181,7 +181,7 @@ function ManageBadges() {
               </button>
             </form>
 
-            <button
+            {badgePermission.canCreate && (<button
               type="button"
               className="btn main-btn "
               onClick={() => {
@@ -190,7 +190,7 @@ function ManageBadges() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
           <div
@@ -218,6 +218,7 @@ function ManageBadges() {
                 <GridColumn
                   title="Actions"
                   width={getWidth("action")}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -234,6 +235,7 @@ function ManageBadges() {
                 <GridColumn
                   title="Images"
                   field="imageFullPath"
+                  sortable={false}
                   width={getWidth("imageFullPath")}
                   cells={{
                     data: (props) => (

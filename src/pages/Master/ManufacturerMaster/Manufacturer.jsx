@@ -179,7 +179,7 @@ function Manufacturer() {
             </form>
 
             {/* Add */}
-            <button
+            {manufacturerPermission.canCreate && (<button
               type="button"
               className="btn main-btn"
               onClick={() => {
@@ -188,7 +188,7 @@ function Manufacturer() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
           {/* Grid */}
@@ -217,6 +217,7 @@ function Manufacturer() {
                 <GridColumn
                   width={getWidth("action")}
                   title="Action"
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -259,7 +260,7 @@ function Manufacturer() {
                 <GridColumn
                   width={getWidth("status")}
                   title="Status"
-                  field="status"
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell

@@ -240,6 +240,7 @@ function Group() {
                 <GridColumn
                   width={getWidth("action")}
                   title="Action"
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -261,6 +262,7 @@ function Group() {
 
                 <GridColumn
                   title="Group Image"
+                  sortable={false}
                   field="groupImageFullUrl"
                   width={getWidth("groupImageFullUrl")}
                   cells={{
@@ -333,6 +335,7 @@ function Group() {
                 <GridColumn
                   title="Status"
                   width={getWidth("status")}
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell

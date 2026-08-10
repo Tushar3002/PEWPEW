@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 import Cookies from "js-cookie";
-import { decrypt, encrypt } from "../utils/crypto"; // adjust the path
+import { decrypt, encrypt } from "../utils/crypto"; 
 
 function Login() {
   const { login } = useAuth();

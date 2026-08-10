@@ -36,6 +36,7 @@ function GroupActivity() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState(0);
+  const [sort,setSort]=useState([])
   const { id } = useParams();
 
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ function GroupActivity() {
 
   useEffect(() => {
     fetchGroupActivity();
-  }, []);
+  }, [page,sort,search]);
   const handleSearch = (e) => {
     e.preventDefault();
 
@@ -61,6 +62,10 @@ function GroupActivity() {
     const body = {
       Page: page.skip / page.take + 1,
       pageSize: page.take,
+      Sorts:sort.map((s)=>({
+        field:s.field,
+        direction:s.dir==='asc'?0:1,
+      })),
       search,
       Filters: [
         {
@@ -168,11 +173,15 @@ function GroupActivity() {
                 skip={page.skip}
                 take={page.take}
                 total={total}
+                sortable
+                sort={sort}
+                onSortChange={(e) => setSort(e.sort)}
               >
                 <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   headerClassName="text-center"
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -201,6 +210,7 @@ function GroupActivity() {
                 <GridColumn
                   field="attachmentList"
                   title="Image/Video"
+                  sortable={false}
                   width={getWidth("attachmentList")}
                   cells={{ data: AttachmentCell }}
                 />
@@ -239,6 +249,7 @@ function GroupActivity() {
                 <GridColumn
                   title="Status"
                   width={getWidth("status")}
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell

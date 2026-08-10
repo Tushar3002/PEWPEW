@@ -177,7 +177,7 @@ function AccessoriesMaster() {
               </button>
             </form>
 
-            <button
+            {accessoryPermission.canCreate && (<button
               type="button"
               className="btn main-btn"
               onClick={() => {
@@ -186,7 +186,7 @@ function AccessoriesMaster() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
           <div className="table-responsive " style={{ overflow: "visible" }} ref={gridRef}>
@@ -210,6 +210,7 @@ function AccessoriesMaster() {
                 <GridColumn
                   title="Action"
                   width={getWidth("action")}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -236,8 +237,9 @@ function AccessoriesMaster() {
                 <GridColumn title="Modified By" field="updatedByUserName" width={getWidth("updatedByUserName")}/>
                 <GridColumn
                   title="Status"
-                  field="status"
+                  field="isActive"
                   width={getWidth("status")}
+                  
                   cells={{
                     data: (props) => (
                       <StatusCell

@@ -121,9 +121,9 @@ Main Grid
     border-right: 1px solid #e9ecef;
 }
 /* Hover */
-.k-grid tbody tr:hover {
+/* .k-grid tbody tr:hover {
   background: #f8f9fa !important;
-}
+} */
 
 /* Remove last borders */
 .k-grid tbody td:last-child,

@@ -23,7 +23,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 
 const responsiveColumns = [
-  { field: "action", minWidth: 90 },
+  { field: "action", minWidth: 150 },
   { field: "venueName", minWidth: 180 },
   { field: "description", minWidth: 230 },
   { field: "website", minWidth: 180 },

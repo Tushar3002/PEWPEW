@@ -178,7 +178,7 @@ function AmmunitionMaster() {
               </button>
             </form>
 
-            <button
+            {ammunitionPermission.canCreate && (<button
               type="button"
               className="btn main-btn "
               onClick={() => {
@@ -187,7 +187,7 @@ function AmmunitionMaster() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
           <div className="table-responsive " style={{ overflow: "visible" }} ref={gridRef}>
@@ -211,6 +211,7 @@ function AmmunitionMaster() {
                 <GridColumn
                   title="Action"
                   width={getWidth("action")}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -270,8 +271,8 @@ function AmmunitionMaster() {
 
                 <GridColumn
                   title="Status"
-                  field="status"
                   width={getWidth("status")}
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell

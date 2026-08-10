@@ -246,12 +246,12 @@ function ManageUser() {
               Export
             </a> */}
 
-            <Link
+            {userPermission.canCreate && (<Link
               to={"/manage-users/add"}
               className="btn main-btn border-btn blue-btn"
             >
               Add Users
-            </Link>
+            </Link>)}
           </div>
         </div>
       </div>

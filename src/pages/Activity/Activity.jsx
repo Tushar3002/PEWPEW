@@ -23,7 +23,7 @@ const responsiveColumns = [
   { field: "userName", minWidth: 140 },
   { field: "createdOn", minWidth: 140 },
   { field: "postTypeName", minWidth: 140 },
-  { field: "attachmentList", minWidth: 120 },
+  { field: "attachmentList", minWidth: 220 },
   { field: "post", minWidth: 250 },
   { field: "rate", minWidth: 100 },
   { field: "totalGun", minWidth: 100 },
@@ -255,6 +255,7 @@ function Activity() {
                 <GridColumn
                   title="Actions"
                   width={getWidth('action')}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -290,6 +291,7 @@ function Activity() {
                   title="Image/Video"
                   field="attachmentList"
                   width={getWidth("attachmentList")}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <AttachmentCell {...props} onOpen={openViewer} />
@@ -354,6 +356,8 @@ function Activity() {
                 <GridColumn
                   title="Status"
                   width={getWidth("status")}
+                  sortable={true}
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell

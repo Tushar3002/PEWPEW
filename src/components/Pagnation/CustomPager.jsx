@@ -7,8 +7,8 @@ import { SvgIcon } from "@progress/kendo-react-common";
 import {
   chevronLeftIcon,
   chevronRightIcon,
-  caretAltLeftIcon,
-  caretAltRightIcon,
+  caretAltToLeftIcon,
+  caretAltToRightIcon,
 } from "@progress/kendo-svg-icons";
 
 const CustomPager = ({
@@ -49,8 +49,6 @@ const CustomPager = ({
       },
     });
   };
-
-  // -------- Kendo-like block pagination --------
 
   const blockIndex = Math.floor((currentPage - 1) / buttonCount);
 
@@ -95,7 +93,7 @@ const CustomPager = ({
             onClick={() => changePage(1)}
             disabled={currentPage === 1}
           >
-            <SvgIcon icon={caretAltLeftIcon} />
+            <SvgIcon icon={caretAltToLeftIcon} />
           </button>
         )}
 
@@ -152,7 +150,7 @@ const CustomPager = ({
             onClick={() => changePage(totalPages)}
             disabled={currentPage === totalPages}
           >
-            <SvgIcon icon={caretAltRightIcon} />
+            <SvgIcon icon={caretAltToRightIcon} />
           </button>
         )}
       </div>

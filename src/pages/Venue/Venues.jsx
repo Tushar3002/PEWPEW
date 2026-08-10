@@ -317,6 +317,7 @@ function Venues() {
                 <GridColumn
                   width={getWidth("action")}
                   title="Action"
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -332,7 +333,7 @@ function Venues() {
                 />
                 <GridColumn
                   title="Owner Name"
-                  // field="venueOwnerUserName"
+                  field="venueOwnerUserName"
                   cells={{ data: editUserCell }}
                   width={getWidth("venueOwnerUserName")}
                 />
@@ -415,6 +416,7 @@ function Venues() {
                 <GridColumn
                   width={getWidth("status")}
                   title="Status"
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell

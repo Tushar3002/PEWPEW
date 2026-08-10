@@ -177,7 +177,7 @@ function ProhibitedWords() {
             </form>
 
             {/* Add */}
-            <button
+            {prohibitedwordsPermissions.canCreate && (<button
               type="button"
               className="btn main-btn"
               onClick={() => {
@@ -186,7 +186,7 @@ function ProhibitedWords() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
           <div
@@ -215,6 +215,7 @@ function ProhibitedWords() {
                 <GridColumn
                   title="Action"
                   width={getWidth("action")}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell

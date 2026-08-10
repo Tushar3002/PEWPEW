@@ -109,7 +109,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
   const getEndUsersList = async () => {
     try {
       const res = await getEndUserDropDown();
-      // console.log(res.data);
+      console.log(res.data);
       setEndUsers(res.data);
     } catch (error) {
       console.log(error);
@@ -120,7 +120,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
     try {
       const res = await getVenueById(venueId);
 
-      console.log(res.data);
+      console.log("DEKJ",res.data);
 
       reset({
         userId: res.data.userId,
@@ -560,7 +560,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
       </div>
 
       {/* Backdrop */}
-      {/* <div className="modal-backdrop fade show"></div> */}
+      <div className="modal-backdrop fade show"></div>
     </>
   );
 }

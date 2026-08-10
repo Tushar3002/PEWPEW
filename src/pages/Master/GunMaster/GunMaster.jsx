@@ -248,7 +248,7 @@ function GunMaster() {
               </button>
             </form>
 
-            <button
+            {gunMasterPermission.canCreate && (<button
               type="button"
               className="btn main-btn "
               onClick={() => {
@@ -257,7 +257,7 @@ function GunMaster() {
               }}
             >
               Add
-            </button>
+            </button>)}
           </div>
 
           <div
@@ -286,6 +286,7 @@ function GunMaster() {
                 <GridColumn
                   title="Action"
                   width={getWidth("action")}
+                  sortable={false}
                   cells={{
                     data: (props) => (
                       <ActionCell
@@ -329,6 +330,7 @@ function GunMaster() {
                 <GridColumn
                   title="Images"
                   field="attachmentFullPath"
+                  sortable={false}                
                   width={getWidth("attachmentFullPath")}
                   cells={{
                     data: (props) => (
@@ -375,7 +377,7 @@ function GunMaster() {
 
                 <GridColumn
                   title="Status"
-                  field="status"
+                  field="isActive"
                   width={getWidth("status")}
                   cells={{
                     data: (props) => (

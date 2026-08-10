@@ -313,6 +313,7 @@ function SupportTicket() {
                   title="Action"
                   width={getWidth("action")}
                   cells={{ data: ActionCell }}
+                  sortable={false}
                 />
 
                 <GridColumn
