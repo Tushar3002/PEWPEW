@@ -1513,6 +1513,7 @@ header {
     align-items: center;
     display: flex;
     z-index: 11;
+    /* z-index: 1 !important; */
     position: fixed;
     top: 0;
     left: 0;
@@ -1521,6 +1522,17 @@ header {
     background-attachment: fixed;
     background-position: center center;
     background-size: cover;
+}
+.modal.show.d-block {
+    position: fixed;
+    inset: 0;
+    z-index: 1060 !important;
+    background: rgba(0, 0, 0, 0.7);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.modal-backdrop {
+    z-index: 99998 !important;
 }
 
 header ul.navbar-nav {
@@ -3455,4 +3467,12 @@ span.chat-time {
   align-items: center;
 
   z-index: 9999;
+}
+
+.modal.show.d-block {
+    position: fixed;
+    inset: 0;
+    z-index: 1060 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
 }

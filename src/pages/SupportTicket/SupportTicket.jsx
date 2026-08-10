@@ -16,14 +16,16 @@ import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
+import { DropDownList } from "@progress/kendo-react-dropdowns";
+
 const responsiveColumns = [
-  { field: "action", minWidth:110 },
+  { field: "action", minWidth: 110 },
   { field: "userName", minWidth: 180 },
   { field: "emailePhone", minWidth: 220 },
   { field: "issueType", minWidth: 180 },
   { field: "description", minWidth: 250 },
   { field: "adminDescription", minWidth: 250 },
-  { field: "status", minWidth: 180 },
+  { field: "status", minWidth: 160 },
 ];
 
 function SupportTicket() {
@@ -204,7 +206,7 @@ function SupportTicket() {
     const isClosedStatus = currentStatusId === 3 || currentStatusId === 4;
 
     const handleStatusChange = (e) => {
-      const newStatusId = Number(e.target.value);
+      const newStatusId = Number(e.value?.id);
 
       if (newStatusId === currentStatusId) return;
 
@@ -221,25 +223,30 @@ function SupportTicket() {
       setShowStatusModal(true);
     };
 
+    const dropdownData = status.map((item) => ({
+      ...item,
+      disabled: isClosedStatus && (item.id === 1 || item.id === 2),
+    }));
+
+    const currentStatus =
+      status.find((item) => item.id === currentStatusId) || null;
+
     return (
       <td {...props.tdProps}>
-        <select
-          title={status.find((s) => s.id === currentStatusId)?.description}
-          className="form-select"
-          value={currentStatusId}
+        <DropDownList
+          data={dropdownData}
+          textField="description"
+          dataItemKey="id"
+          value={currentStatus}
           onChange={handleStatusChange}
-        >
-          {status.map((item) => {
-            const shouldDisable =
-              isClosedStatus && (item.id === 1 || item.id === 2);
-
-            return (
-              <option key={item.id} value={item.id} disabled={shouldDisable}>
-                {item.description}
-              </option>
-            );
-          })}
-        </select>
+          disabled={false}
+          className="form-control"
+          popupSettings={{
+            appendTo: typeof window !== "undefined" ? document.body : undefined,
+            positionMode: "fixed",
+            popupClass: "k-dropdown-popup",
+          }}
+        />
       </td>
     );
   };

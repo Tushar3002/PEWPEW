@@ -43,7 +43,7 @@ const responsiveColumns = [
   { field: "dateTime", minWidth: 220 },
   { field: "address", minWidth: 260 },
   { field: "userName", minWidth: 140 },
-  { field: "approvalStatusName", minWidth: 180 },
+  { field: "approvalStatusName", minWidth: 220 },
 ];
 
 function Events() {

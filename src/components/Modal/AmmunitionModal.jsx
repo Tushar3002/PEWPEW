@@ -39,8 +39,8 @@ export const AmmunitionModal = ({ show, onClose, id, onSuccess }) => {
 
   useEffect(() => {
     if (!show) return;
-    getCategoryDropDown()
-    getManufacturerDropDown()
+    getCategoryDropDown();
+    getManufacturerDropDown();
     if (isEditable) {
       fetchDataById(id);
     } else {
@@ -203,7 +203,15 @@ export const AmmunitionModal = ({ show, onClose, id, onSuccess }) => {
                         key: "",
                         value: "Select Category",
                       }}
-                      className={errors.manufacturerId ? "k-invalid" : ""}
+                      className={`${errors.manufacturerId ? "k-invalid" : ""} form-control`}
+                      popupSettings={{
+                        appendTo:
+                          typeof window !== "undefined"
+                            ? document.body
+                            : undefined,
+                        positionMode: "fixed",
+                        popupClass: "k-dropdown-popup",
+                      }}
                     />
                   )}
                 />

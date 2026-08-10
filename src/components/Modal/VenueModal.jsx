@@ -18,6 +18,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
   const [countryCodeData, setCountryCodeData] = useState([]);
   const [imagePreview, setImagePreview] = useState("");
   const [existingImageName, setExistingImageName] = useState("");
+  const [primaryGun, setPrimaryGun] = useState(null);
 
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -204,7 +205,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
         tabIndex="-1"
         role="dialog"
       >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
+        <div className="modal-dialog modal-xl modal-dialog-centered">
           <div className="modal-content">
             {/* Header */}
             <div className="modal-header">
@@ -229,23 +230,33 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                       Select Username <span className="text-danger">*</span>
                     </label>
 
-                    <select
-                      className={`form-select ${
-                        errors.userId ? "is-invalid" : ""
-                      }`}
-                      disabled={isEditMode}
-                      {...register("userId", {
+                    <Controller
+                      name="userId"
+                      control={control}
+                      rules={{
                         required: "Username is required",
-                      })}
-                    >
-                      <option value="">Select Username</option>
-
-                      {endUsers.map((user) => (
-                        <option key={user.key} value={user.key}>
-                          {user.userName}
-                        </option>
-                      ))}
-                    </select>
+                      }}
+                      render={({ field }) => (
+                        <DropDownList
+                          className={`form-control ${errors.userId ? "is-invalid" : ""}`}
+                          data={endUsers}
+                          textField="userName"
+                          dataItemKey="key"
+                          value={
+                            endUsers.find((user) => user.key === field.value) ||
+                            null
+                          }
+                          onChange={(e) => {
+                            field.onChange(e.value?.key || "");
+                          }}
+                          disabled={isEditMode}
+                          defaultItem={{
+                            key: "",
+                            userName: " ",
+                          }}
+                        />
+                      )}
+                    />
 
                     {errors.userId && (
                       <div className="invalid-feedback">
@@ -325,6 +336,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                           control={control}
                           render={({ field }) => (
                             <DropDownList
+                              className="form-control"
                               data={countryCodeData}
                               textField="phoneInternationalCode"
                               dataItemKey="countryId"
@@ -349,7 +361,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                               }}
                               valueRender={(element, value) => {
                                 if (!value) {
-                                  return <span>Code</span>;
+                                  return <span></span>;
                                 }
 
                                 return (
@@ -373,7 +385,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                                   </>,
                                 )
                               }
-                              style={{ width: 80 }}
+                              style={{ width: 100 }}
                               popupSettings={{
                                 className: "country-code-popup",
                               }}
@@ -548,7 +560,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
       </div>
 
       {/* Backdrop */}
-      <div className="modal-backdrop fade show"></div>
+      {/* <div className="modal-backdrop fade show"></div> */}
     </>
   );
 }

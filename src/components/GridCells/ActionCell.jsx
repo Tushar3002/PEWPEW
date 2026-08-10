@@ -21,13 +21,14 @@ export const ActionCell = ({
             onClick={() => onView(id)}
           >
             <i className="fa fa-eye"></i>
+            {/* <i className="icon-eye-line"></i> */}
           </button>
         )}
 
         {permission?.canUpdate && onEdit && (
           <button
             type="button"
-            className="edit-btn"
+            className="eye-btn"
             title="Edit"
             onClick={() => onEdit(id)}
           >
@@ -43,6 +44,8 @@ export const ActionCell = ({
             onClick={() => onDelete(id)}
           >
             <i className="icon-delete-1"></i>
+           
+
           </button>
         )}
 

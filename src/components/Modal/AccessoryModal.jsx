@@ -96,7 +96,7 @@ export const AccessoryModal = ({ show, onClose, id, onSuccess }) => {
       console.log("Badge body:", body);
 
       if (isEditable) {
-        await editAccessories(id,body);
+        await editAccessories(id, body);
       } else {
         await addAccessories(body);
       }
@@ -166,10 +166,18 @@ export const AccessoryModal = ({ show, onClose, id, onSuccess }) => {
                       onChange={(e) => {
                         field.onChange(e.value?.key ?? "");
                       }}
-                    //   defaultItem={{
-                    //     key: "",
-                    //     value: "Select Category",
-                    //   }}
+                      popupSettings={{
+                        appendTo:
+                          typeof window !== "undefined"
+                            ? document.body
+                            : undefined,
+                        positionMode: "fixed",
+                        popupClass: "k-dropdown-popup",
+                      }}
+                      //   defaultItem={{
+                      //     key: "",
+                      //     value: "Select Category",
+                      //   }}
                     />
                   )}
                 />

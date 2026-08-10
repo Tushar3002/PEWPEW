@@ -281,6 +281,14 @@ function UserForm({
                           }
                           onChange={(e) => field.onChange(e.value?.id ?? "")}
                           className={`form-control ${errors.gender ? "is-invalid" : ""}`}
+                          popupSettings={{
+                            appendTo:
+                              typeof window !== "undefined"
+                                ? document.body
+                                : undefined,
+                            positionMode: "fixed",
+                            popupClass: "k-dropdown-popup",
+                          }}
                         />
                       )}
                     />
@@ -407,6 +415,14 @@ function UserForm({
                               phoneInternationalCode: "+1",
                             }}
                             className={`form-control ${errors.countryCode ? "is-invalid" : ""}`}
+                            popupSettings={{
+                              appendTo:
+                                typeof window !== "undefined"
+                                  ? document.body
+                                  : undefined,
+                              positionMode: "fixed",
+                              popupClass: "k-dropdown-popup",
+                            }}
                           />
                         )}
                       />
@@ -487,6 +503,14 @@ function UserForm({
                             value: "Select Role",
                           }}
                           className={`form-control ${errors.role ? "is-invalid" : ""}`}
+                          popupSettings={{
+                            appendTo:
+                              typeof window !== "undefined"
+                                ? document.body
+                                : undefined,
+                            positionMode: "fixed",
+                            popupClass: "k-dropdown-popup",
+                          }}
                         />
                       )}
                     />

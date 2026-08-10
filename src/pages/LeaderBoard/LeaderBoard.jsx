@@ -11,16 +11,58 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../utils/permission";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
-const leaderboardOptions = [
-  { value: 5, type: "gun", label: "Top 5 Gun Reviewers/Check-Ins" },
-  { value: 20, type: "gun", label: "Top 20 Gun Reviewers/Check-Ins" },
-  { value: 50, type: "gun", label: "Top 50 Gun Reviewers/Check-Ins" },
-  { value: 100, type: "gun", label: "Top 100 Gun Reviewers/Check-Ins" },
+import { DropDownList } from "@progress/kendo-react-dropdowns";
 
-  { value: 5, type: "venue", label: "Top 5 Venue Reviewers/Check-Ins" },
-  { value: 20, type: "venue", label: "Top 20 Venue Reviewers/Check-Ins" },
-  { value: 50, type: "venue", label: "Top 50 Venue Reviewers/Check-Ins" },
-  { value: 100, type: "venue", label: "Top 100 Venue Reviewers/Check-Ins" },
+const leaderboardOptions = [
+  {
+    id: "gun-5",
+    value: 5,
+    type: "gun",
+    label: "Top 5 Gun Reviewers/Check-Ins",
+  },
+  {
+    id: "gun-20",
+    value: 20,
+    type: "gun",
+    label: "Top 20 Gun Reviewers/Check-Ins",
+  },
+  {
+    id: "gun-50",
+    value: 50,
+    type: "gun",
+    label: "Top 50 Gun Reviewers/Check-Ins",
+  },
+  {
+    id: "gun-100",
+    value: 100,
+    type: "gun",
+    label: "Top 100 Gun Reviewers/Check-Ins",
+  },
+
+  {
+    id: "venue-5",
+    value: 5,
+    type: "venue",
+    label: "Top 5 Venue Reviewers/Check-Ins",
+  },
+  {
+    id: "venue-20",
+    value: 20,
+    type: "venue",
+    label: "Top 20 Venue Reviewers/Check-Ins",
+  },
+  {
+    id: "venue-50",
+    value: 50,
+    type: "venue",
+    label: "Top 50 Venue Reviewers/Check-Ins",
+  },
+  {
+    id: "venue-100",
+    value: 100,
+    type: "venue",
+    label: "Top 100 Venue Reviewers/Check-Ins",
+  },
 ];
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -38,7 +80,7 @@ function LeaderBoard() {
 
   const navigate = useNavigate();
 
-  const leaderBoardPermissions=getMenuPermission("Leaderboard")
+  const leaderBoardPermissions = getMenuPermission("Leaderboard");
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   useEffect(() => {
     fetchDashboardFilters();
@@ -76,13 +118,13 @@ function LeaderBoard() {
   };
 
   const handleFilterChange = (e) => {
-    const filterId = Number(e.target.value);
+    const filterId = Number(e.value.id);
 
     setSelectedFilter(filterId);
   };
 
   const handleLeaderboardChange = (e) => {
-    const selected = leaderboardOptions[e.target.selectedIndex];
+    const selected = e.value;
 
     setLeaderboardType(selected.type);
     setTopData(selected.value);
@@ -101,27 +143,45 @@ function LeaderBoard() {
         />
         <div className="col-12 col-lg-auto">
           <div className="d-flex gap-2">
-            <select
-              className="form-select"
-              value={selectedFilter}
+            <DropDownList
+              data={filterDropDown.filter((item) => item.id !== 9)}
+              textField="description"
+              dataItemKey="id"
+              value={
+                filterDropDown.find((item) => item.id === selectedFilter) ||
+                null
+              }
               onChange={handleFilterChange}
-            >
-              {filterDropDown
-                .filter((item) => item.id !== 9)
-                .map((data) => (
-                  <option key={data.id} value={data.id}>
-                    {data.description}
-                  </option>
-                ))}
-            </select>
+              popupSettings={{
+                appendTo:
+                  typeof window !== "undefined" ? document.body : undefined,
+                positionMode: "fixed",
+                popupClass: "k-dropdown-popup",
+              }}
+              className="form-control"
+              style={{width:"200px"}}
+            />
 
-            <select className="form-select" onChange={handleLeaderboardChange}>
-              {leaderboardOptions.map((item, index) => (
-                <option key={index} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
+            <DropDownList
+              data={leaderboardOptions}
+              textField="label"
+              dataItemKey="id"
+              value={
+                leaderboardOptions.find(
+                  (item) =>
+                    item.value === topData && item.type === leaderboardType,
+                ) || null
+              }
+              onChange={handleLeaderboardChange}
+              popupSettings={{
+                appendTo:
+                  typeof window !== "undefined" ? document.body : undefined,
+                positionMode: "fixed",
+                popupClass: "k-dropdown-popup",
+              }}
+              className="form-control"
+              style={{width:"350px"}}
+            />
           </div>
         </div>
 
@@ -143,45 +203,47 @@ function LeaderBoard() {
                   data={data}
                 >
                   <GridColumn
-  title="Actions"
-  width={getWidth("action")}
-  cells={{
-    data: (props) => (
-      <ActionCell
-        {...props}
-        permission={leaderBoardPermissions}
-        idField="userId"
-        onView={(id) => navigate(`/manage-end-users/view/${id}`)}
-      />
-    ),
-  }}
-/>
+                    title="Actions"
+                    width={getWidth("action")}
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={leaderBoardPermissions}
+                          idField="userId"
+                          onView={(id) =>
+                            navigate(`/manage-end-users/view/${id}`)
+                          }
+                        />
+                      ),
+                    }}
+                  />
 
-<GridColumn
-  title="Rank"
-  field="rank"
-  width={getWidth("rank")}
-/>
+                  <GridColumn
+                    title="Rank"
+                    field="rank"
+                    width={getWidth("rank")}
+                  />
 
-<GridColumn
-  title="Username"
-  field="userName"
-  width={getWidth("userName")}
-  cells={{ data: TextCell }}
-/>
+                  <GridColumn
+                    title="Username"
+                    field="userName"
+                    width={getWidth("userName")}
+                    cells={{ data: TextCell }}
+                  />
 
-<GridColumn
-  title="Followers"
-  field="totalMember"
-  width={getWidth("totalMember")}
-  cells={{ data: TextCell }}
-/>
+                  <GridColumn
+                    title="Followers"
+                    field="totalMember"
+                    width={getWidth("totalMember")}
+                    cells={{ data: TextCell }}
+                  />
 
-<GridColumn
-  title="Gun Check-Ins"
-  field="totalCheckins"
-  width={getWidth("totalCheckins")}
-/>
+                  <GridColumn
+                    title="Gun Check-Ins"
+                    field="totalCheckins"
+                    width={getWidth("totalCheckins")}
+                  />
                 </Grid>
               </Tooltip>
             </div>

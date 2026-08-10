@@ -211,21 +211,51 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
                     <Controller
                       name="manufacturerIds"
                       control={control}
-                      render={({ field }) => (
-                        <MultiSelect
-                          className="venue-gun-multiselect form-control"
-                          data={manufacturerDropdown}
-                          textField="value"
-                          dataItemKey="key"
-                          value={manufacturerDropdown.filter((man) =>
+                      render={({ field }) => {
+                        const selectedManufacturers =
+                          manufacturerDropdown.filter((man) =>
                             field.value?.includes(man.key),
-                          )}
-                          onChange={(e) => {
-                            field.onChange(e.value.map((man) => man.key));
-                          }}
-                          placeholder="Select Manufacturer"
-                        />
-                      )}
+                          );
+
+                        return (
+                          <MultiSelect
+                            className="venue-gun-multiselect form-control"
+                            data={manufacturerDropdown}
+                            textField="value"
+                            dataItemKey="key"
+                            value={selectedManufacturers}
+                            onChange={(e) => {
+                              field.onChange(e.value.map((man) => man.key));
+                            }}
+                            placeholder="Select Manufacturer"
+                            tags={
+                              selectedManufacturers.length === 0
+                                ? []
+                                : selectedManufacturers.length === 1
+                                  ? [
+                                      {
+                                        text: selectedManufacturers[0].value,
+                                        data: [selectedManufacturers[0]],
+                                      },
+                                    ]
+                                  : [
+                                      {
+                                        text: selectedManufacturers[0].value,
+                                        data: [selectedManufacturers[0]],
+                                      },
+                                      {
+                                        text: `${selectedManufacturers.length - 1} item${
+                                          selectedManufacturers.length - 1 > 1
+                                            ? "s"
+                                            : ""
+                                        } selected`,
+                                        data: selectedManufacturers.slice(1),
+                                      },
+                                    ]
+                            }
+                          />
+                        );
+                      }}
                     />
 
                     {errors.manufacturerIds && (
@@ -242,23 +272,51 @@ export const GunMasterModal = ({ show, onClose, id, onSuccess }) => {
                     <Controller
                       name="ammunitionIds"
                       control={control}
-                      render={({ field }) => (
-                        <MultiSelect
-                          className="venue-gun-multiselect form-control"
-                          data={ammunitionDropdown}
-                          textField="value"
-                          dataItemKey="key"
-                          value={ammunitionDropdown.filter((amu) =>
-                            field.value?.includes(amu.key),
-                          )}
-                          onChange={(e) => {
-                            field.onChange(e.value.map((amu) => amu.key));
-                          }}
-                          placeholder="Select Ammunitions"
-                        />
-                      )}
-                    />
+                      render={({ field }) => {
+                        const selectedAmmunitions = ammunitionDropdown.filter(
+                          (amu) => field.value?.includes(amu.key),
+                        );
 
+                        return (
+                          <MultiSelect
+                            className="venue-gun-multiselect form-control"
+                            data={ammunitionDropdown}
+                            textField="value"
+                            dataItemKey="key"
+                            value={selectedAmmunitions}
+                            onChange={(e) => {
+                              field.onChange(e.value.map((amu) => amu.key));
+                            }}
+                            placeholder="Select Ammunitions"
+                            tags={
+                              selectedAmmunitions.length === 0
+                                ? []
+                                : selectedAmmunitions.length === 1
+                                  ? [
+                                      {
+                                        text: selectedAmmunitions[0].value,
+                                        data: [selectedAmmunitions[0]],
+                                      },
+                                    ]
+                                  : [
+                                      {
+                                        text: selectedAmmunitions[0].value,
+                                        data: [selectedAmmunitions[0]],
+                                      },
+                                      {
+                                        text: `${selectedAmmunitions.length - 1} item${
+                                          selectedAmmunitions.length - 1 > 1
+                                            ? "s"
+                                            : ""
+                                        } selected`,
+                                        data: selectedAmmunitions.slice(1),
+                                      },
+                                    ]
+                            }
+                          />
+                        );
+                      }}
+                    />
                     {errors.ammunitionIds && (
                       <div className="invalid-feedback">
                         {errors.ammunitionIds.message}
