@@ -12,10 +12,12 @@ import VenuesTable from "./VenuesTable";
 import EventsTable from "./EventsTable";
 import ActivitiesTables from "./ActivitiesTables";
 import Breadcrumbs from "../../../components/BreadCrumbs/Breadcrumbs";
+import { decryptUrlParam } from "../../../utils/crypto";
 
 function ManageEndUserView() {
   const [endUser, setEndUser] = useState({});
   const { id } = useParams();
+  const endUserId=decryptUrlParam(id)
   const [activeTab, setActiveTab] = useState("upload");
   const tabs = [
     { id: "upload", label: "Upload Gun" },
@@ -46,9 +48,9 @@ function ManageEndUserView() {
     return typeof value === "string" ? value.split("T")[0] : value;
   };
 
-  const fetchEndUser = async (userId) => {
+  const fetchEndUser = async () => {
     try {
-      const res = await getEndUserById(userId);
+      const res = await getEndUserById(endUserId);
       setEndUser(res.data || {});
     } catch (error) {
       console.log(error?.response);
@@ -57,7 +59,7 @@ function ManageEndUserView() {
 
   useEffect(() => {
     if (id) {
-      fetchEndUser(id);
+      fetchEndUser();
     }
   }, [id]);
 
@@ -322,25 +324,25 @@ function ManageEndUserView() {
             <div className="tab-content mt-4">
               {activeTab === "upload" && (
                 <div className="tab-pane fade show active">
-                  <UploadGunsTable userId={id} />
+                  <UploadGunsTable userId={endUserId} />
                 </div>
               )}
 
               {activeTab === "venues" && (
                 <div className="tab-pane fade show active">
-                  <VenuesTable userId={id} />
+                  <VenuesTable userId={endUserId} />
                 </div>
               )}
 
               {activeTab === "events" && (
                 <div className="tab-pane fade show active">
-                  <EventsTable userId={id} />
+                  <EventsTable userId={endUserId} />
                 </div>
               )}
 
               {activeTab === "activities" && (
                 <div className="tab-pane fade show active">
-                  <ActivitiesTables userId={id} />
+                  <ActivitiesTables userId={endUserId} />
                 </div>
               )}
             </div>

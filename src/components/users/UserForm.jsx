@@ -404,24 +404,53 @@ function UserForm({
                               }
 
                               field.onChange(selectedCountry.countryId);
+
                               setValue(
                                 "countryCodeName",
                                 selectedCountry.countryCode ||
                                   selectedCountry.phoneInternationalCode,
                               );
                             }}
-                            defaultItem={{
-                              countryId: "",
-                              phoneInternationalCode: "+1",
+                            valueRender={(element, value) => {
+                              if (!value) {
+                                return React.cloneElement(
+                                  element,
+                                  element.props,
+                                  "",
+                                );
+                              }
+
+                              return React.cloneElement(
+                                element,
+                                element.props,
+                                value.phoneInternationalCode,
+                              );
                             }}
-                            className={`form-control ${errors.countryCode ? "is-invalid" : ""}`}
+                            itemRender={(li, itemProps) =>
+                              React.cloneElement(
+                                li,
+                                li.props,
+                                <>
+                                  <strong>
+                                    {itemProps.dataItem.phoneInternationalCode}
+                                  </strong>
+
+                                  <span style={{ marginLeft: "10px" }}>
+                                    {itemProps.dataItem.countryName}
+                                  </span>
+                                </>,
+                              )
+                            }
+                            className={`form-control ${
+                              errors.countryCode ? "is-invalid" : ""
+                            }`}
                             popupSettings={{
                               appendTo:
                                 typeof window !== "undefined"
                                   ? document.body
                                   : undefined,
                               positionMode: "fixed",
-                              popupClass: "k-dropdown-popup",
+                              popupClass: "country-code-popup",
                             }}
                           />
                         )}

@@ -13,12 +13,11 @@ export default function useResponsiveGridWidths(columns) {
   const [gridCurrent, setGridCurrent] = useState(0);
 
   useEffect(() => {
-    // Find the Kendo Grid inside the wrapper
+
     grid.current = gridRef.current?.querySelector(".k-grid");
 
     if (!grid.current) return;
 
-    // Calculate total minimum width only once
     minGridWidth.current = columns.reduce(
       (sum, column) => sum + (column.minWidth || 0),
       0
@@ -37,7 +36,6 @@ export default function useResponsiveGridWidths(columns) {
       }
     };
 
-    // Initial calculation
     handleResize();
 
     window.addEventListener("resize", handleResize);
@@ -45,7 +43,7 @@ export default function useResponsiveGridWidths(columns) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []); // exactly like Telerik
+  }, []);
 
   const getWidth = (field) => {
     const column = columns.find((c) => c.field === field);

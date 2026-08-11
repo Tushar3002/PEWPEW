@@ -18,6 +18,7 @@ import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationMo
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import { encryptUrlParam } from "../../utils/crypto";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -108,7 +109,7 @@ function Group() {
           title="userName"
           type="button"
           className="btn btn-link p-0"
-          onClick={() => navigate(`/manage-end-users/view/${userId}`)}
+          onClick={() => navigate(`/manage-end-users/view/${encryptUrlParam(userId)}`)}
         >
           {userName}
         </button>
@@ -247,7 +248,7 @@ function Group() {
                         {...props}
                         permission={groupPermission}
                         idField="id"
-                        onView={(id) => navigate(`/groups/view/${id}`)}
+                        onView={(id) => navigate(`/groups/view/${encryptUrlParam(id)}`)}
                         onDelete={openDeleteModal}
                       />
                     ),
@@ -292,7 +293,7 @@ function Group() {
                     data: (props) => (
                       <CountLinkCell
                         {...props}
-                        getPath={(item) => `/groups/view/${item.id}/members`}
+                        getPath={(item) => `/groups/view/${encryptUrlParam(item.id)}/members`}
                       />
                     ),
                   }}
@@ -306,7 +307,7 @@ function Group() {
                     data: (props) => (
                       <CountLinkCell
                         {...props}
-                        getPath={(item) => `/groups/activity/${item.id}`}
+                        getPath={(item) => `/groups/activity/${encryptUrlParam(item.id)}`}
                       />
                     ),
                   }}

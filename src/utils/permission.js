@@ -9,7 +9,7 @@ export const getMenuPermission = (menuName) => {
 
   return (
     permissions.find(
-      (x) => x.menuName.toLowerCase() === menuName.toLowerCase()
+      (x) => x.menuName.toLowerCase() === menuName.toLowerCase(),
     ) || {
       canCreate: false,
       canRead: false,

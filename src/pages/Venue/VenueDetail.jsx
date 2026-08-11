@@ -10,6 +10,7 @@ import GunModal from "../../components/Modal/GunModal";
 import ActivityTabs from "./Tabs/ActivityTabs";
 import EventsTable from "../ManageEndUsers/View/EventsTable";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { decryptUrlParam } from "../../utils/crypto";
 
 function VenueDetail() {
   const [data, setData] = useState("");
@@ -18,6 +19,7 @@ function VenueDetail() {
   const [showGunModal, setShowGunModal] = useState(false);
   const [gunData, setGunData] = useState([]);
   const { id } = useParams();
+  const venueId=decryptUrlParam(id)
   const isVideo = (url) => /\.(mp4|webm|mov)$/i.test(url);
 
   const [activeTab, setActiveTab] = useState("activities");
@@ -33,7 +35,7 @@ function VenueDetail() {
 
   const getVenueByIdData = async () => {
     try {
-      const res = await getVenueById(id);
+      const res = await getVenueById(venueId);
       console.log(res.data);
       setData(res.data);
     } catch (error) {
@@ -107,7 +109,7 @@ function VenueDetail() {
                 <button
                   type="button"
                   className="btn btn-link p-0"
-                  onClick={() => handleGunClick(id)}
+                  onClick={() => handleGunClick(venueId)}
                 >
                   View All
                 </button>
@@ -240,7 +242,7 @@ function VenueDetail() {
 
               {activeTab === "activities" && (
                 <div className="tab-pane fade show active">
-                  <ActivityTabs userId={id} />
+                  <ActivityTabs userId={venueId} />
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { loader } from "../utils/loaderController";
 import { toast } from "react-toastify";
+import { getStorage } from "../utils/storage";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL
@@ -23,7 +24,8 @@ api.interceptors.request.use((config) => {
   }
 
   if (config.useToken) {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
+    const token = getStorage("token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

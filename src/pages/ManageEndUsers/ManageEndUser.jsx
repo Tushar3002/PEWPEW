@@ -15,6 +15,9 @@ import { Tooltip } from "@progress/kendo-react-tooltip";
 import { TextCell } from "../../components/GridCells/TextCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import { encryptUrlParam } from "../../utils/crypto";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 
 const responsiveColumns = [
   { field: "checkbox", minWidth: 60 },
@@ -49,6 +52,17 @@ function ManageEndUser() {
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const navigate = useNavigate();
+
+  const {
+      showDeleteModal,
+      deleteId,
+      isDeleting,
+      setIsDeleting,
+      openDeleteModal,
+      closeDeleteModal,
+    } = useDeleteConfirmation();
+  
+  
   useEffect(() => {
     fetchUsers();
   }, [page, sort, search]);
@@ -94,19 +108,27 @@ function ManageEndUser() {
       console.error(err);
     }
   };
-  const handleDelete = async (ids) => {
-    const userIds = Array.isArray(ids) ? ids : [ids];
 
-    if (!userIds.length) return;
-
-    try {
-      await deleteEndUser(userIds);
-      fetchUsers();
-      setSelectedUserIds([]);
-    } catch (error) {
-      console.log(error.response);
-    }
-  };
+  const handleDelete = async () => {
+      if (!deleteId) return;
+  
+      try {
+        setIsDeleting(true);
+  
+        // const userIds = Array.isArray(deleteId) ? deleteId : [deleteId];
+  
+        await deleteEndUser(deleteId);
+  
+        closeDeleteModal();
+        await fetchUsers();
+  
+        setSelectedUserIds([]);
+      } catch (error) {
+        console.log(error?.response);
+      } finally {
+        setIsDeleting(false);
+      }
+    };
 
   const updateStatusData = async (id, isActive) => {
     try {
@@ -163,7 +185,7 @@ function ManageEndUser() {
             className="eye-btn"
             title="View"
             onClick={() =>
-              navigate(`/manage-end-users/view/${props.dataItem.id}`)
+              navigate(`/manage-end-users/view/${encryptUrlParam(props.dataItem.id)}`)
             }
           >
             <i className="fa fa-eye"></i>
@@ -173,7 +195,7 @@ function ManageEndUser() {
             type="button"
             className="delete-btn"
             title="Delete"
-            onClick={() => handleDelete(props.dataItem.id)}
+            onClick={() => openDeleteModal(props.dataItem.id)}
           >
             <i className="icon-delete-1"></i>
           </button>
@@ -275,7 +297,7 @@ function ManageEndUser() {
               <button
                 type="button"
                 className="btn main-btn border-btn danger-btn"
-                onClick={() => handleDelete(selectedUserIds)}
+                onClick={() => openDeleteModal(selectedUserIds)}
               >
                 Delete
               </button>
@@ -393,6 +415,13 @@ function ManageEndUser() {
           </div>
         </div>
       </div>
+
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

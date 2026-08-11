@@ -17,9 +17,10 @@ import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import UserCountCell from "../../components/GridCells/UserCountCell";
 
 const responsiveColumns = [
-  { field: "action", minWidth: 30 },
+  { field: "action", minWidth: 90 },
   { field: "role", minWidth: 220 },
   { field: "description", minWidth: 320 },
   { field: "noOfUser", minWidth: 140 },
@@ -278,7 +279,7 @@ function RolesPermission() {
                   field="noOfUser"
                   title="No. Of User"
                   width={getWidth("noOfUser")}
-                  cells={{ data: GunCountCell }}
+                  cells={{ data: UserCountCell }}
                 />
 
                 <GridColumn

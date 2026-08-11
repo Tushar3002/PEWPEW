@@ -14,6 +14,7 @@ import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import { encryptUrlParam } from "../../utils/crypto";
 
 const eventTabs = [
   {
@@ -243,7 +244,7 @@ function Events() {
                           {...props}
                           permission={eventsPermission}
                           idField="eventId"
-                          onView={(id) => navigate(`/events/view/${id}`)}
+                          onView={(id) => navigate(`/events/view/${encryptUrlParam(id)}`)}
                           onDelete={openDeleteModal}
                         />
                       ),

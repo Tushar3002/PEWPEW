@@ -12,6 +12,7 @@ import { getMenuPermission } from "../../utils/permission";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 import { DropDownList } from "@progress/kendo-react-dropdowns";
+import { encryptUrlParam } from "../../utils/crypto";
 
 const leaderboardOptions = [
   {
@@ -212,7 +213,7 @@ function LeaderBoard() {
                           permission={leaderBoardPermissions}
                           idField="userId"
                           onView={(id) =>
-                            navigate(`/manage-end-users/view/${id}`)
+                            navigate(`/manage-end-users/view/${encryptUrlParam(id)}`)
                           }
                         />
                       ),

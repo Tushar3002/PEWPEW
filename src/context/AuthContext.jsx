@@ -1,43 +1,32 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { getCurrentUser } from "../api/userApi";
-import { clearStorage, setStorage } from "../utils/storage";
+import { clearStorage, getStorage, setStorage } from "../utils/storage";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [menu, setMenu] = useState([]);
-  // const navigate=useNavigate()
+
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+    const token = getStorage("token");
+    const userData = getStorage("userData");
 
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const user = await getCurrentUser();
+    if (token && userData) {
+      setUser(userData);
+    }
 
-        setUser(user.data);
-        // console.log("Get Current",user);
-      } catch {
-        localStorage.removeItem("token");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
+    setLoading(false);
   }, []);
+
   const login = (data) => {
-    localStorage.setItem("token", data.token);
+    // localStorage.setItem("token", data.token);
+    setStorage("token", data.token);
     setStorage("menuList", data.userDetails.menuPermissions);
 
+    setStorage("userData", data.userDetails);
     setUser(data.userDetails);
-
     setLoading(false);
     // console.log("JANA@",data);
   };
@@ -48,6 +37,10 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     // navigate('/')
   };
+  if (status === 401) {
+    clearStorage();
+    window.location.href = "/login";
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>

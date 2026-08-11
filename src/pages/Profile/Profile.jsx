@@ -1,39 +1,54 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+
 import UserForm from "../../components/users/UserForm";
 import { initialUserForm } from "../../constants/userForm";
 import { useUserDropDown } from "../../hooks/useUserDropDown";
+import { getCurrentUser } from "../../api/userApi";
 
 function Profile() {
-  const { user } = useAuth();
+
   const { genders, roles, countryCodeData } = useUserDropDown();
+  const [data, setData] = useState([]);
 
   const [defaultValues, setDefaultValues] = useState(initialUserForm);
 
   useEffect(() => {
-    if (!user) return;
+    fetchUser();
+  }, []);
+  useEffect(() => {
+    if (!data) return;
 
     setDefaultValues({
-      userId: user.userId || "",
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
-      email: user.email || "",
-      contactNumber: user.contactNumber || "",
-      countryCode: user.countryCode || "",
-      countryCodeName: user.countryCodeName || "",
-      gender: user.gender || "",
-      role: user.roleId || "",
-      commincateWith: Array.isArray(user.commincateWith)
-        ? user.commincateWith.map(String)
+      userId: data.userId || "",
+      firstName: data.firstName || "",
+      lastName: data.lastName || "",
+      email: data.email || "",
+      contactNumber: data.contactNumber || "",
+      countryCode: data.countryCode || "",
+      countryCodeName: data.countryCodeName || "",
+      gender: data.gender || "",
+      role: data.roleId || "",
+      commincateWith: Array.isArray(data.commincateWith)
+        ? data.commincateWith.map(String)
         : [],
-      birthDay: user.birthDay || "",
-      address: user.address || "",
-      userName: user.userName || "",
-      profileImage: user.profileImage
-        ? user.profileImageFullPath
-        : "",
+      birthDay: data.birthDay || "",
+      address: data.address || "",
+      userName: data.userName || "",
+      profileImage: data.profileImage ? data.profileImageFullPath : "",
     });
-  }, [user]);
+  }, [data]);
+
+  const fetchUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      console.log("userData", user.data);
+
+      setData(user.data);
+      // console.log("Get Current",user);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
 
   return (
     <UserForm

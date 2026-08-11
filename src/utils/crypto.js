@@ -3,7 +3,9 @@ import CryptoJS from "crypto-js";
 const KEY = CryptoJS.enc.Hex.parse(import.meta.env.VITE_AES_KEY);
 const IV = CryptoJS.enc.Hex.parse(import.meta.env.VITE_AES_IV);
 
-export const encrypt = (text) => {
+export const encrypt = (data) => {
+  const text = JSON.stringify(data);
+
   return CryptoJS.AES.encrypt(text, KEY, {
     iv: IV,
     mode: CryptoJS.mode.CBC,
@@ -12,6 +14,8 @@ export const encrypt = (text) => {
 };
 
 export const decrypt = (cipher) => {
+  if (!cipher) return null;
+
   try {
     const decrypted = CryptoJS.AES.decrypt(
       {
@@ -25,7 +29,22 @@ export const decrypt = (cipher) => {
       }
     );
 
-    return decrypted.toString(CryptoJS.enc.Utf8);
+    const text = decrypted.toString(CryptoJS.enc.Utf8);
+
+    return text ? JSON.parse(text) : null;
+  } catch (error) {
+    console.error("Decryption failed:", error);
+    return null;
+  }
+};
+
+export const encryptUrlParam = (value) => {
+  return encodeURIComponent(encrypt(value));
+};
+
+export const decryptUrlParam = (value) => {
+  try {
+    return decrypt(decodeURIComponent(value));
   } catch {
     return "";
   }

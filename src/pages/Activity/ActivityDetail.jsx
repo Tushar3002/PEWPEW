@@ -4,10 +4,11 @@ import { getVenueActivities } from "../../api/EndUsers/endUserViewApi";
 import ActivityComments from "../../components/Activity/ActivityComments";
 import ActivityShares from "../../components/Activity/ActivityShares";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { decryptUrlParam } from "../../utils/crypto";
 
 function ActivityDetail() {
   const { id } = useParams();
-
+  const activityId=decryptUrlParam(id)
   const [activityData, setActivityData] = useState(null);
   const [selectedAttachment, setSelectedAttachment] = useState(0);
 
@@ -21,9 +22,9 @@ function ActivityDetail() {
 
   const getVenueActivityData = async () => {
     try {
-      console.log(id);
+      // console.log(id);
 
-      const res = await getVenueActivities(id);
+      const res = await getVenueActivities(activityId);
       setActivityData(res.data);
       console.log(res.data);
     } catch (error) {
@@ -272,13 +273,13 @@ function ActivityDetail() {
           </div>
         </div>
         <div className="col-md-12 col-lg-6 col-xl-7 mt-3 mt-xxl-4">
-          {activeSection === "comments" && <ActivityComments postId={id} />}
+          {activeSection === "comments" && <ActivityComments postId={activityId} />}
 
           {activeSection === "shares" && (
-            <ActivityShares postId={id} type={3} />
+            <ActivityShares postId={activityId} type={3} />
           )}
 
-          {activeSection === "likes" && <ActivityShares postId={id} type={1} />}
+          {activeSection === "likes" && <ActivityShares postId={activityId} type={1} />}
         </div>
       </div>
     </div>

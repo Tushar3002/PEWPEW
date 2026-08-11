@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getEventDetail } from "../../api/Events/eventApi";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { decryptUrlParam } from "../../utils/crypto";
 
 function EventsDetail() {
   const [data, setData] = useState("");
   const { id } = useParams();
-
+  const eventId=decryptUrlParam(id)
   useEffect(() => {
     getEventDatabyId();
   }, []);
   const getEventDatabyId = async () => {
     try {
-      const res = await getEventDetail(id);
+      const res = await getEventDetail(eventId);
       console.log(res.data);
       setData(res.data);
     } catch (error) {

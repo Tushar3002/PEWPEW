@@ -55,6 +55,7 @@ function AmmunitionMaster() {
   } = useDeleteConfirmation();
 
   const ammunitionPermission = getMenuPermission("Ammunition");
+  
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 

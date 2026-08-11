@@ -4,6 +4,7 @@ import { getGroupMembers } from "../../api/Group/group";
 import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import CustomPager from "../../components/Pagnation/CustomPager";
+import { decryptUrlParam, encryptUrlParam } from "../../utils/crypto";
 
 function GroupMembers() {
   const [data, setData] = useState([]);
@@ -15,7 +16,10 @@ function GroupMembers() {
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState(0);
   const { id } = useParams();
-
+  console.log("URL",id);
+  
+  const groupId=decryptUrlParam(id)
+  console.log("Decrypted",groupId)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +42,7 @@ function GroupMembers() {
       pageNumber: page.skip / page.take + 1,
       pageSize: page.take,
       search,
-      groupId: id,
+      groupId: groupId,
     };
     try {
       const res = await getGroupMembers(body);
@@ -72,7 +76,7 @@ function GroupMembers() {
             <button
               type="button"
               className="btn btn-link p-0 text-decoration-none fw-semibold"
-              onClick={() => navigate(`/manage-end-users/view/${userId}`)}
+              onClick={() => navigate(`/manage-end-users/view/${encryptUrlParam(userId)}`)}
             >
               {userName}
             </button>
@@ -101,7 +105,7 @@ function GroupMembers() {
             {
               id: "group-details",
               text: "Group Details",
-              path: `/groups/view/${id}`,
+              path: `/groups/view/${encryptUrlParam(groupId)}`,
             },
             {
               id: "group-members",

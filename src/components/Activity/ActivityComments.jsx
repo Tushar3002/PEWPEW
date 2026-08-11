@@ -5,7 +5,7 @@ const CommentItem = ({ item, isReply = false }) => {
   const formatDateTime = (date) => {
     if (!date) return "";
 
-    const formatted = new Date(`${date}Z`).toLocaleString("en-GB", {
+    const formatted = new Date(`${date}Z`).toLocaleString("en-US", {
       timeZone: "Asia/Kolkata",
       day: "2-digit",
       month: "2-digit",

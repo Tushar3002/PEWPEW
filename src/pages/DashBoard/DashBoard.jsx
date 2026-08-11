@@ -19,6 +19,7 @@ import { updateActivitiesStatus } from "../../api/EndUsers/endUserViewApi";
 import { Link, useNavigate } from "react-router-dom";
 import { DropDownList } from "@progress/kendo-react-dropdowns";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 const topLikedPostsColumns = [
   { field: "action", minWidth: 90 },
   { field: "userName", minWidth: 180 },
@@ -180,8 +181,10 @@ function DashBoard() {
 
   return (
     <>
-      <div className="page-heading">
+      <div className="tabbar-section">
         <div className="row align-items-center gap-3 mb-3 mb-xxl-4">
+          
+
           <div className="col-12 col-md">
             <h2 className="page-title">
               Welcome to Dashboard, {user?.firstName} {user?.lastName}!
@@ -203,8 +206,7 @@ function DashBoard() {
                   target: { value: e.value?.id ?? "" },
                 })
               }
-        
-              style={{width:"250px"}}
+              style={{ width: "250px" }}
             />
           </div>
         </div>
@@ -427,8 +429,6 @@ function DashBoard() {
                 </Grid>
               </div>
             </div>
-
-        
           </div>
         </div>
       </div>

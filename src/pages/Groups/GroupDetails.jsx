@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getGroupDataById } from "../../api/Group/group";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { decryptUrlParam, encryptUrlParam } from "../../utils/crypto";
 
 function GroupDetails() {
   const [data, setData] = useState([]);
   const { id } = useParams();
+  const groupId=decryptUrlParam(id)
 
   useEffect(() => {
     fetchGroupDetailsById();
   }, []);
   const fetchGroupDetailsById = async () => {
     try {
-      const res = await getGroupDataById(id);
+      const res = await getGroupDataById(groupId);
       console.log(res.data);
       setData(res.data);
     } catch (error) {
@@ -104,7 +106,7 @@ function GroupDetails() {
             </span>
 
             {data.totalActivity > 0 ? (
-              <Link to={`/groups/activity/${id}`} className="fw-semibold">
+              <Link to={`/groups/activity/${encryptUrlParam(groupId)}`} className="fw-semibold">
                 {data.totalActivity}
               </Link>
             ) : (

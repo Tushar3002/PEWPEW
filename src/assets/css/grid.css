@@ -274,6 +274,12 @@ Main Grid
     max-width: 100%;
 }
 
-.country-popup .k-list-container {
-    min-width: 260px !important;
+.country-code-popup .k-list {
+  min-width: 350px !important;
+}
+
+.country-code-dropdown:hover,
+.country-code-dropdown.k-hover {
+  background-color: white !important;
+  color: inherit !important;
 }

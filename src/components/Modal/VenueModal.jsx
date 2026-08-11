@@ -65,7 +65,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
         address: "",
         venueType: "",
         guns: [],
-        countryCode: "",
+        countryCode: "+91",
         countryCodeName: "",
       });
 
@@ -120,7 +120,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
     try {
       const res = await getVenueById(venueId);
 
-      console.log("DEKJ",res.data);
+      console.log("DEKJ", res.data);
 
       reset({
         userId: res.data.userId,
@@ -336,7 +336,7 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                           control={control}
                           render={({ field }) => (
                             <DropDownList
-                              className="form-control"
+                              className="form-control country-code-dropdown"
                               data={countryCodeData}
                               textField="phoneInternationalCode"
                               dataItemKey="countryId"
@@ -360,14 +360,16 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                                 );
                               }}
                               valueRender={(element, value) => {
-                                if (!value) {
-                                  return <span></span>;
-                                }
+  if (!value) {
+    return React.cloneElement(element, element.props, "");
+  }
 
-                                return (
-                                  <span>{value.phoneInternationalCode}</span>
-                                );
-                              }}
+  return React.cloneElement(
+    element,
+    element.props,
+    value.phoneInternationalCode
+  );
+}}
                               itemRender={(li, itemProps) =>
                                 React.cloneElement(
                                   li,
@@ -379,13 +381,15 @@ function VenueModal({ venueId, show, onClose, onSuccess }) {
                                           .phoneInternationalCode
                                       }
                                     </strong>
-                                    <span style={{ marginLeft: "10px" }}>
+                                    <span style={{ marginLeft: 10 }}>
                                       {itemProps.dataItem.countryName}
                                     </span>
                                   </>,
                                 )
                               }
                               style={{ width: 100 }}
+                              fillMode="outline"
+                              rounded="medium"
                               popupSettings={{
                                 className: "country-code-popup",
                               }}

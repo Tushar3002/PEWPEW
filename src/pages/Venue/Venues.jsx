@@ -22,6 +22,9 @@ import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import { encryptUrlParam } from "../../utils/crypto";
+import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 
 const responsiveColumns = [
   { field: "action", minWidth: 140 },
@@ -62,6 +65,17 @@ function Venues() {
 
   const navigate = useNavigate();
 
+  const {
+      showDeleteModal,
+      deleteId,
+      isDeleting,
+      setIsDeleting,
+      openDeleteModal,
+      closeDeleteModal,
+    } = useDeleteConfirmation();
+
+    
+
   useEffect(() => {
     venueData();
     approvalStatusData();
@@ -85,6 +99,8 @@ function Venues() {
     return () => clearTimeout(timeout);
   }, [searchInput]);
   const venuePermission = getMenuPermission("Venue");
+
+  
   // console.log(venuePermission);
   const venueData = async () => {
     // console.log("venueData CALLED");
@@ -204,22 +220,22 @@ function Venues() {
     }
   };
 
-  const handleDelete = async (venueId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this venue?",
-    );
-
-    if (!confirmed) return;
-
-    try {
-      const res = await deleteVenue(venueId);
-
-      await venueData();
-    } catch (error) {
-      console.log("DELETE CATCH:", error);
-      console.log("Response:", error?.response);
-    }
-  };
+  const handleDelete = async () => {
+      if (!deleteId) return;
+  
+      try {
+        setIsDeleting(true);
+  
+        await deleteVenue(deleteId);
+  
+        closeDeleteModal();
+        await venueData();
+      } catch (error) {
+        console.log(error.response);
+      } finally {
+        setIsDeleting(false);
+      }
+    };
 
   const handleEditVenue = (venueId) => {
     console.log("Handle Edit", venueId);
@@ -324,9 +340,9 @@ function Venues() {
                         {...props}
                         permission={venuePermission}
                         idField="venueId"
-                        onView={(id) => navigate(`/venues/view/${id}`)}
+                        onView={(id) => navigate(`/venues/view/${encryptUrlParam(id)}`)}
                         onEdit={handleEditVenue}
-                        onDelete={handleDelete}
+                        onDelete={openDeleteModal}
                       />
                     ),
                   }}
@@ -456,6 +472,13 @@ function Venues() {
         }}
         venueId={selectedVenueId}
         onSuccess={venueData}
+      />
+
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

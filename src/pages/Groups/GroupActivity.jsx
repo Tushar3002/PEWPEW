@@ -13,6 +13,7 @@ import { getMenuPermission } from "../../utils/permission";
 import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import { decryptUrlParam, encryptUrlParam } from "../../utils/crypto";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -38,7 +39,7 @@ function GroupActivity() {
   const [total, setTotal] = useState(0);
   const [sort,setSort]=useState([])
   const { id } = useParams();
-
+  const groupId=decryptUrlParam(id)
   const navigate = useNavigate();
   const activityPermission = getMenuPermission("Activity");
 
@@ -71,7 +72,7 @@ function GroupActivity() {
         {
           Field: "groupId",
           OperatorType: 2,
-          Value: id,
+          Value: groupId,
         },
       ],
     };
@@ -188,7 +189,7 @@ function GroupActivity() {
                         {...props}
                         permission={activityPermission}
                         idField="postId"
-                        onView={(id) => navigate(`/activity/view/${id}`)}
+                        onView={(id) => navigate(`/activity/view/${encryptUrlParam(id)}`)}
                       />
                     ),
                   }}

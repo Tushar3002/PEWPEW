@@ -3,7 +3,7 @@ export const initialUserForm = {
     lastName: "",
     email: "",
     contactNumber: "",
-    countryCode: "",
+    countryCode: "+91",
     countryCodeName: "",
     gender: "",
     role: "",

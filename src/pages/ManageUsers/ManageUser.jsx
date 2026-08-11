@@ -14,8 +14,10 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
+import { useLocation } from "react-router-dom";
+
 const responsiveColumns = [
-  {field:'check',minWidth:60},
+  { field: "check", minWidth: 60 },
   { field: "action", minWidth: 90 },
   { field: "firstName", minWidth: 180 },
   { field: "lastName", minWidth: 180 },
@@ -44,6 +46,10 @@ function ManageUser() {
   // });
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const location = useLocation();
+
+  const roleId = location.state?.roleId;
 
   const {
     showDeleteModal,
@@ -95,16 +101,25 @@ function ManageUser() {
   const fetchUsers = async () => {
     try {
       const body = {
-        page: page.skip / page.take + 1,
-        pageSize: page.take,
+        Page: page.skip / page.take + 1,
+        PageSize: page.take,
 
-        sorts: sort.map((s) => ({
+        Sorts: sort.map((s) => ({
           field: s.field,
           direction: s.dir === "asc" ? 0 : 1,
         })),
 
-        customSearch: search,
+        CustomSearch: search,
       };
+      if (roleId) {
+        body.Filters = [
+          {
+            field: "roleId",
+            operatorType: 2,
+            value: roleId,
+          },
+        ];
+      }
 
       const res = await getUsers(body);
       console.log(res.data.data);
@@ -115,20 +130,22 @@ function ManageUser() {
       console.error(err);
     }
   };
-  const handleDelete = async (ids) => {
-    const userIds = Array.isArray(ids) ? ids : [ids];
-
-    if (!userIds.length) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
 
     try {
       setIsDeleting(true);
+
+      const userIds = Array.isArray(deleteId) ? deleteId : [deleteId];
+
       await deleteUser(userIds);
+
       closeDeleteModal();
-      fetchUsers();
+      await fetchUsers();
 
       setSelectedUserIds([]);
     } catch (error) {
-      console.log(error.response);
+      console.log(error?.response);
     } finally {
       setIsDeleting(false);
     }
@@ -158,8 +175,11 @@ function ManageUser() {
   // };
 
   const CheckboxCell = (props) => {
-    const rowId = props.dataItem.userId ?? props.dataItem.id;
-    const isSelected = selectedUserIds.includes(rowId);
+    const userId = props.dataItem.id;
+
+    //   console.log("User row:", props.dataItem);
+    // console.log("User ID:", userId);
+    const isSelected = selectedUserIds.includes(userId);
 
     return (
       <td className="text-center align-middle">
@@ -168,7 +188,7 @@ function ManageUser() {
             type="checkbox"
             className="child-checkbox"
             checked={isSelected}
-            onChange={() => toggleUserSelection(rowId)}
+            onChange={() => toggleUserSelection(userId)}
           />
           <span className="checkmark"></span>
         </label>
@@ -246,19 +266,25 @@ function ManageUser() {
               Export
             </a> */}
 
-            {userPermission.canCreate && (<Link
-              to={"/manage-users/add"}
-              className="btn main-btn border-btn blue-btn"
-            >
-              Add Users
-            </Link>)}
+            {userPermission.canCreate && (
+              <Link
+                to={"/manage-users/add"}
+                className="btn main-btn border-btn blue-btn"
+              >
+                Add Users
+              </Link>
+            )}
           </div>
         </div>
       </div>
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
+          <div
+            className="table-responsive"
+            style={{ overflow: "visible" }}
+            ref={gridRef}
+          >
             <Tooltip
               anchorElement="target"
               position="top"
