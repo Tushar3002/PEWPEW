@@ -4,7 +4,7 @@ import {
   getVenueById,
   getVenueGunDetails,
 } from "../../api/EndUsers/endUserViewApi";
-import { useParams } from "react-router-dom";
+import { useParams ,useSearchParams } from "react-router-dom";
 import GunModal from "../../components/Modal/GunModal";
 
 import ActivityTabs from "./Tabs/ActivityTabs";
@@ -22,7 +22,9 @@ function VenueDetail() {
   const venueId=decryptUrlParam(id)
   const isVideo = (url) => /\.(mp4|webm|mov)$/i.test(url);
 
-  const [activeTab, setActiveTab] = useState("activities");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+const activeTab = searchParams.get("tab") || "activities";
 
   const tabs = [
     { id: "activities", label: "Activities" },
@@ -32,6 +34,12 @@ function VenueDetail() {
   useEffect(() => {
     getVenueByIdData();
   }, []);
+
+  useEffect(() => {
+  if (!searchParams.get("tab")) {
+    setSearchParams({ tab: "activities" }, { replace: true });
+  }
+}, [searchParams, setSearchParams]);
 
   const getVenueByIdData = async () => {
     try {
@@ -69,7 +77,6 @@ function VenueDetail() {
           },
         ]}
       />
-      {/* Page Heading */}
 
       <div className="border rounded p-4">
         <div className="d-flex align-items-center gap-2 mb-4">
@@ -219,20 +226,20 @@ function VenueDetail() {
       <div className="tabbar-section mt-4 mt-xxl-5">
         <div className="row">
           <div className="col-12">
-            {/* <!-- Tab Nav (desktop only) --> */}
+
             <ul className="nav nav-tabs">
               {tabs.map((tab) => (
                 <li className="nav-item" key={tab.id}>
                   <button
                     className={`nav-link ${activeTab === tab.id ? "active" : ""}`}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => setSearchParams({ tab: tab.id })}
                   >
                     {tab.label}
                   </button>
                 </li>
               ))}
             </ul>
-            {/* <!-- Shared Content: Tab + Accordion --> */}
+
             <div className="tab-content mt-4">
               {activeTab === "events" && (
                 <div className="tab-pane fade show active">

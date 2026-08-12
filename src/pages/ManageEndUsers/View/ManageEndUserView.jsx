@@ -6,7 +6,7 @@ import profileImage from "../../../assets/images/profile-img.png";
 // import badge3 from "../../../assets/images/badge-3.svg";
 // import badge4 from "../../../assets/images/badge-4.svg";
 import { getEndUserById } from "../../../api/EndUsers/endUserViewApi";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import UploadGunsTable from "./UploadGunsTable";
 import VenuesTable from "./VenuesTable";
 import EventsTable from "./EventsTable";
@@ -17,8 +17,10 @@ import { decryptUrlParam } from "../../../utils/crypto";
 function ManageEndUserView() {
   const [endUser, setEndUser] = useState({});
   const { id } = useParams();
-  const endUserId=decryptUrlParam(id)
-  const [activeTab, setActiveTab] = useState("upload");
+  const endUserId = decryptUrlParam(id);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTab = searchParams.get("tab") || "upload";
   const tabs = [
     { id: "upload", label: "Upload Gun" },
     { id: "venues", label: "Venues" },
@@ -62,6 +64,12 @@ function ManageEndUserView() {
       fetchEndUser();
     }
   }, [id]);
+
+    useEffect(() => {
+    if (!searchParams.get("tab")) {
+      setSearchParams({ tab: "upload" }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // const fullName =
   //   endUser?.fullName ||
@@ -313,7 +321,7 @@ function ManageEndUserView() {
                 <li className="nav-item" key={tab.id}>
                   <button
                     className={`nav-link ${activeTab === tab.id ? "active" : ""}`}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => setSearchParams({ tab: tab.id })}
                   >
                     {tab.label}
                   </button>

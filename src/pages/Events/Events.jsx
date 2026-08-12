@@ -5,7 +5,7 @@ import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { Tooltip } from "@progress/kendo-react-tooltip";
 import { DetailsCell } from "../../components/GridCells/DetailsCell";
 import DateTimeCell from "../../components/GridCells/DateTimeCell";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
@@ -30,7 +30,7 @@ const eventTabs = [
     isAdminRequest: "null",
   },
   {
-    key: "requests",
+    key: "adminAdded",
     label: "Admin-added venues' Events requests",
     isUpcomingEvents: "null",
     isAdminRequest: true,
@@ -61,7 +61,10 @@ function Events() {
   const [sort, setSort] = useState([]);
 
   //   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("upcoming");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTab = searchParams.get("tab") || "upcoming";
+
   const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
 
   const navigate = useNavigate();
@@ -102,6 +105,12 @@ function Events() {
     getEvents();
   }, [page, sort, search, activeTab]);
 
+  useEffect(() => {
+    if (!searchParams.get("tab")) {
+      setSearchParams({ tab: "upcoming" }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const getEvents = async () => {
     const body = {
       Page: page.skip / page.take + 1,
@@ -129,8 +138,7 @@ function Events() {
   };
 
   const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    console.log("Tab Key", selectedTab);
+    setSearchParams({ tab: tabKey });
 
     setPage((prev) => ({
       ...prev,
@@ -217,7 +225,11 @@ function Events() {
 
         <div className="mt-4">
           <div className="col-12 mt-3 mt-xxl-4">
-            <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
+            <div
+              className="table-responsive"
+              style={{ overflow: "visible" }}
+              ref={gridRef}
+            >
               <Tooltip
                 anchorElement="target"
                 position="top"
@@ -235,7 +247,7 @@ function Events() {
                   onSortChange={(e) => setSort(e.sort)}
                 >
                   <GridColumn
-                    width={getWidth('action')}
+                    width={getWidth("action")}
                     title="Action"
                     sortable={false}
                     cells={{
@@ -244,7 +256,9 @@ function Events() {
                           {...props}
                           permission={eventsPermission}
                           idField="eventId"
-                          onView={(id) => navigate(`/events/view/${encryptUrlParam(id)}`)}
+                          onView={(id) =>
+                            navigate(`/events/view/${encryptUrlParam(id)}`)
+                          }
                           onDelete={openDeleteModal}
                         />
                       ),

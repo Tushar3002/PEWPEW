@@ -5,7 +5,7 @@ import { eventListByUser } from "../../../api/EndUsers/endUserViewApi";
 import "../css/EventsTable.css";
 import { DetailsCell } from "../../../components/GridCells/DetailsCell";
 import { TextCell } from "../../../components/GridCells/TextCell";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import DateTimeCell from "../../../components/GridCells/DateTimeCell";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
@@ -42,14 +42,16 @@ const responsiveColumns = [
 ];
 
 function EventsTable({ userId, venueId }) {
-  const [activeTab, setActiveTab] = useState("upcoming");
+ 
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState({
     skip: 0,
     take: 10,
   });
-  const selectedTab = eventTabs.find((tab) => tab.key === activeTab);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeInnerTab = searchParams.get("innerTab") || "upcoming";
+  const selectedTab = eventTabs.find((tab) => tab.key === activeInnerTab);
   const navigate = useNavigate();
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
@@ -57,7 +59,7 @@ function EventsTable({ userId, venueId }) {
     if (!userId && !venueId) return;
 
     fetchEvent();
-  }, [page, activeTab, userId, venueId]);
+  }, [page, activeInnerTab, userId, venueId]);
 
   const fetchEvent = async () => {
     console.log("UserID", userId);
@@ -83,15 +85,18 @@ function EventsTable({ userId, venueId }) {
     }
   };
 
-  const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    console.log("Tab Keys ", tabkey);
+  const handleInnerTabChange = (tabKey) => {
+  setSearchParams((prev) => {
+    const params = new URLSearchParams(prev);
+    params.set("innerTab", tabKey);
+    return params;
+  });
 
-    setPage((prev) => ({
-      ...prev,
-      skip: 0,
-    }));
-  };
+  setPage((prev) => ({
+    ...prev,
+    skip: 0,
+  }));
+};
 
   const ActionCell = (props) => {
     return (
@@ -139,8 +144,8 @@ function EventsTable({ userId, venueId }) {
             <button
               type="button"
               role="tab"
-              className={`nav-link ${activeTab === tab.key ? "active" : ""}`}
-              onClick={() => handleTabChange(tab.key)}
+              className={`nav-link ${activeInnerTab === tab.key ? "active" : ""}`}
+              onClick={() => handleInnerTabChange(tab.key)}
             >
               {tab.label}
             </button>
@@ -190,7 +195,7 @@ function EventsTable({ userId, venueId }) {
                     data: (props) => (
                       <DateTimeCell
                         {...props}
-                        showEndedMessage={activeTab === "passed"}
+                        showEndedMessage={activeInnerTab === "passed"}
                       />
                     ),
                   }}
