@@ -272,7 +272,7 @@ function DashBoard() {
       </div>
 
       <div className="card-section">
-        <div className="row gx-5">
+        <div className="row gx-4">
           <div className="col-xl-6 mt-3 mt-xxl-4">
             <div className="row">
               <div className="col">

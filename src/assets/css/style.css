@@ -352,6 +352,7 @@ table.table tbody td+td {
     flex-direction: column;
     min-height: 0;
     overflow: auto;
+    border-radius: 15px 15px 0 0;
 }
 
 .content-inside > .container-fluid {
@@ -371,6 +372,7 @@ table.table tbody td+td {
 .cards-section,
 .card-section {
     min-width: 0;
+    
 }
 
 /* Nested rows inside the content area can shrink unexpectedly at non-default zoom levels; prevent that */
