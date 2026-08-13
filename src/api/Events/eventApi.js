@@ -23,6 +23,6 @@ export const getAllEventList=async(body,isUpcomingEvents,isAdminRequest)=>{
 
 
 export const deleteEvents=async(eventId)=>{
-    const res=await api.delete(`/Event/Delete/${eventId}`)
+    const res=await api.delete(`/Event/Delete/${eventId}`,{showSuccessToast: true})
     return res.data
 }

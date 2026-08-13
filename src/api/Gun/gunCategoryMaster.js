@@ -25,17 +25,17 @@ export const getGunCategoryById=async(id)=>{
 }
 
 export const addGunCategory=async(body)=>{
-    const res=await api.post('/GunCategoryMaster/Add',body)
+    const res=await api.post('/GunCategoryMaster/Add',body,{showSuccessToast: true})
     return res.data
 }
 
 export const editGunCategory=async(id,body)=>{
-    const res=await api.put(`/GunCategoryMaster/Edit/${id}`,body)
+    const res=await api.put(`/GunCategoryMaster/Edit/${id}`,body,{showSuccessToast: true})
     return res.data
 }
 
 export const deleteCategory=async(id)=>{
-    const res=await api.delete(`/GunCategoryMaster/Delete/${id}`)
+    const res=await api.delete(`/GunCategoryMaster/Delete/${id}`,{showSuccessToast: true})
     return res.data
 }
 
@@ -43,6 +43,7 @@ export const updateGunCategoryStatus=async(id,isActive)=>{
     const res=await api.put(`/api/v{version}/GunCategoryMaster/UpdateStatus/${id}`,{
         params:{
             isActive
-        }
+        },
+        showSuccessToast: true
     })
 }

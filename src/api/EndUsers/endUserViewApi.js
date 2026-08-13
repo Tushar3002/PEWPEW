@@ -19,7 +19,7 @@ export const gunListByUser = async (body) => {
 };
 
 export const deleteGunUser = async (gunId) => {
-  const res = await api.delete("/Gun/Delete/", gunId);
+  const res = await api.delete(`/Gun/Delete/${gunId}`,{showSuccessToast: true});
   return res.data;
 };
 

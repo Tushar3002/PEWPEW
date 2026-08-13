@@ -6,7 +6,7 @@ export const getSupportList=async(body)=>{
 }
 
 export const statusUpdateSupportTicket=async(body)=>{
-    const res=await api.post('/SupportTicket/StatusUpadteAsync',body)
+    const res=await api.post('/SupportTicket/StatusUpadteAsync',body,{showSuccessToast: true})
     return res.data
 }
 
@@ -21,6 +21,6 @@ export const getSupportTicketDatabyId=async(id)=>{
 }
 
 export const deleteSupportTicket=async(ticketId)=>{
-    const res=await api.delete(`/SupportTicket/Delete/${ticketId}`)
+    const res=await api.delete(`/SupportTicket/Delete/${ticketId}`,{showSuccessToast: true})
     return res.data
 }

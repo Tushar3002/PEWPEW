@@ -6,6 +6,6 @@ export const getReportList = async (body) => {
 }
 
 export const updateReportStatus = async (body) => {
-    const res = await api.put("/Report/UpdateStatus", body);
+    const res = await api.put("/Report/UpdateStatus", body,{showSuccessToast: true});
     return res.data;
 }

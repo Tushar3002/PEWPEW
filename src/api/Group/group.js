@@ -9,7 +9,8 @@ export const updateGroupStatus=async(id,isActive)=>{
     const res=await api.put(`/Group/UpdateStatus/${id}`,null,{
         params:{
             isActive
-        }
+        },
+        showSuccessToast: true
     })
     return res.data
 }
@@ -25,6 +26,6 @@ export const getGroupMembers=async(body)=>{
 }
 
 export const deleteGroup=async(id)=>{
-    const res=await api.delete(`Group/Delete/${id}`)
+    const res=await api.delete(`Group/Delete/${id}`,{showSuccessToast: true})
     return res.data
 }

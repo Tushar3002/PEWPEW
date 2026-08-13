@@ -10,17 +10,18 @@ export const updateProhibitedWordsStatus = async (id, isActive) => {
     params: {
       isActive,
     },
+    showSuccessToast: true
   });
   return res.data;
 };
 
 export const addProhibitedWords = async (body) => {
-  const res = await api.post("/ProhibitedWord/Add", body);
+  const res = await api.post("/ProhibitedWord/Add", body,{showSuccessToast: true});
   return res.data;
 };
 
 export const updateProhibitedWords = async (body) => {
-  const res = await api.put("/ProhibitedWord/Update", body);
+  const res = await api.put("/ProhibitedWord/Update", body,{showSuccessToast: true});
   return res.data;
 };
 
@@ -34,6 +35,6 @@ export const getProhibitedWordsById = async (id) => {
 };
 
 export const deleteProhibitedWords=async(id)=>{
-    const res=await api.delete(`/ProhibitedWord/Delete/${id}`)
+    const res=await api.delete(`/ProhibitedWord/Delete/${id}`,{showSuccessToast: true})
     return res.data
 }

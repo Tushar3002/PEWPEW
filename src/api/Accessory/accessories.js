@@ -6,7 +6,7 @@ export const getAccessoriesList=async(body)=>{
 }
 
 export const addAccessories=async(body)=>{
-    const res=await api.post('Accessory/Add',body)
+    const res=await api.post('Accessory/Add',body,{showSuccessToast: true})
     return res.data
 }
 
@@ -20,7 +20,7 @@ export const getAccessoriesListById=async(id)=>{
 }
 
 export const editAccessories=async(id,body)=>{
-    const res=await api.put(`/Accessory/Edit/${id}`,body)
+    const res=await api.put(`/Accessory/Edit/${id}`,body,{showSuccessToast: true})
     return res.data
 }
 
@@ -28,13 +28,14 @@ export const updateAccessoriesStatus=async(id,isActive)=>{
     const res=await api.put(`/Accessory/UpdateStatus/${id}`,null,{
         params:{
             isActive
-        }
+        },
+        showSuccessToast: true
     })
 
     return res.data
 }
 
 export const deleteAccessory=async(id)=>{
-    const res=await api.delete(`/Accessory/Delete/${id}`)
+    const res=await api.delete(`/Accessory/Delete/${id}`,{showSuccessToast: true})
     return res.data
 }

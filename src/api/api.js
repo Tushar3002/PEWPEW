@@ -64,7 +64,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     } else if (error.config?.showErrorToast !== false) {
       toast.error(
-        error.response?.data?.message || "Something went wrong. Please try again.",
+        error.response?.data?.message || "Request Failed.",
         {
           theme: "colored",
         }

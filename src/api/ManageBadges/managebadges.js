@@ -11,16 +11,16 @@ export const getBadgeById = async (badgeId) => {
 }
 
 export const createBadge = async (body) => {
-    const res=await api.post('/ManageBadges/Add', body)
+    const res=await api.post('/ManageBadges/Add', body,{showSuccessToast: true})
     return res.data
 }
 
 export const updateBadge = async ( body) => {
-    const res=await api.put(`/ManageBadges/Update`, body)
+    const res=await api.put(`/ManageBadges/Update`, body,{showSuccessToast: true})
     return res.data
 }
 
 export const deleteBadge = async (badgeId) => {
-    const res=await api.delete(`/ManageBadges/Delete/${badgeId}`)
+    const res=await api.delete(`/ManageBadges/Delete/${badgeId}`,{showSuccessToast: true})
     return res.data
 }
