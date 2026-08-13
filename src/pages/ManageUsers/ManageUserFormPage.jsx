@@ -6,12 +6,15 @@ import { initialUserForm } from "../../constants/userForm";
 import { useUserDropDown } from "../../hooks/useUserDropDown";
 import { getRoleById } from "../../api/rolesandPermission";
 import PermissionTable from "../../components/rolesAndPermissions/PermissionTable";
+import { decryptUrlParam } from "../../utils/crypto";
 
 function ManageUserFormPage() {
   const [defaultValues, setDefaultValues] = useState(initialUserForm);
   
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const manageUserId=decryptUrlParam(id)
   const isEditMode = Boolean(id);
   const { genders, roles, countryCodeData } = useUserDropDown();
   const [selectedRole, setSelectedRole] = useState("");
@@ -45,13 +48,13 @@ function ManageUserFormPage() {
 
   const loadUser = async () => {
     try {
-      const res = await getUserById(id);
-      console.log("User by Id",res.data);
+      const res = await getUserById(manageUserId);
+      // console.log("User by Id",res.data);
       
       const userData = res.data || {};
 
       setDefaultValues({
-        userId: id,
+        userId: manageUserId,
         firstName: userData.firstName || "",
         lastName: userData.lastName || "",
         email: userData.email || "",
@@ -81,7 +84,7 @@ function ManageUserFormPage() {
 
     return {
       ...data,
-      userId: isEditMode ? id : undefined,
+      userId: isEditMode ? manageUserId : undefined,
       gender: data.gender ? Number(data.gender) : null,
       role: data.role,
       commincateWith: Array.isArray(data.commincateWith)

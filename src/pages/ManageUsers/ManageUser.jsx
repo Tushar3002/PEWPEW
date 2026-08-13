@@ -15,6 +15,7 @@ import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 import { useLocation } from "react-router-dom";
+import { encryptUrlParam } from "../../utils/crypto";
 
 const responsiveColumns = [
   { field: "check", minWidth: 60 },
@@ -321,7 +322,7 @@ function ManageUser() {
                         {...props}
                         permission={userPermission}
                         idField="id"
-                        onEdit={(id) => navigate(`/manage-users/edit/${id}`)}
+                        onEdit={(id) => navigate(`/manage-users/edit/${encryptUrlParam(id)}`)}
                         onDelete={openDeleteModal}
                       />
                     ),

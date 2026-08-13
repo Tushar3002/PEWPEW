@@ -8,11 +8,13 @@ import {
 } from "../../api/rolesandPermission";
 import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import { decrypt } from "../../utils/crypto";
 
 function RolesPermissionFormPage() {
   const [permissions, setPermissions] = useState([]);
 
   const { id } = useParams();
+  const roleId=decrypt(id)
   const isEditMode = Boolean(id);
 
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ function RolesPermissionFormPage() {
   };
 
   const buildPayload = (data) => ({
-    roleId: isEditMode ? id : undefined,
+    roleId: isEditMode ? roleId : undefined,
     roleName: data.roleName,
     description: data.description,
     isSystemRole: false,
@@ -100,7 +102,7 @@ function RolesPermissionFormPage() {
 
   const loadRole = async () => {
     try {
-      const res = await getRoleById(id);
+      const res = await getRoleById(roleId);
       const roleData = res?.data || res || {};
 
       reset({
@@ -119,7 +121,7 @@ function RolesPermissionFormPage() {
       const payload = buildPayload(data);
 
       if (isEditMode) {
-        await updateRole(id, payload);
+        await updateRole(roleId, payload);
       } else {
         await addRole(payload);
       }

@@ -18,6 +18,7 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import UserCountCell from "../../components/GridCells/UserCountCell";
+import { encryptUrlParam } from "../../utils/crypto";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -253,7 +254,7 @@ function RolesPermission() {
                         permission={rolePermission}
                         idField="id"
                         onEdit={(id) =>
-                          navigate(`/roles-permissions/edit/${id}`)
+                          navigate(`/roles-permissions/edit/${encryptUrlParam(id)}`)
                         }
                         onDelete={openDeleteModal}
                       />
