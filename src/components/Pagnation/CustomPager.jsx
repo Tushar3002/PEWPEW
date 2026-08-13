@@ -69,6 +69,8 @@ const CustomPager = ({
           data={pageSizes}
           value={take}
           onChange={(e) => changePageSize(e.value)}
+          adaptive={true}
+          adaptiveTitle="Items per page"
           popupSettings={{
             appendTo: typeof window !== "undefined" ? document.body : undefined,
             positionMode: "fixed",
@@ -129,7 +131,10 @@ const CustomPager = ({
         ))}
 
         {endPage < totalPages && (
-          <button className="page-more" onClick={() => changePage(startPage + buttonCount)}>
+          <button
+            className="page-more"
+            onClick={() => changePage(startPage + buttonCount)}
+          >
             ...
           </button>
         )}

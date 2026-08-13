@@ -121,8 +121,8 @@ function Events() {
       })),
       CustomSearch: search,
     };
-    console.log("Upcoming:", selectedTab.isUpcomingEvents);
-    console.log("Admin:", selectedTab.isAdminRequest);
+    // console.log("Upcoming:", selectedTab.isUpcomingEvents);
+    // console.log("Admin:", selectedTab.isAdminRequest);
     try {
       const res = await getAllEventList(
         body,
