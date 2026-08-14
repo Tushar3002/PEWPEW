@@ -25,6 +25,7 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { encryptUrlParam } from "../../utils/crypto";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 140 },
@@ -40,8 +41,8 @@ const responsiveColumns = [
   { field: "noOfEvent", minWidth: 170 },
   { field: "userName", minWidth: 140 },
   { field: "createdOn", minWidth: 140 },
-  { field: "approvalStatusName", minWidth: 240 },
-  { field: "status", minWidth: 90 },
+  { field: "approvalStatus", minWidth: 240 },
+  { field: "status", minWidth: 150 },
 ];
 
 function Venues() {
@@ -55,6 +56,9 @@ function Venues() {
     take: 10,
   });
 
+  const [filters, setFilters] = useState([]);
+  const [openFilter, setOpenFilter] = useState(null);
+
   const [sort, setSort] = useState([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -66,20 +70,18 @@ function Venues() {
   const navigate = useNavigate();
 
   const {
-      showDeleteModal,
-      deleteId,
-      isDeleting,
-      setIsDeleting,
-      openDeleteModal,
-      closeDeleteModal,
-    } = useDeleteConfirmation();
-
-    
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
 
   useEffect(() => {
     venueData();
     approvalStatusData();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== searchInput) {
@@ -100,7 +102,6 @@ function Venues() {
   }, [searchInput]);
   const venuePermission = getMenuPermission("Venue");
 
-  
   // console.log(venuePermission);
   const venueData = async () => {
     // console.log("venueData CALLED");
@@ -115,6 +116,8 @@ function Venues() {
         })),
 
         customSearch: search,
+
+        Filters: filters,
       };
       const res = await getVenueList(body);
       console.log(res.data);
@@ -221,21 +224,21 @@ function Venues() {
   };
 
   const handleDelete = async () => {
-      if (!deleteId) return;
-  
-      try {
-        setIsDeleting(true);
-  
-        await deleteVenue(deleteId);
-  
-        closeDeleteModal();
-        await venueData();
-      } catch (error) {
-        console.log(error.response);
-      } finally {
-        setIsDeleting(false);
-      }
-    };
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteVenue(deleteId);
+
+      closeDeleteModal();
+      await venueData();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleEditVenue = (venueId) => {
     console.log("Handle Edit", venueId);
@@ -340,7 +343,9 @@ function Venues() {
                         {...props}
                         permission={venuePermission}
                         idField="venueId"
-                        onView={(id) => navigate(`/venues/view/${encryptUrlParam(id)}`)}
+                        onView={(id) =>
+                          navigate(`/venues/view/${encryptUrlParam(id)}`)
+                        }
                         onEdit={handleEditVenue}
                         onDelete={openDeleteModal}
                       />
@@ -350,37 +355,105 @@ function Venues() {
                 <GridColumn
                   title="Owner Name"
                   field="venueOwnerUserName"
-                  cells={{ data: editUserCell }}
+                  cells={{
+                    data: editUserCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                   width={getWidth("venueOwnerUserName")}
                 />
                 <GridColumn
                   width={getWidth("venueName")}
                   title="Venue Name"
                   field="venueName"
-                  cells={{ data: TextCell }}
+                  cells={{
+                    data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("description")}
                   title="Description"
                   field="description"
-                  cells={{ data: TextCell }}
+                  cells={{
+                    data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("website")}
                   title="Website"
                   field="website"
-                  cells={{ data: WebsiteCell }}
+                  cells={{
+                    data: WebsiteCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("phone")}
                   title="Phone"
-                  cells={{ data: PhoneCell }}
+                  cells={{
+                    data: PhoneCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("address")}
                   title="Address"
                   field="address"
-                  cells={{ data: TextCell }}
+                  cells={{
+                    data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("totalGun")}
@@ -415,19 +488,54 @@ function Venues() {
                   width={getWidth("userName")}
                   title="Created By"
                   field="userName"
-                  cells={{ data: TextCell }}
+                  cells={{
+                    data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("createdOn")}
                   title="Created On"
                   field="createdOn"
-                  cells={{ data: DateCell }}
+                  cells={{
+                    data: DateCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="date"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
-                  width={getWidth("approvalStatusName")}
+                  width={getWidth("approvalStatus")}
                   title="Approval Status"
-                  field="approvalStatusName"
-                  cells={{ data: StatusDropdownCell }}
+                  field="approvalStatus"
+                  cells={{
+                    data: StatusDropdownCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="approvalStatus"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   width={getWidth("status")}
@@ -439,6 +547,16 @@ function Venues() {
                         {...props}
                         idField="venueId"
                         onToggle={handleStatusToggle}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="status"
                       />
                     ),
                   }}
