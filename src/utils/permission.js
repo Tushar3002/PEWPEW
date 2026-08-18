@@ -6,7 +6,8 @@ export const getPermissions = () => {
 
 export const getMenuPermission = (menuName) => {
   const permissions = getPermissions();
-
+  // console.log("Permi",permissions);
+  
   return (
     permissions.find(
       (x) => x.menuName.toLowerCase() === menuName.toLowerCase(),

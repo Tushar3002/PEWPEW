@@ -16,6 +16,7 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 import { useLocation } from "react-router-dom";
 import { encryptUrlParam } from "../../utils/crypto";
+import { useAuth } from "../../context/AuthContext";
 
 const responsiveColumns = [
   { field: "check", minWidth: 60 },
@@ -68,6 +69,7 @@ function ManageUser() {
   const navigate = useNavigate();
   useEffect(() => {
     fetchUsers();
+    
   }, [page, sort, search]);
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -121,9 +123,8 @@ function ManageUser() {
           },
         ];
       }
-
       const res = await getUsers(body);
-      console.log(res.data.data);
+      // console.log("Users",res.data.data);
 
       setUsers(res.data.data);
       setTotal(res.data.totalRecord);

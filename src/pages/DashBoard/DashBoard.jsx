@@ -21,20 +21,20 @@ import { DropDownList } from "@progress/kendo-react-dropdowns";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 const topLikedPostsColumns = [
-  { field: "action", minWidth: 90 },
+  { field: "action", minWidth: 120 },
   { field: "userName", minWidth: 180 },
   { field: "createdOn", minWidth: 140 },
   { field: "totalLike", minWidth: 100 },
 ];
 
 const topReportingUsersColumns = [
-  { field: "action", minWidth: 90 },
+  { field: "action", minWidth: 120 },
   { field: "userName", minWidth: 180 },
   { field: "totalCount", minWidth: 120 },
 ];
 
 const topReportedPostsColumns = [
-  { field: "action", minWidth: 90 },
+  { field: "action", minWidth: 120 },
   { field: "userName", minWidth: 180 },
   { field: "totalCount", minWidth: 120 },
   { field: "createdOn", minWidth: 140 },

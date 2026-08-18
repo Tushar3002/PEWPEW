@@ -26,6 +26,7 @@ import { encryptUrlParam } from "../../utils/crypto";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
+import { useAuth } from "../../context/AuthContext";
 
 const responsiveColumns = [
   { field: "action", minWidth: 140 },
@@ -68,6 +69,8 @@ function Venues() {
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
   const navigate = useNavigate();
+
+  const {user}=useAuth()
 
   const {
     showDeleteModal,
@@ -119,6 +122,8 @@ function Venues() {
 
         Filters: filters,
       };
+      // console.log("Venye User",user);
+      
       const res = await getVenueList(body);
       console.log(res.data);
       setData(res.data.data);
@@ -184,10 +189,10 @@ function Venues() {
     return (
       <td {...props.tdProps}>
         <button
-          title="userName"
+          title={userName}
           type="button"
           className="btn btn-link p-0"
-          onClick={() => navigate(`/manage-users/edit/${userId}`)}
+          onClick={() => navigate(`/manage-users/edit/${encryptUrlParam(userId)}`)}
         >
           {userName}
         </button>

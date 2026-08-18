@@ -81,3 +81,10 @@
   background-color: #c82333 !important;
   color: #fff !important;
 }
+
+
+.user-info .dropdown-menu .dropdown-item:hover,
+.user-info .dropdown-menu .dropdown-item:focus {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}

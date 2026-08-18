@@ -17,6 +17,7 @@ import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 import { DropDownList } from "@progress/kendo-react-dropdowns";
+import { getMenuPermission } from "../../utils/permission";
 
 const responsiveColumns = [
   { field: "action", minWidth: 110 },
@@ -50,6 +51,8 @@ function SupportTicket() {
   const [adminDescription, setAdminDescription] = useState("");
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
+  const supportPermission = getMenuPermission("SupportTicket");
 
   const {
     showDeleteModal,
@@ -177,7 +180,7 @@ function SupportTicket() {
         <div className="d-flex justify-content align-items-center gap-2">
           <button
             type="button"
-            className="edit-btn"
+            className="eye-btn"
             title="Edit"
             onClick={() => handleEditTicket(props.dataItem.id)}
           >

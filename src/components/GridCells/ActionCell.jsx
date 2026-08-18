@@ -1,3 +1,5 @@
+import { useAuth } from "../../context/AuthContext";
+
 export const ActionCell = ({
   dataItem,
   tdProps,
@@ -8,7 +10,8 @@ export const ActionCell = ({
   onDelete,
 }) => {
   const id = dataItem[idField];
-
+  const {user}=useAuth()
+  const isLoggedInUser = user?.id === dataItem.id;
   return (
     <td {...tdProps} className="text-center align-middle">
       <div className="d-flex justify-content-center align-items-center gap-2">
@@ -36,7 +39,7 @@ export const ActionCell = ({
           </button>
         )}
 
-        {permission?.canDelete && onDelete && (
+        {!isLoggedInUser && permission?.canDelete && onDelete && (
           <button
             type="button"
             className="delete-btn"

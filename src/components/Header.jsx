@@ -1,12 +1,12 @@
 import logo from "../assets/images/logo-white.svg";
 import profile from "../assets/images/profile-img.png";
-
+import { DropDownButton } from "@progress/kendo-react-buttons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function Header({ toggleSidebar }) {
   const { logout, user } = useAuth();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   return (
     <header>
       <div className="container-fluid">
@@ -78,7 +78,11 @@ function Header({ toggleSidebar }) {
 
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li>
-                    <button type="button" className="dropdown-item" onClick={()=>{navigate('/profile')}}>
+                    <button
+                      type="button"
+                      className="dropdown-item"
+                      onClick={() => navigate("/profile")}
+                    >
                       Profile
                     </button>
                   </li>
