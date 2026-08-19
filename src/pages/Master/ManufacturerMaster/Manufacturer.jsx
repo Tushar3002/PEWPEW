@@ -21,6 +21,8 @@ import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 import CustomPager from "../../../components/Pagnation/CustomPager";
+import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
 
 const columns = [
   { field: "action", minWidth: 90 },
@@ -54,6 +56,16 @@ function Manufacturer() {
     openDeleteModal,
     closeDeleteModal,
   } = useDeleteConfirmation();
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
   const manufacturerPermission = getMenuPermission("Manufacturer");
 
@@ -108,26 +120,30 @@ function Manufacturer() {
       setIsDeleting(false);
     }
   };
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
-    console.log("NextV", nextValue);
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updateManufacturerStatus(id, nextValue);
-    await fetchManufacturer();
+      const isSuccess = await updateManufacturerStatus(statusId, nextValue);
 
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await fetchManufacturer();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
-
   const handleSearch = (e) => {
     e.preventDefault(); // Prevent form submission/reload
     setPage((prev) => ({
@@ -179,16 +195,18 @@ function Manufacturer() {
             </form>
 
             {/* Add */}
-            {manufacturerPermission.canCreate && (<button
-              type="button"
-              className="btn main-btn"
-              onClick={() => {
-                setSelectedId(null);
-                setShowManufacturerModal(true);
-              }}
-            >
-              Add
-            </button>)}
+            {manufacturerPermission.canCreate && (
+              <button
+                type="button"
+                className="btn main-btn"
+                onClick={() => {
+                  setSelectedId(null);
+                  setShowManufacturerModal(true);
+                }}
+              >
+                Add
+              </button>
+            )}
           </div>
 
           {/* Grid */}
@@ -266,7 +284,7 @@ function Manufacturer() {
                       <StatusCell
                         {...props}
                         idField="id"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -276,7 +294,7 @@ function Manufacturer() {
                 skip={page.skip}
                 take={page.take}
                 total={total}
-                pageSizes={[5, 10, 20,50,100,500]}
+                pageSizes={[5, 10, 20, 50, 100, 500]}
                 onPageChange={(e) => setPage(e.page)}
               />
             </Tooltip>
@@ -296,6 +314,12 @@ function Manufacturer() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
+      />
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

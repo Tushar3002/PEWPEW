@@ -7,6 +7,8 @@ import { Tooltip } from "@progress/kendo-react-tooltip";
 import { useLocation } from "react-router-dom";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 
 const responsiveColumns = [
   { field: "username", minWidth: 180 },
@@ -28,6 +30,16 @@ function ReportedUsers() {
   const location = useLocation();
   const [sort, setSort] = useState(location.state?.sort || []);
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== searchInput) {
@@ -72,26 +84,28 @@ function ReportedUsers() {
     }
   };
 
-  const handleStatusToggle = async (userId, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
+    try {
+      setIsUpdatingStatus(true);
 
-    const body = {
-      userId,
-      isActive: nextValue,
-    };
+      const isSuccess = await updateReportStatus(statusId, nextValue);
 
-    const isSuccess = await updateReportStatus(body);
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
 
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      closeStatusModal();
+
+      await fetchReportList();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
   return (
@@ -178,7 +192,7 @@ function ReportedUsers() {
                         <StatusCell
                           {...props}
                           idField="userId"
-                          onToggle={handleStatusToggle}
+                          onToggle={openStatusModal}
                         />
                       ),
                     }}
@@ -200,6 +214,12 @@ function ReportedUsers() {
           </div>
         </div>
       </div>
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
+      />
     </div>
   );
 }

@@ -17,6 +17,8 @@ import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import { TextCell } from "../../../components/GridCells/TextCell";
+import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -52,6 +54,16 @@ function AccessoriesMaster() {
     openDeleteModal,
     closeDeleteModal,
   } = useDeleteConfirmation();
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
   const accessoryPermission = getMenuPermission("Accessory");
 
@@ -107,26 +119,31 @@ function AccessoriesMaster() {
       setIsDeleting(false);
     }
   };
+const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+    const nextValue = !currentStatus;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    try {
+      setIsUpdatingStatus(true);
 
-    if (!confirmed) return;
-    console.log("NextV", nextValue);
+      const isSuccess = await updateAccessoriesStatus(statusId, nextValue);
 
-    const isSuccess = await updateAccessoriesStatus(id, nextValue);
-    await fetchAccessories();
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
 
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      closeStatusModal();
+
+      await fetchAccessories();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
+
 
   const handleSearch = (e) => {
     e.preventDefault(); // Prevent form submission/reload
@@ -245,7 +262,7 @@ function AccessoriesMaster() {
                       <StatusCell
                         {...props}
                         idField="accessoryId"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -279,6 +296,12 @@ function AccessoriesMaster() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
+      />
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

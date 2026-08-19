@@ -23,6 +23,8 @@ import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 import CustomPager from "../../../components/Pagnation/CustomPager";
+import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
 
 
 const responsiveColumns = [
@@ -76,6 +78,16 @@ function GunMaster() {
     openViewer,
     closeViewer,
   } = useAttachmentViewer();
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
   useEffect(() => {
     fetchGuns();
@@ -153,23 +165,28 @@ function GunMaster() {
     }
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
-    console.log("NextV", nextValue);
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updateGunStatus(id, nextValue);
-    await fetchGuns();
+      const isSuccess = await updateGunStatus(statusId, nextValue);
 
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await fetchGuns();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -384,7 +401,7 @@ function GunMaster() {
                       <StatusCell
                         {...props}
                         idField="gunId"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -426,6 +443,13 @@ function GunMaster() {
         attachments={attachments}
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
+      />
+
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

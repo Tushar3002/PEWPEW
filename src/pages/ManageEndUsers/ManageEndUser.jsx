@@ -18,6 +18,7 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { encryptUrlParam } from "../../utils/crypto";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 
 const responsiveColumns = [
   { field: "checkbox", minWidth: 60 },
@@ -61,7 +62,16 @@ function ManageEndUser() {
       openDeleteModal,
       closeDeleteModal,
     } = useDeleteConfirmation();
-  
+    
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
   
   useEffect(() => {
     fetchUsers();

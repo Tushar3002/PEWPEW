@@ -71,11 +71,11 @@ const CustomPager = ({
           onChange={(e) => changePageSize(e.value)}
           adaptive={true}
           adaptiveTitle="Items per page"
-          popupSettings={{
-            appendTo: typeof window !== "undefined" ? document.body : undefined,
-            positionMode: "fixed",
-            popupClass: "k-dropdown-popup",
-          }}
+          // popupSettings={{
+          //   appendTo: typeof window !== "undefined" ? document.body : undefined,
+          //   positionMode: "fixed",
+          //   popupClass: "k-dropdown-popup",
+          // }}
           style={{ width: 90 }}
         />
 

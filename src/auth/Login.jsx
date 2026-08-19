@@ -53,7 +53,7 @@ function Login() {
       Cookies.remove("password");
     }
 
-    navigate("/");
+    window.location.href = "/";
   } catch (error) {
     console.log(error);
   }
