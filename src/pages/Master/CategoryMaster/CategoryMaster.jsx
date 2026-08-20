@@ -17,6 +17,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -228,7 +229,7 @@ function CategoryMaster() {
                   sort={sort}
                   onSortChange={(e) => setSort(e.sort)}
                 >
-                  <GridColumn
+                  {hasAction(categoryMasterPermission)&&<GridColumn
                     width={getWidth("action")}
                     title="Action"
                     sortable={false}
@@ -244,7 +245,7 @@ function CategoryMaster() {
                       />
                     ),
                   }}
-                  />
+                  />}
                   <GridColumn title="Applicable For" field="applicableFor" width={getWidth("applicableFor")}/>
                   <GridColumn title="Category Name" field="accessoryCategory" width={getWidth("accessoryCategory")} />
                   <GridColumn title="Description" field="description" width={getWidth("description")} cells={{data:TextCell}}/>

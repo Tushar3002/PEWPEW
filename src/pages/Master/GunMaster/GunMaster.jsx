@@ -25,6 +25,7 @@ import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../../utils/hasAction";
 
 
 const responsiveColumns = [
@@ -300,7 +301,7 @@ function GunMaster() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(gunMasterPermission) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   sortable={false}
@@ -315,7 +316,7 @@ function GunMaster() {
                       />
                     ),
                   }}
-                />
+                />}
                 <GridColumn
                   title="Gun Name"
                   field="gunName"

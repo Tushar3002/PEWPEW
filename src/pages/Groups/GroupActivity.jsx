@@ -14,6 +14,8 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { decryptUrlParam, encryptUrlParam } from "../../utils/crypto";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -43,7 +45,19 @@ function GroupActivity() {
   const navigate = useNavigate();
   const activityPermission = getMenuPermission("Activity");
 
+  const onView=true
+
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
   useEffect(() => {
     fetchGroupActivity();
@@ -96,21 +110,28 @@ function GroupActivity() {
     }
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updateStatusToggle(id, nextValue);
+      const isSuccess = await updateStatusToggle(statusId, nextValue);
 
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await fetchGroupActivity();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -178,7 +199,7 @@ function GroupActivity() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(activityPermission,onView) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   headerClassName="text-center"
@@ -193,7 +214,7 @@ function GroupActivity() {
                       />
                     ),
                   }}
-                />
+                />}
 
                 <GridColumn
                   field="userName"
@@ -256,7 +277,7 @@ function GroupActivity() {
                       <StatusCell
                         {...props}
                         idField="postId"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -277,6 +298,12 @@ function GroupActivity() {
           </div>
         </div>
       </div>
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
+      />
     </div>
   );
 }

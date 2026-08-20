@@ -19,6 +19,7 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../utils/permission";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
+import { hasAction } from "../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -215,7 +216,7 @@ function ManageBadges() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(badgePermission) &&<GridColumn
                   title="Actions"
                   width={getWidth("action")}
                   sortable={false}
@@ -230,7 +231,7 @@ function ManageBadges() {
                       />
                     ),
                   }}
-                />
+                />}
 
                 <GridColumn
                   title="Images"

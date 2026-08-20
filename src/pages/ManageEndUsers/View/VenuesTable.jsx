@@ -21,6 +21,7 @@ import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmatio
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import { hasAction } from "../../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 150 },
@@ -66,6 +67,8 @@ function VenuesTable({ userId }) {
   } = useDeleteConfirmation();
 
   const venuePermission = getMenuPermission("Venue");
+
+  const onView=true
 
   useEffect(() => {
     fetchVenue();
@@ -175,7 +178,7 @@ function VenuesTable({ userId }) {
                 total={total}
                 onPageChange={(e) => setPage(e.page)}
               >
-                <GridColumn
+                {hasAction(venuePermission,onView) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   headerClassName="text-center"
@@ -191,7 +194,7 @@ function VenuesTable({ userId }) {
                       />
                     ),
                   }}
-                />
+                />}
                 <GridColumn
                   field="venueName"
                   title="Venue Name"

@@ -17,6 +17,9 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { useLocation } from "react-router-dom";
 import { encryptUrlParam } from "../../utils/crypto";
 import { useAuth } from "../../context/AuthContext";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "check", minWidth: 60 },
@@ -62,6 +65,16 @@ function ManageUser() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
+
   const userPermission = getMenuPermission("User");
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
@@ -90,17 +103,7 @@ function ManageUser() {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  const updateStatusData = async (id, isActive) => {
-    try {
-      await updateStatus(id, isActive);
-      fetchUsers();
-      return true;
-    } catch (error) {
-      console.log(error?.response);
-      return false;
-    }
-  };
-
+  
   const fetchUsers = async () => {
     try {
       const body = {
@@ -198,22 +201,31 @@ function ManageUser() {
     );
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updateStatusData(id, nextValue);
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      const isSuccess = await updateStatus(statusId, nextValue);
+
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await fetchUsers();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
+
 
   return (
     <div className="tabbar-section">
@@ -304,16 +316,17 @@ function ManageUser() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                {/* Checkbox */}
-                <GridColumn
+              
+                {userPermission?.canDelete &&<GridColumn
                   width={getWidth("check")}
                   headerClassName="text-center"
                   cells={{
                     data: CheckboxCell,
                   }}
-                />
+                />}
 
-                <GridColumn
+                {hasAction(userPermission) && (
+                  <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   headerClassName="text-center"
@@ -328,8 +341,8 @@ function ManageUser() {
                       />
                     ),
                   }}
-                />
-
+                />)
+}
                 <GridColumn
                   field="firstName"
                   title="First Name"
@@ -380,7 +393,8 @@ function ManageUser() {
                       <StatusCell
                         {...props}
                         idField="id"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
+                        disabled={!userPermission?.canUpdate}
                       />
                     ),
                   }}
@@ -406,6 +420,13 @@ function ManageUser() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
+      />
+
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

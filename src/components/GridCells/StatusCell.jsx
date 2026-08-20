@@ -1,5 +1,5 @@
 
-const StatusCell = ({ dataItem, tdProps, onToggle, idField = "id" ,statusField = "isActive",}) => {
+const StatusCell = ({ dataItem, tdProps, onToggle, idField = "id" ,statusField = "isActive",disabled}) => {
 
   return (
     <td {...tdProps} className="text-center align-middle">
@@ -9,6 +9,7 @@ const StatusCell = ({ dataItem, tdProps, onToggle, idField = "id" ,statusField =
           className="form-check-input"
           type="checkbox"
           checked={Boolean(dataItem[statusField])}
+          disabled={disabled}
           onChange={() =>
             onToggle(
               dataItem[idField],

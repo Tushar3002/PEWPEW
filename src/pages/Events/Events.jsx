@@ -15,6 +15,7 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { encryptUrlParam } from "../../utils/crypto";
+import { hasAction } from "../../utils/hasAction";
 
 const eventTabs = [
   {
@@ -70,6 +71,8 @@ function Events() {
   const navigate = useNavigate();
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
+  const onView=true
 
   const {
     showDeleteModal,
@@ -246,7 +249,7 @@ function Events() {
                   sort={sort}
                   onSortChange={(e) => setSort(e.sort)}
                 >
-                  <GridColumn
+                  {hasAction(eventsPermission,onView) && <GridColumn
                     width={getWidth("action")}
                     title="Action"
                     sortable={false}
@@ -263,7 +266,7 @@ function Events() {
                         />
                       ),
                     }}
-                  />
+                  />}
                   <GridColumn
                     title="Host Name/Venue Name"
                     field="venueName"

@@ -19,6 +19,8 @@ import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import UserCountCell from "../../components/GridCells/UserCountCell";
 import { encryptUrlParam } from "../../utils/crypto";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -53,6 +55,16 @@ function RolesPermission() {
     closeDeleteModal,
   } = useDeleteConfirmation();
 
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
+
   const navigate = useNavigate();
 
   const rolePermission = getMenuPermission("Role");
@@ -81,16 +93,7 @@ function RolesPermission() {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  const updateStatusData = async (id, isActive) => {
-    try {
-      await updateStatusforRoles(id, isActive);
-      rolesandpermissionData();
-      return true;
-    } catch (error) {
-      console.log(error?.response);
-      return false;
-    }
-  };
+  
 
   const handleDelete = async () => {
     try {
@@ -128,36 +131,28 @@ function RolesPermission() {
     }
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
-    if (!nextValue) {
-      const confirmed = window.confirm(
-        "Are you sure you want to inactivate this role?\n\nInactivating this role will prevent all associated users from accessing the system.",
-      );
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-      if (!confirmed) {
+    const nextValue = !currentStatus;
+
+    try {
+      setIsUpdatingStatus(true);
+
+      const isSuccess = await updateStatusforRoles(statusId, nextValue);
+
+      if (!isSuccess) {
+        alert("Failed to update status.");
         return;
       }
-    }
 
-    setData((prev) =>
-      prev.map((item) =>
-        item.id === id || item.userId === id
-          ? { ...item, isActive: nextValue }
-          : item,
-      ),
-    );
+      closeStatusModal();
 
-    const isSuccess = await updateStatusData(id, nextValue);
-
-    if (!isSuccess) {
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === id || item.userId === id
-            ? { ...item, isActive: currentValue }
-            : item,
-        ),
-      );
+      await rolesandpermissionData();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -292,7 +287,7 @@ function RolesPermission() {
                       <StatusCell
                         {...props}
                         idField="id"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -318,6 +313,13 @@ function RolesPermission() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
+      />
+
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

@@ -19,6 +19,7 @@ import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../../utils/hasAction";
 
 const columns = [
   { field: "action", minWidth: 90 },
@@ -229,7 +230,7 @@ function ProhibitedWords() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(prohibitedwordsPermissions) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   sortable={false}
@@ -244,7 +245,7 @@ function ProhibitedWords() {
                       />
                     ),
                   }}
-                />
+                />}
                 <GridColumn
                   title="Prohibited Words"
                   field="words"

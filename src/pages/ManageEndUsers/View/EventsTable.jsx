@@ -9,6 +9,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import DateTimeCell from "../../../components/GridCells/DateTimeCell";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import { hasAction } from "../../../utils/hasAction";
+import { ActionCell } from "../../../components/GridCells/ActionCell";
+import { getMenuPermission } from "../../../utils/permission";
+import { useDeleteConfirmation } from "../../../hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "../../../components/Modal/DeleteConfirmationModal";
 
 const eventTabs = [
   {
@@ -42,7 +47,6 @@ const responsiveColumns = [
 ];
 
 function EventsTable({ userId, venueId }) {
- 
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState({
@@ -54,7 +58,21 @@ function EventsTable({ userId, venueId }) {
   const selectedTab = eventTabs.find((tab) => tab.key === activeInnerTab);
   const navigate = useNavigate();
 
+  const onView = true;
+
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
+  const eventsPermission = getMenuPermission("Event");
+
+  const {
+      showDeleteModal,
+      deleteId,
+      isDeleting,
+      setIsDeleting,
+      openDeleteModal,
+      closeDeleteModal,
+    } = useDeleteConfirmation();
+
   useEffect(() => {
     if (!userId && !venueId) return;
 
@@ -86,43 +104,35 @@ function EventsTable({ userId, venueId }) {
   };
 
   const handleInnerTabChange = (tabKey) => {
-  setSearchParams((prev) => {
-    const params = new URLSearchParams(prev);
-    params.set("innerTab", tabKey);
-    return params;
-  });
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("innerTab", tabKey);
+      return params;
+    });
 
-  setPage((prev) => ({
-    ...prev,
-    skip: 0,
-  }));
-};
-
-  const ActionCell = (props) => {
-    return (
-      <td className="text-center align-middle">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <button
-            type="button"
-            className="eye-btn"
-            title="View"
-            onClick={() => navigate(`/events/view/${props.dataItem.eventId}`)}
-          >
-            <i className="fa fa-eye"></i>
-          </button>
-
-          <button
-            type="button"
-            className="delete-btn"
-            title="Delete"
-            onClick={() => handleDelete(props.dataItem.venueId)}
-          >
-            <i className="icon-delete-1"></i>
-          </button>
-        </div>
-      </td>
-    );
+    setPage((prev) => ({
+      ...prev,
+      skip: 0,
+    }));
   };
+
+  const handleDelete = async () => {
+      if (!deleteId) return;
+  
+      try {
+        setIsDeleting(true);
+  
+        await deleteEvents(deleteId);
+  
+        closeDeleteModal();
+        await getEvents();
+      } catch (error) {
+        console.log(error.response);
+      } finally {
+        setIsDeleting(false);
+      }
+    };
+
 
   const StatusDropdownCell = (props) => {
     const value = props.dataItem?.[props.field] ?? "-";
@@ -155,7 +165,11 @@ function EventsTable({ userId, venueId }) {
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
+          <div
+            className="table-responsive"
+            style={{ overflow: "visible" }}
+            ref={gridRef}
+          >
             <Tooltip
               anchorElement="target"
               position="top"
@@ -170,11 +184,26 @@ function EventsTable({ userId, venueId }) {
                 total={total}
                 onPageChange={(e) => setPage(e.page)}
               >
-                <GridColumn
-                  title="Action"
-                  width={getWidth("action")}
-                  cells={{ data: ActionCell }}
-                />
+                {hasAction(eventsPermission, onView) && (
+                  <GridColumn
+                    width={getWidth("action")}
+                    title="Action"
+                    sortable={false}
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={eventsPermission}
+                          idField="eventId"
+                          onView={(id) =>
+                            navigate(`/events/view/${encryptUrlParam(id)}`)
+                          }
+                          onDelete={openDeleteModal}
+                        />
+                      ),
+                    }}
+                  />
+                )}
 
                 <GridColumn
                   title="Host Name/Venue Name"
@@ -236,6 +265,12 @@ function EventsTable({ userId, venueId }) {
           </div>
         </div>
       </div>
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

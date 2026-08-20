@@ -27,6 +27,8 @@ import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 import { useAuth } from "../../context/AuthContext";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 
 const responsiveColumns = [
   { field: "action", minWidth: 140 },
@@ -80,6 +82,16 @@ function Venues() {
     openDeleteModal,
     closeDeleteModal,
   } = useDeleteConfirmation();
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
   useEffect(() => {
     venueData();
@@ -210,21 +222,28 @@ function Venues() {
     }
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updateStatusToggle(id, nextValue);
+      const isSuccess = await updateStatusToggle(statusId, nextValue);
 
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await venueData();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -551,7 +570,7 @@ function Venues() {
                       <StatusCell
                         {...props}
                         idField="venueId"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                     headerCell: (props) => (
@@ -602,6 +621,13 @@ function Venues() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
+      />
+
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

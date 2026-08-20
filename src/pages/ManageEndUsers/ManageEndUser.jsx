@@ -19,6 +19,8 @@ import { encryptUrlParam } from "../../utils/crypto";
 import { useDeleteConfirmation } from "../../hooks/useDeleteConfirmation";
 import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationModal";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { getMenuPermission } from "../../utils/permission";
 
 const responsiveColumns = [
   { field: "checkbox", minWidth: 60 },
@@ -52,17 +54,36 @@ function ManageEndUser() {
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
+  const enduserPermission = getMenuPermission('EndUser')
+
   const navigate = useNavigate();
 
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationId, setVerificationId] = useState(null);
+  const [currentVerification, setCurrentVerification] = useState(false);
+  const [isUpdatingVerification, setIsUpdatingVerification] = useState(false);
+
+  const openVerificationModal = (id, currentValue) => {
+    setVerificationId(id);
+    setCurrentVerification(currentValue);
+    setShowVerificationModal(true);
+  };
+
+  const closeVerificationModal = () => {
+    setShowVerificationModal(false);
+    setVerificationId(null);
+    setCurrentVerification(false);
+  };
+
   const {
-      showDeleteModal,
-      deleteId,
-      isDeleting,
-      setIsDeleting,
-      openDeleteModal,
-      closeDeleteModal,
-    } = useDeleteConfirmation();
-    
+    showDeleteModal,
+    deleteId,
+    isDeleting,
+    setIsDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+  } = useDeleteConfirmation();
+
   const {
     showStatusModal,
     statusId,
@@ -72,7 +93,7 @@ function ManageEndUser() {
     openStatusModal,
     closeStatusModal,
   } = useStatusConfirmation();
-  
+
   useEffect(() => {
     fetchUsers();
   }, [page, sort, search]);
@@ -120,34 +141,23 @@ function ManageEndUser() {
   };
 
   const handleDelete = async () => {
-      if (!deleteId) return;
-  
-      try {
-        setIsDeleting(true);
-  
-        // const userIds = Array.isArray(deleteId) ? deleteId : [deleteId];
-  
-        await deleteEndUser(deleteId);
-  
-        closeDeleteModal();
-        await fetchUsers();
-  
-        setSelectedUserIds([]);
-      } catch (error) {
-        console.log(error?.response);
-      } finally {
-        setIsDeleting(false);
-      }
-    };
+    if (!deleteId) return;
 
-  const updateStatusData = async (id, isActive) => {
     try {
-      await updateEndUserStatus(id, isActive);
-      fetchUsers();
-      return true;
+      setIsDeleting(true);
+
+      // const userIds = Array.isArray(deleteId) ? deleteId : [deleteId];
+
+      await deleteEndUser(deleteId);
+
+      closeDeleteModal();
+      await fetchUsers();
+
+      setSelectedUserIds([]);
     } catch (error) {
       console.log(error?.response);
-      return false;
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -185,6 +195,7 @@ function ManageEndUser() {
       </td>
     );
   };
+
   const ActionCell = (props) => {
     const isVerified = Boolean(props.dataItem.isVerify);
     return (
@@ -195,7 +206,9 @@ function ManageEndUser() {
             className="eye-btn"
             title="View"
             onClick={() =>
-              navigate(`/manage-end-users/view/${encryptUrlParam(props.dataItem.id)}`)
+              navigate(
+                `/manage-end-users/view/${encryptUrlParam(props.dataItem.id)}`,
+              )
             }
           >
             <i className="fa fa-eye"></i>
@@ -213,7 +226,7 @@ function ManageEndUser() {
           <button
             type="button"
             onClick={() =>
-              handleVerificationToggle(
+              openVerificationModal(
                 props.dataItem.id,
                 Boolean(props.dataItem.isVerify),
               )
@@ -230,43 +243,55 @@ function ManageEndUser() {
       </td>
     );
   };
-  const handleToggle = async ({ currentValue, updateFn, confirmMessage }) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const message =
-      typeof confirmMessage === "function"
-        ? confirmMessage(nextValue)
-        : confirmMessage;
+    const nextValue = !currentStatus;
 
-    if (message) {
-      const confirmed = window.confirm(message);
+    try {
+      setIsUpdatingStatus(true);
 
-      if (!confirmed) return;
-    }
+      const isSuccess = await updateEndUserStatus(statusId, nextValue);
 
-    const isSuccess = await updateFn(nextValue);
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
 
-    if (!isSuccess) {
-      alert("Failed to update.");
+      closeStatusModal();
+
+      await fetchUsers();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
-  const handleStatusToggle = (id, currentValue) =>
-    handleToggle({
-      currentValue,
-      updateFn: (nextValue) => updateStatusData(id, nextValue),
-      confirmMessage: (nextValue) =>
-        `Are you sure you want to ${
-          nextValue ? "activate" : "deactivate"
-        } this user?`,
-    });
+  const handleVerificationToggle = async () => {
+    if (!verificationId) return;
 
-  const handleVerificationToggle = (id, currentValue) =>
-    handleToggle({
-      currentValue,
-      updateFn: (nextValue) => updateVerificationData(id, nextValue),
-      confirmMessage: "Do you want the user Verified",
-    });
+    const nextValue = !currentVerification;
+
+    try {
+      setIsUpdatingVerification(true);
+
+      const isSuccess = await updateVerificationData(verificationId, nextValue);
+
+      if (!isSuccess) {
+        alert("Failed to update verification.");
+        return;
+      }
+
+      closeVerificationModal();
+
+      await fetchUsers();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingVerification(false);
+    }
+  };
 
   return (
     <div className="tabbar-section">
@@ -326,7 +351,11 @@ function ManageEndUser() {
 
       <div className="row">
         <div className="col-12 mt-3 mt-xxl-4">
-          <div className="table-responsive" style={{ overflow: "visible" }} ref={gridRef}>
+          <div
+            className="table-responsive"
+            style={{ overflow: "visible" }}
+            ref={gridRef}
+          >
             <Tooltip
               anchorElement="target"
               position="top"
@@ -344,13 +373,13 @@ function ManageEndUser() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {enduserPermission?.canDelete &&<GridColumn
                   width={getWidth("checkbox")}
                   headerClassName="text-center"
                   cells={{
                     data: CheckboxCell,
                   }}
-                />
+                />}
 
                 <GridColumn
                   title="Action"
@@ -404,7 +433,7 @@ function ManageEndUser() {
                       <StatusCell
                         {...props}
                         idField="id"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -431,6 +460,19 @@ function ManageEndUser() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         isDeleting={isDeleting}
+      />
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
+      />
+
+      <StatusConfirmationModal
+        show={showVerificationModal}
+        onClose={closeVerificationModal}
+        onConfirm={handleVerificationToggle}
+        isToggle={isUpdatingVerification}
       />
     </div>
   );

@@ -17,6 +17,7 @@ import { getMenuPermission } from "../../../utils/permission";
 import { ActionCell } from "../../../components/GridCells/ActionCell";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import { hasAction } from "../../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -59,6 +60,7 @@ function ActivitiesTables({ userId }) {
   } = useAttachmentViewer();
 
   const activityPermission = getMenuPermission("Activity");
+  const onView=true
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -200,7 +202,7 @@ function ActivitiesTables({ userId }) {
                 take={page.take}
                 total={total}
               >
-                <GridColumn
+                {hasAction(activityPermission,onView) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   headerClassName="text-center"
@@ -214,7 +216,7 @@ function ActivitiesTables({ userId }) {
                       />
                     ),
                   }}
-                />
+                />}
 
                 <GridColumn
                   title="Created On"

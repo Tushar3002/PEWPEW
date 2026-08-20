@@ -23,6 +23,7 @@ import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../../utils/hasAction";
 
 const columns = [
   { field: "action", minWidth: 90 },
@@ -232,7 +233,7 @@ function Manufacturer() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(manufacturerPermission) && <GridColumn
                   width={getWidth("action")}
                   title="Action"
                   sortable={false}
@@ -247,7 +248,7 @@ function Manufacturer() {
                       />
                     ),
                   }}
-                />
+                />}
                 <GridColumn
                   title="Manufacturer Name"
                   field="name"

@@ -19,6 +19,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -224,7 +225,7 @@ const handleStatusToggle = async () => {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(accessoryPermission)&&<GridColumn
                   title="Action"
                   width={getWidth("action")}
                   sortable={false}
@@ -239,7 +240,7 @@ const handleStatusToggle = async () => {
                       />
                     ),
                   }}
-                />
+                />}
                 <GridColumn title="Name" field="accessoryName" width={getWidth("accessoryName")}/>
                 <GridColumn title="Category Name" field="accessoryCategory" width={getWidth("accessoryCategory")}/>
                 <GridColumn title="Gun" field="gunNames" width={getWidth("gunNames")}/>

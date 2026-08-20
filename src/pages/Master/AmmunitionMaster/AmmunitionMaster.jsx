@@ -20,6 +20,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import { TextCell } from "../../../components/GridCells/TextCell";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -226,7 +227,7 @@ function AmmunitionMaster() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(ammunitionPermission)&&<GridColumn
                   title="Action"
                   width={getWidth("action")}
                   sortable={false}
@@ -241,7 +242,7 @@ function AmmunitionMaster() {
                       />
                     ),
                   }}
-                />
+                />}
 
                 <GridColumn
                   title="Ammunition Name"

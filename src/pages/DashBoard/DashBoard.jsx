@@ -20,6 +20,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { DropDownList } from "@progress/kendo-react-dropdowns";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 const topLikedPostsColumns = [
   { field: "action", minWidth: 120 },
   { field: "userName", minWidth: 180 },
@@ -58,6 +60,16 @@ function DashBoard() {
   const topLikedGrid = useResponsiveGridWidths(topLikedPostsColumns);
   const topReportedUserGrid = useResponsiveGridWidths(topReportingUsersColumns);
   const topReportedPostGrid = useResponsiveGridWidths(topReportedPostsColumns);
+
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
   const formatDateForApi = (date) => {
     if (!date) return "";
@@ -138,21 +150,28 @@ function DashBoard() {
     setCustomTo(value);
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updateActivitiesStatus(id, nextValue);
-    await fetchDashboardData(selectedFilter);
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      const isSuccess = await updateActivitiesStatus(statusId, nextValue);
+
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await fetchDashboardData();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -172,7 +191,7 @@ function DashBoard() {
           <StatusCell
             {...props}
             idField="postId"
-            onToggle={handleStatusToggle}
+            onToggle={openStatusModal}
           />
         </div>
       </td>
@@ -432,6 +451,12 @@ function DashBoard() {
           </div>
         </div>
       </div>
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
+      />
     </>
   );
 }

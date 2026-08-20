@@ -18,6 +18,9 @@ import { ActionCell } from "../../components/GridCells/ActionCell";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { encryptUrlParam } from "../../utils/crypto";
+import useStatusConfirmation from "../../hooks/useStatusConfirmation";
+import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -62,8 +65,18 @@ function Activity() {
     closeViewer,
   } = useAttachmentViewer();
 
-  const activityPermission = getMenuPermission("Activity");
+  const {
+    showStatusModal,
+    statusId,
+    currentStatus,
+    isUpdatingStatus,
+    setIsUpdatingStatus,
+    openStatusModal,
+    closeStatusModal,
+  } = useStatusConfirmation();
 
+  const activityPermission = getMenuPermission("Activity");
+  const onView=true
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -110,21 +123,28 @@ function Activity() {
     }
   };
 
-  const handleStatusToggle = async (id, currentValue) => {
-    const nextValue = !currentValue;
+  const handleStatusToggle = async () => {
+    if (!statusId) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${
-        nextValue ? "activate" : "deactivate"
-      } this role?`,
-    );
+    const nextValue = !currentStatus;
 
-    if (!confirmed) return;
+    try {
+      setIsUpdatingStatus(true);
 
-    const isSuccess = await updatePostStatus(id, nextValue);
-    await getActivitiesData();
-    if (!isSuccess) {
-      alert("Failed to update status.");
+      const isSuccess = await updatePostStatus(statusId, nextValue);
+
+      if (!isSuccess) {
+        alert("Failed to update status.");
+        return;
+      }
+
+      closeStatusModal();
+
+      await getActivitiesData();
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -253,7 +273,7 @@ function Activity() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(activityPermission,onView) && <GridColumn
                   title="Actions"
                   width={getWidth('action')}
                   sortable={false}
@@ -267,7 +287,7 @@ function Activity() {
                       />
                     ),
                   }}
-                />
+                />}
                 <GridColumn
                   title="Created By"
                   field="userName"
@@ -364,7 +384,7 @@ function Activity() {
                       <StatusCell
                         {...props}
                         idField="postId"
-                        onToggle={handleStatusToggle}
+                        onToggle={openStatusModal}
                       />
                     ),
                   }}
@@ -397,6 +417,13 @@ function Activity() {
         show={showReport}
         reportedId={reportedIdData}
         onClose={() => setShowReport(false)}
+      />
+
+      <StatusConfirmationModal
+        show={showStatusModal}
+        onClose={closeStatusModal}
+        onConfirm={handleStatusToggle}
+        isUpdatingStatus={isUpdatingStatus}
       />
     </div>
   );

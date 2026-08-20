@@ -13,6 +13,7 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 import { DropDownList } from "@progress/kendo-react-dropdowns";
 import { encryptUrlParam } from "../../utils/crypto";
+import { hasAction } from "../../utils/hasAction";
 
 const leaderboardOptions = [
   {
@@ -86,6 +87,8 @@ function LeaderBoard() {
   useEffect(() => {
     fetchDashboardFilters();
   }, []);
+
+  const onView=true
 
   useEffect(() => {
     if (selectedFilter === 9) return;
@@ -203,7 +206,7 @@ function LeaderBoard() {
                   style={{ width: "100%", overflow: "visible" }}
                   data={data}
                 >
-                  <GridColumn
+                  {hasAction(leaderBoardPermissions,onView) && <GridColumn
                     title="Actions"
                     width={getWidth("action")}
                     cells={{
@@ -218,7 +221,7 @@ function LeaderBoard() {
                         />
                       ),
                     }}
-                  />
+                  />}
 
                   <GridColumn
                     title="Rank"
