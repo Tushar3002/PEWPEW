@@ -1,16 +1,7 @@
-const AttachmentCell = ({
-  dataItem,
-  tdProps,
-  onOpen,
-  field,
-}) => {
+const AttachmentCell = ({ dataItem, tdProps, onOpen, field }) => {
   const value = dataItem[field];
 
-const attachments = Array.isArray(value)
-  ? value
-  : value
-    ? [value]
-    : [];
+  const attachments = Array.isArray(value) ? value : value ? [value] : [];
 
   const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
 
@@ -20,15 +11,17 @@ const attachments = Array.isArray(value)
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(60px, 1fr))",
             gap: "6px",
           }}
         >
-          {attachments.slice(0,3).map((file, index) =>
+          {attachments.slice(0, 3).map((file, index) =>
             isVideo(file) ? (
               <div
                 key={index}
-                onClick={onOpen ?() => onOpen?.(attachments, index):undefined}
+                onClick={
+                  onOpen ? () => onOpen?.(attachments, index) : undefined
+                }
                 style={{
                   position: "relative",
                   cursor: "pointer",
@@ -36,17 +29,21 @@ const attachments = Array.isArray(value)
               >
                 <video
                   style={{
-    width: "100%",
-    height: "50px",
-    objectFit: "contain",
-    pointerEvents: "none",
-}}
+                    width: "60px",
+                    height: "60px",
+                    objectFit: "cover",
+                    pointerEvents: "none",
+                    borderRadius: "12px"
+                  }}
                 >
                   <source src={file} />
                 </video>
 
                 <div
                   style={{
+                    width: "60px",
+                    height: "60px",
+                    objectFit: "cover",
                     position: "absolute",
                     inset: 0,
                     display: "flex",
@@ -55,6 +52,7 @@ const attachments = Array.isArray(value)
                     color: "#fff",
                     fontSize: "24px",
                     background: "rgba(0,0,0,0.2)",
+                    borderRadius:"12px"
                   }}
                 >
                   ▶
@@ -66,16 +64,16 @@ const attachments = Array.isArray(value)
                 src={file}
                 // alt={`Attachment ${index + 1}`}
                 alt={`#`}
-                onClick={onOpen ? () => onOpen(attachments, index): undefined}
+                onClick={onOpen ? () => onOpen(attachments, index) : undefined}
                 style={{
-    width: "60px",
-    height: "50px",
-    objectFit: "contain",
-    borderRadius: "6px",
-    cursor: "pointer",
-}}
+                  width: "60px",
+                  height: "60px",
+                  objectFit: "cover",
+                  borderRadius: "12px",
+                  cursor: "pointer",
+                }}
               />
-            )
+            ),
           )}
         </div>
       ) : (

@@ -21,6 +21,7 @@ import DeleteConfirmationModal from "../../components/Modal/DeleteConfirmationMo
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 import { getMenuPermission } from "../../utils/permission";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "checkbox", minWidth: 60 },
@@ -45,10 +46,9 @@ function ManageEndUser() {
   });
 
   const [sort, setSort] = useState([]);
-  // const [filter, setFilter] = useState({
-  //   logic: "and",
-  //   filters: [],
-  // });
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
+
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
@@ -96,7 +96,7 @@ function ManageEndUser() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, sort, search]);
+  }, [page, sort, search,filters]);
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== searchInput) {
@@ -128,6 +128,7 @@ function ManageEndUser() {
         })),
 
         customSearch: search,
+        Filters:filters
       };
 
       const res = await getEndUsers(body);
@@ -394,46 +395,112 @@ function ManageEndUser() {
                   field="firstName"
                   title="First Name"
                   width={getWidth("firstName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   field="lastName"
                   title="Last Name"
                   width={getWidth("lastName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell, 
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   field="userName"
                   title="User Name"
                   width={getWidth("userName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   field="contactNumber"
                   title="Phone"
                   width={getWidth("contactNumber")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   field="email"
                   title="Email"
                   width={getWidth("email")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Status"
                   width={getWidth("status")}
+                  field="isActive"
                   cells={{
                     data: (props) => (
                       <StatusCell
                         {...props}
                         idField="id"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}

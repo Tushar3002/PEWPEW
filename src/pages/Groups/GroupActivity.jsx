@@ -16,12 +16,13 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { decryptUrlParam, encryptUrlParam } from "../../utils/crypto";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
   { field: "userName", minWidth: 180 },
   { field: "uploadedDate", minWidth: 140 },
-  { field: "attachmentList", minWidth: 120 },
+  { field: "attachmentList", minWidth: 220 },
   { field: "post", minWidth: 250 },
   { field: "totalLike", minWidth: 100 },
   { field: "totalComment", minWidth: 110 },

@@ -21,6 +21,8 @@ import UserCountCell from "../../components/GridCells/UserCountCell";
 import { encryptUrlParam } from "../../utils/crypto";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../utils/hasAction";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -39,10 +41,8 @@ function RolesPermission() {
   });
 
   const [sort, setSort] = useState([]);
-  // const [filter, setFilter] = useState({
-  //   logic: "and",
-  //   filters: [],
-  // });
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
@@ -73,7 +73,7 @@ function RolesPermission() {
 
   useEffect(() => {
     rolesandpermissionData();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search !== searchInput) {
@@ -121,6 +121,7 @@ function RolesPermission() {
         })),
 
         customSearch: search,
+        Filters:filters
       };
       const res = await getRolesAndPermission(body);
       console.log(res.data);
@@ -237,7 +238,7 @@ function RolesPermission() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(rolePermission) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   sortable={false}
@@ -255,20 +256,42 @@ function RolesPermission() {
                       />
                     ),
                   }}
-                />
+                />}
 
                 <GridColumn
                   field="role"
                   title="Role Name"
                   width={getWidth("role")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   field="description"
                   title="Description"
                   width={getWidth("description")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
@@ -288,6 +311,16 @@ function RolesPermission() {
                         {...props}
                         idField="id"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}

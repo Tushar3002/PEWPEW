@@ -26,6 +26,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
 import { hasAction } from "../../../utils/hasAction";
+import FilterHeaderCell from "../../../components/GridCells/FilterHeaderCell";
 
 
 const responsiveColumns = [
@@ -55,6 +56,9 @@ function GunMaster() {
 
   const [showGunModal, setShowGunModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
 
   const [approvalStatusDropdown, setApprovalStatusDropdown] = useState([]);
 
@@ -93,7 +97,7 @@ function GunMaster() {
   useEffect(() => {
     fetchGuns();
     getApprovalStatusList();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
 
   const fetchGuns = async () => {
     const body = {
@@ -104,6 +108,7 @@ function GunMaster() {
         direction: s.dir === "asc" ? 0 : 1,
       })),
       CustomSearch: search,
+      Filters:filters
     };
     try {
       const res = await getGunList(body);
@@ -200,32 +205,6 @@ function GunMaster() {
     setSearch(searchInput);
   };
 
-  const StatusDropdownCell = (props) => {
-    const currentStatus = props.dataItem?.[props.field] ?? "";
-
-    return (
-      <td {...props.tdProps}>
-        <select
-          className="form-select"
-          value={currentStatus}
-          disabled={props.dataItem.isCreateAdmin}
-          onChange={(e) => {
-            const selectedStatus = approvals.find(
-              (approval) => approval.description === e.target.value,
-            );
-
-            console.log("Selected approval:", selectedStatus);
-          }}
-        >
-          {approvals.map((approval) => (
-            <option key={approval.id} value={approval.description}>
-              {approval.description}
-            </option>
-          ))}
-        </select>
-      </td>
-    );
-  };
   return (
     <div className="tabbar-section">
       <div className="row align-items-center gap-3">
@@ -321,28 +300,72 @@ function GunMaster() {
                   title="Gun Name"
                   field="gunName"
                   width={getWidth("gunName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Category Name"
                   field="categoryNames"
                   width={getWidth("categoryNames")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Manyfacturer Name"
                   field="manufacturerNames"
                   width={getWidth("manufacturerNames")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Details"
                   field="details"
                   width={getWidth("details")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
@@ -361,21 +384,54 @@ function GunMaster() {
                   title="Ammunition"
                   field="ammunitions"
                   width={getWidth("ammunitions")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Created On"
                   field="createdDate"
                   width={getWidth("createdDate")}
-                  cells={{ data: DateCell }}
+                  cells={{ data: DateCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="date"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Modified By"
                   field="updatedByUserName"
                   width={getWidth("updatedByUserName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
@@ -388,6 +444,21 @@ function GunMaster() {
                         {...props}
                         approvalStatusDropdown={approvalStatusDropdown}
                         onStatusChange={handleApprovalStatusChange}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="select"
+                        filterOptions={[
+                          { label: "Approved", value: "1" },
+                          { label: "Rejected", value: "2" },
+                          { label: "Pending", value: "3" },
+                        ]}
                       />
                     ),
                   }}
@@ -403,6 +474,16 @@ function GunMaster() {
                         {...props}
                         idField="gunId"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}

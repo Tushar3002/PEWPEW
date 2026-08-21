@@ -29,6 +29,7 @@ import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 import { useAuth } from "../../context/AuthContext";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { hasAction } from "../../utils/hasAction";
 
 const responsiveColumns = [
   { field: "action", minWidth: 140 },
@@ -72,7 +73,9 @@ function Venues() {
 
   const navigate = useNavigate();
 
-  const {user}=useAuth()
+  // const {user}=useAuth()
+
+  const onView = true;
 
   const {
     showDeleteModal,
@@ -135,7 +138,7 @@ function Venues() {
         Filters: filters,
       };
       // console.log("Venye User",user);
-      
+
       const res = await getVenueList(body);
       console.log(res.data);
       setData(res.data.data);
@@ -204,7 +207,9 @@ function Venues() {
           title={userName}
           type="button"
           className="btn btn-link p-0"
-          onClick={() => navigate(`/manage-users/edit/${encryptUrlParam(userId)}`)}
+          onClick={() =>
+            navigate(`/manage-users/edit/${encryptUrlParam(userId)}`)
+          }
         >
           {userName}
         </button>
@@ -357,25 +362,27 @@ function Venues() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
-                  width={getWidth("action")}
-                  title="Action"
-                  sortable={false}
-                  cells={{
-                    data: (props) => (
-                      <ActionCell
-                        {...props}
-                        permission={venuePermission}
-                        idField="venueId"
-                        onView={(id) =>
-                          navigate(`/venues/view/${encryptUrlParam(id)}`)
-                        }
-                        onEdit={handleEditVenue}
-                        onDelete={openDeleteModal}
-                      />
-                    ),
-                  }}
-                />
+                {hasAction(venuePermission, onView) && (
+                  <GridColumn
+                    width={getWidth("action")}
+                    title="Action"
+                    sortable={false}
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={venuePermission}
+                          idField="venueId"
+                          onView={(id) =>
+                            navigate(`/venues/view/${encryptUrlParam(id)}`)
+                          }
+                          onEdit={handleEditVenue}
+                          onDelete={openDeleteModal}
+                        />
+                      ),
+                    }}
+                  />
+                )}
                 <GridColumn
                   title="Owner Name"
                   field="venueOwnerUserName"
@@ -556,7 +563,12 @@ function Venues() {
                         setOpenFilter={setOpenFilter}
                         filters={filters}
                         setFilters={setFilters}
-                        filterType="approvalStatus"
+                        filterType="select"
+                        filterOptions={[
+                          { label: "Approved", value: "1" },
+                          { label: "Rejected", value: "2" },
+                          { label: "Pending", value: "3" },
+                        ]}
                       />
                     ),
                   }}

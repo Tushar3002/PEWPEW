@@ -22,6 +22,7 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import Breadcrumbs from "../../components/BreadCrumbs/Breadcrumbs";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import { encryptUrlParam } from "../../utils/crypto";
 const topLikedPostsColumns = [
   { field: "action", minWidth: 120 },
   { field: "userName", minWidth: 180 },
@@ -183,7 +184,7 @@ function DashBoard() {
             type="button"
             className="eye-btn"
             title="View"
-            onClick={() => navigate(`/activity/view/${props.dataItem.postId}`)}
+            onClick={() => navigate(`/activity/view/${encryptUrlParam(props.dataItem.postId)}`)}
           >
             <i className="fa fa-eye"></i>
           </button>

@@ -67,20 +67,20 @@
 
 .k-list-item:hover,
 .k-list-item.k-hover {
-  background-color: #dc3545 !important;
-  color: #fff !important;
+  background-color: #F9E9EA !important;
+  color: #C1272D !important;
 }
 
 .k-list-item.k-selected {
-  background-color: #dc3545 !important;
+  background-color: #C1272D !important;
   color: #fff !important;
 }
-
+/* 
 .k-list-item.k-selected:hover,
 .k-list-item.k-selected.k-hover {
   background-color: #c82333 !important;
   color: #fff !important;
-}
+} */
 
 
 .user-info .dropdown-menu .dropdown-item:hover,

@@ -9,6 +9,7 @@ import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "username", minWidth: 180 },
@@ -26,6 +27,9 @@ function ReportedUsers() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
 
   const location = useLocation();
   const [sort, setSort] = useState(location.state?.sort || []);
@@ -61,7 +65,7 @@ function ReportedUsers() {
 
   useEffect(() => {
     fetchReportList();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
   const fetchReportList = async () => {
     const body = {
       page: page.skip / page.take + 1,
@@ -72,6 +76,8 @@ function ReportedUsers() {
         field: s.field,
         direction: s.dir === "asc" ? 0 : 1,
       })),
+
+      Filters:filters
     };
 
     try {
@@ -169,18 +175,52 @@ function ReportedUsers() {
                     title="Username"
                     field="username"
                     width={getWidth("username")}
+                    cells={{
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                    }}
                   />
 
                   <GridColumn
                     title="Email/Phone Number"
-                    field="emailPhone"
+                    field="emailOrPhone"
                     width={getWidth("emailPhone")}
+                    cells={{headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),}}
                   />
 
                   <GridColumn
                     title="Reported By"
-                    field="reportedBy"
+                    field="reportCount"
                     width={getWidth("reportedBy")}
+                    cells={{
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                    }}
                   />
 
                   <GridColumn
@@ -195,6 +235,16 @@ function ReportedUsers() {
                           onToggle={openStatusModal}
                         />
                       ),
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
+                      />
+                    ),
                     }}
                   />
                 </Grid>

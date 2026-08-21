@@ -22,6 +22,7 @@ import { encryptUrlParam } from "../../utils/crypto";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 import { hasAction } from "../../utils/hasAction";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -47,6 +48,10 @@ function Group() {
   const [sort, setSort] = useState([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const [filters,setFilters]=useState([])
+  const [openFilter,setOpenFilter]=useState(null)
+
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
   const {
     showDeleteModal,
@@ -94,7 +99,7 @@ function Group() {
 
   useEffect(() => {
     fetchGroupData();
-  }, [page, sort, search]);
+  }, [page, sort, search,filters]);
   const fetchGroupData = async () => {
     const body = {
       Page: page.skip / page.take + 1,
@@ -104,6 +109,7 @@ function Group() {
         direction: s.dir === "asc" ? 0 : 1,
       })),
       CustomSearch: search,
+      Filters:filters
     };
     try {
       const res = await getGroupsData(body);
@@ -280,7 +286,18 @@ function Group() {
                   title="Group Name"
                   field="groupName"
                   width={getWidth("groupName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
@@ -290,6 +307,7 @@ function Group() {
                   width={getWidth("groupImageFullUrl")}
                   cells={{
                     data: (props) => <AttachmentCell {...props} />,
+                    
                   }}
                 />
 
@@ -297,14 +315,40 @@ function Group() {
                   title="About Group"
                   field="about"
                   width={getWidth("about")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Group Type"
                   field="isPublic"
                   width={getWidth("isPublic")}
-                  cells={{ data: GroupTypeCell }}
+                  cells={{ data: GroupTypeCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="select"
+                        filterOptions={[
+                          { label: "Public", value: "1" },
+                          { label: "Private", value: "0" },
+                        ]}
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
@@ -316,6 +360,16 @@ function Group() {
                       <CountLinkCell
                         {...props}
                         getPath={(item) => `/groups/view/${encryptUrlParam(item.id)}/members`}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
                       />
                     ),
                   }}
@@ -331,6 +385,15 @@ function Group() {
                         {...props}
                         getPath={(item) => `/groups/activity/${encryptUrlParam(item.id)}`}
                       />
+                    ),headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
                     ),
                   }}
                 />
@@ -339,20 +402,52 @@ function Group() {
                   title="Reported"
                   field="totalReport"
                   width={getWidth("totalReport")}
+                  cells={{headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),}}
                 />
 
                 <GridColumn
                   title="Created By"
                   field="userName"
                   width={getWidth("userName")}
-                  cells={{ data: viewUserCell }}
+                  cells={{ data: viewUserCell , 
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Created On"
                   field="createdOn"
                   width={getWidth("createdOn")}
-                  cells={{ data: DateCell }}
+                  cells={{ data: DateCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="date"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
@@ -365,6 +460,16 @@ function Group() {
                         {...props}
                         idField="id"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}

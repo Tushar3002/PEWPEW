@@ -21,6 +21,7 @@ import { encryptUrlParam } from "../../utils/crypto";
 import useStatusConfirmation from "../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../components/Modal/StatusConfirmationModal";
 import { hasAction } from "../../utils/hasAction";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -29,12 +30,12 @@ const responsiveColumns = [
   { field: "postTypeName", minWidth: 140 },
   { field: "attachmentList", minWidth: 220 },
   { field: "post", minWidth: 250 },
-  { field: "rate", minWidth: 100 },
-  { field: "totalGun", minWidth: 100 },
-  { field: "totalLike", minWidth: 100 },
-  { field: "totalComment", minWidth: 110 },
-  { field: "totalShare", minWidth: 100 },
-  { field: "totalHide", minWidth: 110 },
+  { field: "rate", minWidth: 120 },
+  { field: "totalGun", minWidth: 120 },
+  { field: "totalLike", minWidth: 120 },
+  { field: "totalComment", minWidth: 120 },
+  { field: "totalShare", minWidth: 120 },
+  { field: "totalHide", minWidth: 120 },
   { field: "totalReport", minWidth: 120 },
   { field: "status", minWidth: 90 },
 ];
@@ -56,6 +57,9 @@ function Activity() {
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
 
+  const [filters, setFilters] = useState([]);
+  const [openFilter, setOpenFilter] = useState(null);
+
   const {
     showViewer,
     attachments,
@@ -76,7 +80,7 @@ function Activity() {
   } = useStatusConfirmation();
 
   const activityPermission = getMenuPermission("Activity");
-  const onView=true
+  const onView = true;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,7 +104,7 @@ function Activity() {
 
   useEffect(() => {
     getActivitiesData();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
 
   const getActivitiesData = async () => {
     console.log("getActivitiesData called");
@@ -112,6 +116,7 @@ function Activity() {
         direction: s.dir === "asc" ? 0 : 1,
       })),
       CustomSearch: search,
+      Filters: filters,
     };
     try {
       const res = await getActivities(body);
@@ -156,7 +161,9 @@ function Activity() {
         <button
           type="button"
           className="btn btn-link p-0"
-          onClick={() => navigate(`/manage-end-users/view/${encryptUrlParam(userId)}`)}
+          onClick={() =>
+            navigate(`/manage-end-users/view/${encryptUrlParam(userId)}`)
+          }
         >
           {userName}
         </button>
@@ -273,39 +280,87 @@ function Activity() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                {hasAction(activityPermission,onView) && <GridColumn
-                  title="Actions"
-                  width={getWidth('action')}
-                  sortable={false}
-                  cells={{
-                    data: (props) => (
-                      <ActionCell
-                        {...props}
-                        permission={activityPermission}
-                        idField="postId"
-                        onView={(id) => navigate(`/activity/view/${encryptUrlParam(id)}`)}
-                      />
-                    ),
-                  }}
-                />}
+                {hasAction(activityPermission, onView) && (
+                  <GridColumn
+                    title="Actions"
+                    width={getWidth("action")}
+                    sortable={false}
+                    cells={{
+                      data: (props) => (
+                        <ActionCell
+                          {...props}
+                          permission={activityPermission}
+                          idField="postId"
+                          onView={(id) =>
+                            navigate(`/activity/view/${encryptUrlParam(id)}`)
+                          }
+                        />
+                      ),
+                    }}
+                  />
+                )}
                 <GridColumn
                   title="Created By"
                   field="userName"
                   width={getWidth("userName")}
-                  cells={{ data: viewUserCell }}
+                  cells={{
+                    data: viewUserCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Created On"
                   field="createdOn"
                   width={getWidth("createdOn")}
-                  cells={{ data: DateCell }}
+                  cells={{
+                    data: DateCell,
+
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="date"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Post Type"
                   field="postTypeName"
                   width={getWidth("postTypeName")}
+                  cells={{
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="select"
+                        filterField="postType"
+                        filterOptions={[
+                          { label: "Group", value: "1" },
+                          { label: "User", value: "2" },
+                          { label: "Gun", value: "3" },
+                          { label: "Venue", value: "4" },
+                        ]}
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
@@ -324,54 +379,150 @@ function Activity() {
                   title="Description"
                   field="post"
                   width={getWidth("post")}
-                  cells={{ data: DetailsCell }}
+                  cells={{
+                    data: DetailsCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Ratings"
                   field="rate"
                   width={getWidth("rate")}
+                  cells={{
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Guns"
                   field="totalGun"
                   width={getWidth("totalGun")}
+                  cells={{
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Likes"
                   field="totalLike"
                   width={getWidth("totalLike")}
-                  cells={{ data: viewDetailCell }}
+                  cells={{
+                    data: viewDetailCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Comments"
                   field="totalComment"
                   width={getWidth("totalComment")}
-                  cells={{ data: viewDetailCell }}
+                  cells={{
+                    data: viewDetailCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Shares"
                   field="totalShare"
                   width={getWidth("totalShare")}
-                  cells={{ data: viewDetailCell }}
+                  cells={{
+                    data: viewDetailCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Hide Count"
                   field="totalHide"
                   width={getWidth("totalHide")}
-                  cells={{ data: viewDetailCell }}
+                  cells={{
+                    data: viewDetailCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Reported"
                   field="totalReport"
                   width={getWidth("totalReport")}
-                  cells={{ data: ReportedDataCell }}
+                  cells={{
+                    data: ReportedDataCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
@@ -385,6 +536,16 @@ function Activity() {
                         {...props}
                         idField="postId"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}

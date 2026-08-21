@@ -20,6 +20,7 @@ import { getMenuPermission } from "../../utils/permission";
 import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { hasAction } from "../../utils/hasAction";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 90 },
@@ -46,6 +47,9 @@ function ManageBadges() {
   const [applicableForOptions, setApplicableForOptions] = useState([]);
 
   const { gridRef, getWidth } = useResponsiveGridWidths(responsiveColumns);
+
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
 
   const {
     showViewer,
@@ -89,7 +93,7 @@ function ManageBadges() {
   useEffect(() => {
     fetchBadgesList();
     getApplicableForOptions();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
 
   const fetchBadgesList = async () => {
     const body = {
@@ -100,6 +104,7 @@ function ManageBadges() {
         field: s.field,
         direction: s.dir === "asc" ? 0 : 1,
       })),
+      Filters:filters
     };
 
     try {
@@ -249,7 +254,18 @@ function ManageBadges() {
                   title="Name"
                   field="name"
                   width={getWidth("name")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
@@ -263,6 +279,23 @@ function ManageBadges() {
                         applicableForOptions={applicableForOptions}
                       />
                     ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="select"
+                        // filterField="approvalStatus"
+                        filterOptions={[
+                          { label: "Birthday", value: "3" },
+                          { label: "Gun", value: "4" },
+                          { label: "Venue", value: "2" },
+                          
+                        ]}
+                      />
+                    ),
                   }}
                 />
 
@@ -270,7 +303,18 @@ function ManageBadges() {
                   title="No. of Check-ins"
                   field="noOfCheckIns"
                   width={getWidth("noOfCheckIns")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="number"
+                      />
+                    ),
+                  }}
                 />
               </Grid>
               <CustomPager

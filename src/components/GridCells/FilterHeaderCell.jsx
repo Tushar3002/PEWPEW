@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { SvgIcon } from "@progress/kendo-react-common";
 import { filterIcon } from "@progress/kendo-svg-icons";
 import { DatePicker } from "@progress/kendo-react-dateinputs";
+import { DropDownList } from "@progress/kendo-react-dropdowns";
 
 const dateOperators = [
   { label: "Is equal to", value: 2 },
@@ -13,15 +14,16 @@ const dateOperators = [
   { label: "Is less than or equal to", value: 1 },
 ];
 
-const approvalStatusOptions = [
-  { label: "Approved", value: "1" },
-  { label: "Rejected", value: "2" },
-  { label: "Pending", value: "3" },
-];
+// const approvalStatusOptions = [
+//   { label: "Approved", value: "1" },
+//   { label: "Rejected", value: "2" },
+//   { label: "Pending", value: "3" },
+// ];
 
 const FilterHeaderCell = (props) => {
   const {
     field,
+    filterField,
     children,
     thProps,
     openFilter,
@@ -29,13 +31,18 @@ const FilterHeaderCell = (props) => {
     filters,
     setFilters,
     filterType = "text",
+    filterOptions = [],
   } = props;
+
+  const actualFilterField = filterField || field;
   const [filterValue, setFilterValue] = useState("");
 
-  const [selectedOperator, setSelectedOperator] = useState(2);
+  const [selectedOperator, setSelectedOperator] = useState(2); //For Date
   const [filterDate, setFilterDate] = useState(null);
 
-  const [selectedApprovalStatus, setSelectedApprovalStatus] = useState("");
+  // const [selectedApprovalStatus, setSelectedApprovalStatus] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
+
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const buttonRef = useRef(null);
@@ -44,33 +51,35 @@ const FilterHeaderCell = (props) => {
   const isOpen = openFilter === field;
 
   const updatePopupPosition = () => {
-  if (!buttonRef.current) return;
+    if (!buttonRef.current) return;
 
-  const rect = buttonRef.current.getBoundingClientRect();
+    const rect = buttonRef.current.getBoundingClientRect();
 
-  const popupWidth = 250;
-  const spacing = 8;
+    const popupWidth = 250;
+    const spacing = 8;
 
-  let left = rect.left;
+    let left = rect.left;
 
-  // If popup would go outside the right side of the screen,
-  // align its right edge with the funnel button.
-  if (left + popupWidth > window.innerWidth - spacing) {
-    left = rect.right - popupWidth;
-  }
+    // If popup would go outside the right side of the screen,
+    // align its right edge with the funnel button.
+    if (left + popupWidth > window.innerWidth - spacing) {
+      left = rect.right - popupWidth;
+    }
 
-  // Make sure it doesn't go outside the left side either.
-  if (left < spacing) {
-    left = spacing;
-  }
+    // Make sure it doesn't go outside the left side either.
+    if (left < spacing) {
+      left = spacing;
+    }
 
-  setPopupPosition({
-    top: rect.bottom + 4,
-    left,
-  });
-};
+    setPopupPosition({
+      top: rect.bottom + 4,
+      left,
+    });
+  };
 
-  const appliedFilter = filters.find((filter) => filter.Field === field);
+  const appliedFilter = filters.find(
+    (filter) => filter.Field === actualFilterField,
+  );
 
   const isFiltered = !!appliedFilter;
 
@@ -123,12 +132,12 @@ const FilterHeaderCell = (props) => {
   }, [filterType, appliedFilter?.Value, appliedFilter?.OperatorType]);
 
   useEffect(() => {
-    if (filterType !== "approvalStatus") return;
+    if (filterType !== "select") return;
 
     if (appliedFilter) {
-      setSelectedApprovalStatus(appliedFilter.Value);
+      setSelectedOption(appliedFilter.Value);
     } else {
-      setSelectedApprovalStatus("");
+      setSelectedOption("");
     }
   }, [filterType, appliedFilter?.Value]);
 
@@ -161,8 +170,8 @@ const FilterHeaderCell = (props) => {
       return [
         ...otherFilters,
         {
-          Field: field,
-          OperatorType: 8,
+          Field: actualFilterField,
+          OperatorType: filterType === "number" ? 2 : 8,
           Value: value,
         },
       ];
@@ -188,7 +197,7 @@ const FilterHeaderCell = (props) => {
       return [
         ...otherFilters,
         {
-          Field: field,
+          Field: actualFilterField,
           OperatorType: selectedOperator,
           Value: formattedDate,
         },
@@ -198,27 +207,47 @@ const FilterHeaderCell = (props) => {
     setOpenFilter(null);
   };
 
-  const handleApprovalStatusFilter = () => {
-    if (!selectedApprovalStatus) return;
+  // const handleApprovalStatusFilter = () => {
+  //   if (!selectedApprovalStatus) return;
+
+  //   setFilters((currentFilters) => {
+  //     const otherFilters = currentFilters.filter(
+  //       (filter) => filter.Field !== field,
+  //     );
+
+  //     return [
+  //       ...otherFilters,
+  //       {
+  //         Field: field,
+  //         OperatorType: 2,
+  //         Value: selectedApprovalStatus,
+  //       },
+  //     ];
+  //   });
+
+  //   setOpenFilter(null);
+  // };
+
+  const handleSelectFilter = () => {
+    if (!selectedOption) return;
 
     setFilters((currentFilters) => {
       const otherFilters = currentFilters.filter(
-        (filter) => filter.Field !== field,
+        (filter) => filter.Field !== actualFilterField,
       );
 
       return [
         ...otherFilters,
         {
-          Field: field,
+          Field: actualFilterField,
           OperatorType: 2,
-          Value: selectedApprovalStatus,
+          Value: selectedOption,
         },
       ];
     });
 
     setOpenFilter(null);
   };
-
   const handleStatusFilter = () => {
     if (selectedStatus === "") return;
 
@@ -230,7 +259,7 @@ const FilterHeaderCell = (props) => {
       return [
         ...otherFilters,
         {
-          Field: field,
+          Field: actualFilterField,
           OperatorType: 2,
           Value: selectedStatus,
         },
@@ -244,11 +273,11 @@ const FilterHeaderCell = (props) => {
     setFilterValue("");
     setFilterDate(null);
     setSelectedOperator(2);
-    setSelectedApprovalStatus("");
+    setSelectedOption("");
     setSelectedStatus("");
 
     setFilters((currentFilters) =>
-      currentFilters.filter((filter) => filter.Field !== field),
+      currentFilters.filter((filter) => filter.Field !== actualFilterField),
     );
 
     setOpenFilter(null);
@@ -278,19 +307,14 @@ const FilterHeaderCell = (props) => {
           >
             {filterType === "text" && (
               <>
-                <select
+                <DropDownList
+                  data={["Contains"]}
+                  defaultValue="Contains"
                   style={{
                     width: "100%",
-                    height: "38px",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    padding: "0 10px",
                     marginBottom: "8px",
                   }}
-                  defaultValue="contains"
-                >
-                  <option value="contains">Contains</option>
-                </select>
+                />
 
                 <input
                   type="text"
@@ -309,26 +333,49 @@ const FilterHeaderCell = (props) => {
               </>
             )}
 
-            {filterType === "date" && (
+            {filterType === "number" && (
               <>
-                <select
-                  value={selectedOperator}
-                  onChange={(e) => setSelectedOperator(Number(e.target.value))}
+                <DropDownList
+                  data={["Is equal to"]}
+                  defaultValue="Is equal to"
                   style={{
                     width: "100%",
-                    height: "38px",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    padding: "0 10px",
                     marginBottom: "8px",
                   }}
-                >
-                  {dateOperators.map((operator) => (
-                    <option key={operator.value} value={operator.value}>
-                      {operator.label}
-                    </option>
-                  ))}
-                </select>
+                />
+
+                <input
+                  type="number"
+                  value={filterValue}
+                  onChange={(e) => setFilterValue(e.target.value)}
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    border: "1px solid #ccc",
+                    borderRadius: "6px",
+                    padding: "0 10px",
+                    boxSizing: "border-box",
+                    // marginBottom: "8px",
+                  }}
+                />
+              </>
+            )}
+
+            {filterType === "date" && (
+              <>
+                <DropDownList
+                  data={dateOperators}
+                  textField="label"
+                  dataItemKey="value"
+                  value={dateOperators.find(
+                    (operator) => operator.value === selectedOperator,
+                  )}
+                  onChange={(e) => setSelectedOperator(e.value.value)}
+                  style={{
+                    width: "100%",
+                    marginBottom: "8px",
+                  }}
+                />
 
                 <DatePicker
                   value={filterDate}
@@ -342,7 +389,7 @@ const FilterHeaderCell = (props) => {
               </>
             )}
 
-            {filterType === "approvalStatus" && (
+            {/* {filterType === "approvalStatus" && (
               <select
                 value={selectedApprovalStatus}
                 onChange={(e) => setSelectedApprovalStatus(e.target.value)}
@@ -363,6 +410,28 @@ const FilterHeaderCell = (props) => {
                   </option>
                 ))}
               </select>
+            )} */}
+
+            {filterType === "select" && (
+              <DropDownList
+                data={filterOptions}
+                textField="label"
+                dataItemKey="value"
+                value={
+                  filterOptions.find(
+                    (option) => option.value === selectedOption,
+                  ) || null
+                }
+                onChange={(e) => setSelectedOption(e.value?.value ?? "")}
+                defaultItem={{
+                  label: "Select...",
+                  value: "",
+                }}
+                style={{
+                  width: "100%",
+                  marginBottom: "8px",
+                }}
+              />
             )}
 
             {filterType === "status" && (
@@ -424,8 +493,8 @@ const FilterHeaderCell = (props) => {
                 onClick={
                   filterType === "date"
                     ? handleDateFilter
-                    : filterType === "approvalStatus"
-                      ? handleApprovalStatusFilter
+                    : filterType === "select"
+                      ? handleSelectFilter
                       : filterType === "status"
                         ? handleStatusFilter
                         : handleFilter
@@ -440,8 +509,8 @@ const FilterHeaderCell = (props) => {
                       ? filterDate
                         ? "#dc3545"
                         : "#d66f75"
-                      : filterType === "approvalStatus"
-                        ? selectedApprovalStatus
+                      : filterType === "select"
+                        ? selectedOption
                           ? "#dc3545"
                           : "#d66f75"
                         : filterType === "status"
@@ -457,8 +526,8 @@ const FilterHeaderCell = (props) => {
                       ? filterDate
                         ? "pointer"
                         : "default"
-                      : filterType === "approvalStatus"
-                        ? selectedApprovalStatus
+                      : filterType === "select"
+                        ? selectedOption
                           ? "pointer"
                           : "default"
                         : filterType === "status"

@@ -18,6 +18,8 @@ import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 
 import { DropDownList } from "@progress/kendo-react-dropdowns";
 import { getMenuPermission } from "../../utils/permission";
+import { hasAction } from "../../utils/hasAction";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const responsiveColumns = [
   { field: "action", minWidth: 110 },
@@ -41,6 +43,9 @@ function SupportTicket() {
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
+
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
 
   const [status, setStatus] = useState([]);
 
@@ -83,7 +88,7 @@ function SupportTicket() {
   useEffect(() => {
     getSupportTickets();
     getSupportTicketStatus();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
   const getSupportTickets = async () => {
     const body = {
       page: page.skip / page.take + 1,
@@ -94,6 +99,7 @@ function SupportTicket() {
         field: s.field,
         direction: s.dir === "asc" ? 0 : 1,
       })),
+      Filters:filters
     };
 
     try {
@@ -312,53 +318,130 @@ function SupportTicket() {
                 sort={sort}
                 onSortChange={(e) => setSort(e.sort)}
               >
-                <GridColumn
+                {hasAction(supportPermission) && <GridColumn
                   title="Action"
                   width={getWidth("action")}
                   cells={{ data: ActionCell }}
                   sortable={false}
-                />
+                />}
 
                 <GridColumn
                   title="Username"
                   field="userName"
                   width={getWidth("userName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell, 
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Email/Phone"
                   field="emailePhone"
                   width={getWidth("emailePhone")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),}}
                 />
 
                 <GridColumn
                   title="Issue Type"
                   field="issueType"
                   width={getWidth("issueType")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="select"
+                        filterField="issueTypeId"
+                        filterOptions={[
+                          { label: "Bug", value: "1" },
+                          { label: "Feature Request", value: "2" },
+                          { label: "Other", value: "3" },
+                        ]}
+                      />
+                    ),
+                   }}
                 />
 
                 <GridColumn
                   title="Description"
                   field="description"
                   width={getWidth("description")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Admin Comments"
                   field="adminDescription"
                   width={getWidth("adminDescription")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
 
                 <GridColumn
                   title="Ticket Status"
                   field="status"
                   width={getWidth("status")}
-                  cells={{ data: StatusDropdownCell }}
+                  cells={{ data: StatusDropdownCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="select"
+                        filterField="statusId"
+                        filterOptions={[
+                          { label: "Pending", value: "1" },
+                          { label: "In Progress", value: "2" },
+                          { label: "Resolved / Closed", value: "3" },
+                          { label: "Rejected", value: "4" },
+                        ]}
+                      />
+                    ),
+                   }}
                 />
               </Grid>
               <CustomPager

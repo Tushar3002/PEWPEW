@@ -24,6 +24,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
 import { hasAction } from "../../../utils/hasAction";
+import FilterHeaderCell from "../../../components/GridCells/FilterHeaderCell";
 
 const columns = [
   { field: "action", minWidth: 90 },
@@ -45,6 +46,9 @@ function Manufacturer() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState([]);
+
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
 
   const [showManufacturerModal, setShowManufacturerModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -72,7 +76,7 @@ function Manufacturer() {
 
   useEffect(() => {
     fetchManufacturer();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
 
   const fetchManufacturer = async () => {
     const body = {
@@ -83,6 +87,7 @@ function Manufacturer() {
         direction: s.dir === "asc" ? 0 : 1,
       })),
       CustomSearch: search,
+      Filters:filters
     };
     try {
       const res = await manufacturerList(body);
@@ -253,28 +258,78 @@ function Manufacturer() {
                   title="Manufacturer Name"
                   field="name"
                   width={getWidth("name")}
+                  cells={{headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),}}
                 />
                 <GridColumn
                   width={getWidth("description")}
                   title="Description"
                   field="description"
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell, headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ), }}
                 />
                 <GridColumn
                   title="Created By"
                   field="createdByUserName"
                   width={getWidth("createdByUserName")}
+                  cells={{headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),}}
                 />
                 <GridColumn
                   width={getWidth("createdOn")}
                   title="Created On"
                   field="createdOn"
-                  cells={{ data: DateCell }}
+                  cells={{ data: DateCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="date"
+                      />
+                    ),
+                   }}
                 />
                 <GridColumn
                   title="Modified By"
                   field="updatedByUserName"
                   width={getWidth("updatedByUserName")}
+                  cells={{headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),}}
                 />
                 <GridColumn
                   width={getWidth("status")}
@@ -286,6 +341,16 @@ function Manufacturer() {
                         {...props}
                         idField="id"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}

@@ -16,6 +16,7 @@ import { ActionCell } from "../../../components/GridCells/ActionCell";
 import { getMenuPermission } from "../../../utils/permission";
 import CustomPager from "../../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../../hooks/useResponsiveGridWidths";
+import { hasAction } from "../../../utils/hasAction";
 
 const columns = [
   { field: "action", minWidth: 120 },
@@ -51,6 +52,8 @@ function ActivityTabs({ userId }) {
     openViewer,
     closeViewer,
   } = useAttachmentViewer();
+
+  const onView=true
 
   useEffect(() => {
     getActivitiesData();
@@ -122,7 +125,7 @@ function ActivityTabs({ userId }) {
               take={page.take}
               total={total}
             >
-              <GridColumn
+              {hasAction(activityPermission,onView) && <GridColumn
                 title="Actions"
                 width={getWidth("action")}
                 cells={{
@@ -135,7 +138,7 @@ function ActivityTabs({ userId }) {
                     />
                   ),
                 }}
-              />
+              />}
 
               <GridColumn
                 title="Uploaded By"

@@ -16,6 +16,7 @@ import CustomPager from "../../components/Pagnation/CustomPager";
 import useResponsiveGridWidths from "../../hooks/useResponsiveGridWidths";
 import { encryptUrlParam } from "../../utils/crypto";
 import { hasAction } from "../../utils/hasAction";
+import FilterHeaderCell from "../../components/GridCells/FilterHeaderCell";
 
 const eventTabs = [
   {
@@ -60,6 +61,9 @@ function Events() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState([]);
+
+  const [filters,setFilters]=useState([])
+  const [openFilter,setOpenFilter]=useState(null)
 
   //   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -106,7 +110,7 @@ function Events() {
 
   useEffect(() => {
     getEvents();
-  }, [page, sort, search, activeTab]);
+  }, [page, sort, search, activeTab,filters]);
 
   useEffect(() => {
     if (!searchParams.get("tab")) {
@@ -123,6 +127,7 @@ function Events() {
         direction: s.dir === "asc" ? 0 : 1,
       })),
       CustomSearch: search,
+      Filters:filters
     };
     // console.log("Upcoming:", selectedTab.isUpcomingEvents);
     // console.log("Admin:", selectedTab.isAdminRequest);
@@ -271,19 +276,42 @@ function Events() {
                     title="Host Name/Venue Name"
                     field="venueName"
                     width={getWidth("venueName")}
-                    cells={{ data: TextCell }}
+                    cells={{ data: TextCell ,
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                    }}
                   />
 
                   <GridColumn
                     title="Event Name"
                     field="eventName"
                     width={getWidth("eventName")}
-                    cells={{ data: TextCell }}
+                    cells={{ data: TextCell,
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                     }}
                   />
 
                   <GridColumn
                     title="Date & Time"
                     width={getWidth("dateTime")}
+                    field="eventDate"
                     cells={{
                       data: (props) => (
                         <DateTimeCell
@@ -291,6 +319,16 @@ function Events() {
                           showEndedMessage={activeTab === "passed"}
                         />
                       ),
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="date"
+                      />
+                    ),
                     }}
                   />
 
@@ -298,21 +336,61 @@ function Events() {
                     title="Address"
                     field="address"
                     width={getWidth("address")}
-                    cells={{ data: DetailsCell }}
+                    cells={{ data: DetailsCell,
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                     }}
                   />
 
                   <GridColumn
                     title="Created By"
                     field="userName"
                     width={getWidth("userName")}
-                    cells={{ data: TextCell }}
+                    cells={{ data: TextCell, 
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                     }}
                   />
 
                   <GridColumn
                     title="Status"
                     field="approvalStatusName"
                     width={getWidth("approvalStatusName")}
-                    cells={{ data: StatusDropdownCell }}
+                    cells={{ data: StatusDropdownCell, 
+                      headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        filters={filters}
+                        setFilters={setFilters}
+                        filterType="select"
+                        filterField="approvalStatus"
+                        filterOptions={[
+                          { label: "Approved", value: "1" },
+                          { label: "Cancelled", value: "4" },
+                          { label: "Pending", value: "3" },
+                          { label: "Rejected", value: "2" },
+                        ]}
+                      />
+                    ),
+                     }}
                   />
                 </Grid>
                 <CustomPager

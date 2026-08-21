@@ -20,6 +20,7 @@ import CustomPager from "../../../components/Pagnation/CustomPager";
 import useStatusConfirmation from "../../../hooks/useStatusConfirmation";
 import StatusConfirmationModal from "../../../components/Modal/StatusConfirmationModal";
 import { hasAction } from "../../../utils/hasAction";
+import FilterHeaderCell from "../../../components/GridCells/FilterHeaderCell";
 
 const columns = [
   { field: "action", minWidth: 90 },
@@ -41,6 +42,9 @@ function ProhibitedWords() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState([]);
+
+  const [filters, setFilters] = useState([]);
+  const [openFilter,setOpenFilter]=useState(null)
 
   const [showProhibitedModal, setShowProhibitedModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -70,7 +74,7 @@ function ProhibitedWords() {
 
   useEffect(() => {
     fetchProhibitedWords();
-  }, [page, sort, search]);
+  }, [page, sort, search, filters]);
 
   const fetchProhibitedWords = async () => {
     const body = {
@@ -81,6 +85,7 @@ function ProhibitedWords() {
         direction: s.dir === "asc" ? 0 : 1,
       })),
       CustomSearch: search,
+      Filters:filters
     };
     try {
       const res = await getProhibitedWords(body);
@@ -250,31 +255,86 @@ function ProhibitedWords() {
                   title="Prohibited Words"
                   field="words"
                   width={getWidth("words")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   title="Description"
                   field="description"
                   width={getWidth("description")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   title="Created By"
                   field="createdByUserName"
                   width={getWidth("createdByUserName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
                 <GridColumn
                   title="Created On"
                   field="createdOn"
                   width={getWidth("createdOn")}
-                  cells={{ data: DateCell }}
+                  cells={{ data: DateCell ,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="date"
+                      />
+                    ),
+                  }}
                 />
                 <GridColumn
                   title="Modified By"
                   field="updatedByUserName"
                   width={getWidth("updatedByUserName")}
-                  cells={{ data: TextCell }}
+                  cells={{ data: TextCell,
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="text"
+                      />
+                    ),
+                   }}
                 />
                 <GridColumn
                   title="Status"
@@ -287,6 +347,16 @@ function ProhibitedWords() {
                         idField="id"
                         statusField="status"
                         onToggle={openStatusModal}
+                      />
+                    ),
+                    headerCell: (props) => (
+                      <FilterHeaderCell
+                        {...props}
+                        openFilter={openFilter}
+                        setOpenFilter={setOpenFilter}
+                        setFilters={setFilters}
+                        filters={filters}
+                        filterType="status"
                       />
                     ),
                   }}
